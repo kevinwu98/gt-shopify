@@ -1,5 +1,3 @@
-import {T} from 'gt-react';
-import {useLocalePath} from '~/lib/i18n';
 import {useLoaderData, Link} from 'react-router';
 import type {Route} from './+types/collections._index';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
@@ -49,7 +47,7 @@ export default function Collections() {
 
   return (
     <div className="collections">
-      <h1><T>Collections</T></h1>
+      <h1>Collections</h1>
       <PaginatedResourceSection<CollectionFragment>
         connection={collections}
         resourcesClassName="collections-grid"
@@ -73,12 +71,12 @@ function CollectionItem({
   collection: CollectionFragment;
   index: number;
 }) {
-  const localize = useLocalePath();
+
   return (
     <Link
       className="collection-item"
       key={collection.id}
-      to={localize(`/collections/${collection.handle}`)}
+      to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
       {collection?.image && (

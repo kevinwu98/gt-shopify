@@ -1,5 +1,3 @@
-import {LOCALES} from '~/lib/i18n';
-import {T} from 'gt-react';
 import {useLoaderData, data, type HeadersFunction} from 'react-router';
 import type {Route} from './+types/cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
@@ -12,10 +10,7 @@ export const meta: Route.MetaFunction = () => {
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
 
-export async function action({request, context, params}: Route.ActionArgs) {
-  if (params.locale && !LOCALES.some(({locale}) => locale === params.locale)) {
-    throw new Response('Not found', {status: 404});
-  }
+export async function action({request, context}: Route.ActionArgs) {
   const {cart} = context;
 
   const formData = await request.formData();
@@ -121,7 +116,7 @@ export default function Cart() {
 
   return (
     <div className="cart">
-      <h1><T>Cart</T></h1>
+      <h1>Cart</h1>
       <CartMain layout="page" cart={cart} />
     </div>
   );

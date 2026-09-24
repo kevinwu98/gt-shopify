@@ -1,7 +1,7 @@
 import {Suspense} from 'react';
 import {Await, useLoaderData, useRouteLoaderData, Link} from 'react-router';
 import {Image} from '@shopify/hydrogen';
-import {T} from 'gt-react';
+
 import type {Route} from './+types/_index';
 import type {
   FeaturedCollectionFragment,
@@ -9,7 +9,7 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
-import {useLocalePath} from '~/lib/i18n';
+
 import type {RootLoader} from '~/root';
 
 export const meta: Route.MetaFunction = () => [{title: 'GT Supply'}];
@@ -44,27 +44,27 @@ export default function Homepage() {
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
       <section className="everyday-note">
-        <p className="eyebrow"><T>Less fuss. More living.</T></p>
-        <h2><T>Find your everyday.</T></h2>
-        <p><T>Simple pieces that make getting dressed feel effortless.</T></p>
+        <p className="eyebrow">Less fuss. More living.</p>
+        <h2>Find your everyday.</h2>
+        <p>Simple pieces that make getting dressed feel effortless.</p>
       </section>
     </div>
   );
 }
 
 function FeaturedCollection({collection}: {collection: FeaturedCollectionFragment}) {
-  const localePath = useLocalePath();
+
   const image = collection?.image;
   return (
     <section className="store-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="eyebrow"><T>Everyday essentials</T></p>
-        <h1 id="hero-title"><T>Good things,<br />worn often.</T></h1>
-        <p className="hero-description"><T>Easy layers. Familiar favorites. Find your everyday uniform.</T></p>
-        <Link className="button-primary" to={localePath('/collections/all')} prefetch="intent">
-          <T>Explore the collection</T><span aria-hidden="true">↗</span>
+        <p className="eyebrow">Everyday essentials</p>
+        <h1 id="hero-title">Good things,<br />worn often.</h1>
+        <p className="hero-description">Easy layers. Familiar favorites. Find your everyday uniform.</p>
+        <Link className="button-primary" to={'/collections/all'} prefetch="intent">
+          Explore the collection<span aria-hidden="true">↗</span>
         </Link>
-        <p className="hero-footnote"><T>Your next favorite is right here.</T></p>
+        <p className="hero-footnote">Your next favorite is right here.</p>
       </div>
       <div className="hero-image">
         {image ? (
@@ -76,7 +76,7 @@ function FeaturedCollection({collection}: {collection: FeaturedCollectionFragmen
           />
         ) : null}
         {collection ? (
-          <Link className="hero-collection-link" to={localePath(`/collections/${collection.handle}`)}>
+          <Link className="hero-collection-link" to={`/collections/${collection.handle}`}>
             <span>{collection.title}</span><span aria-hidden="true">↗</span>
           </Link>
         ) : null}
@@ -86,25 +86,25 @@ function FeaturedCollection({collection}: {collection: FeaturedCollectionFragmen
 }
 
 function RecommendedProducts({products}: {products: Promise<RecommendedProductsQuery | null>}) {
-  const localePath = useLocalePath();
+
   return (
     <section className="recommended-products" aria-labelledby="recommended-products">
       <div className="section-heading">
         <div>
-          <p className="eyebrow"><T>On the shortlist</T></p>
-          <h2 id="recommended-products"><T>The everyday edit</T></h2>
+          <p className="eyebrow">On the shortlist</p>
+          <h2 id="recommended-products">The everyday edit</h2>
         </div>
-        <Link className="text-link" to={localePath('/collections/all')}>
-          <T>Shop all</T><span aria-hidden="true">↗</span>
+        <Link className="text-link" to={'/collections/all'}>
+          Shop all<span aria-hidden="true">↗</span>
         </Link>
       </div>
-      <Suspense fallback={<div className="products-loading"><T>Finding your next favorites…</T></div>}>
+      <Suspense fallback={<div className="products-loading">Finding your next favorites…</div>}>
         <Await resolve={products}>
           {(response) => response ? (
             <div className="recommended-products-grid">
               {response.products.nodes.map((product) => <ProductItem key={product.id} product={product} />)}
             </div>
-          ) : <p><T>We could not load the collection. Please try again.</T></p>}
+          ) : <p>We could not load the collection. Please try again.</p>}
         </Await>
       </Suspense>
     </section>

@@ -1,4 +1,3 @@
-import {T} from 'gt-react';
 import * as React from 'react';
 import {Pagination} from '@shopify/hydrogen';
 
@@ -27,10 +26,10 @@ export function PaginatedResourceSection<NodesType>({
           <div>
             <PreviousLink>
               {isLoading ? (
-                <T>Loading…</T>
+                'Loading…'
               ) : (
                 <span>
-                  <T><span aria-hidden="true">↑</span> Load previous</T>
+                  <span aria-hidden="true">↑</span> Load previous
                 </span>
               )}
             </PreviousLink>
@@ -47,10 +46,10 @@ export function PaginatedResourceSection<NodesType>({
             )}
             <NextLink>
               {isLoading ? (
-                <T>Loading…</T>
+                'Loading…'
               ) : (
                 <span>
-                  <T>Load more <span aria-hidden="true">↓</span></T>
+                  Load more <span aria-hidden="true">↓</span>
                 </span>
               )}
             </NextLink>

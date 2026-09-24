@@ -89,7 +89,7 @@ function formBody(action, inputs, extras = {}) {
 }
 
 async function cartAction(action, inputs) {
-  const result = await request('/fr/cart.data', {method: 'POST', body: formBody(action, inputs)});
+  const result = await request('/cart.data', {method: 'POST', body: formBody(action, inputs)});
   assertStatus(result, 200, action);
   const table = dataTable(result.text);
   assert.equal(dataValue(table, 'data', 'cartAction'), action);
@@ -102,75 +102,72 @@ async function cartAction(action, inputs) {
 
 async function main() {
   console.log(`Checking production storefront at ${baseUrl.origin}`);
-  for (const [locale, path, headline, cartLabel] of [
-    ['en', '/', 'Good things,', 'Cart'],
-    ['fr', '/fr', 'De belles pièces,', 'Panier'],
-    ['ja', '/ja', 'お気に入りを、', 'カート'],
-  ]) {
-    const result = await request(path);
-    assertStatus(result, 200, `${locale} homepage`);
-    const markup = initialMarkup(result.text);
-    assert.match(markup, new RegExp(`<html\\b[^>]*lang="${locale}"`));
-    const heading = markup.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
-    assert.ok(heading && visibleText(heading).includes(headline), `${locale}: translated headline must appear before scripts`);
-    assert.ok(visibleText(markup).includes(cartLabel), `${locale}: translated navigation must be server-rendered`);
-    pass(`${locale} translated headline/navigation and html lang are present before scripts`);
-  }
+  const home = await request('/');
+  assertStatus(home, 200, 'English homepage');
+  const homeMarkup = initialMarkup(home.text);
+  assert.match(homeMarkup, /<html\b[^>]*lang="en"/);
+  const heading = homeMarkup.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
+  assert.ok(heading && visibleText(heading).includes('Good things,'), 'English headline must appear before scripts');
+  assert.ok(visibleText(homeMarkup).includes('Cart'), 'English navigation must be server-rendered');
+  assert.doesNotMatch(homeMarkup, /(?:class|data-testid)="[^"]*locale-switcher/);
+  assert.doesNotMatch(homeMarkup, /href="\/(?:fr|ja)(?:[/?#"])/, 'English navigation must not expose locale-prefixed routes');
+  pass('English headline, navigation, and html lang are present before scripts without a locale switcher');
 
-  let runtimeStore;
-  for (const [locale, language] of [['fr', 'FR'], ['ja', 'JA']]) {
-    const result = await request(`/${locale}.data?_routes=root`);
-    assertStatus(result, 200, `${locale} single-fetch homepage`);
-    const table = dataTable(result.text);
-    assert.equal(dataValue(table, 'root', 'data', 'selectedLocale', 'locale'), locale);
-    assert.equal(dataValue(table, 'root', 'data', 'consent', 'language'), language, 'Hydrogen context must use the same language as GT on .data requests');
-    assert.equal(dataValue(table, 'root', 'data', 'consent', 'country'), 'US');
-    runtimeStore = dataValue(table, 'root', 'data', 'publicStoreDomain');
-    pass(`${locale}.data keeps GT and Hydrogen context aligned (${language}/US)`);
-  }
+  const rootData = await request('/_root.data?_routes=root');
+  assertStatus(rootData, 200, 'English single-fetch homepage');
+  const rootTable = dataTable(rootData.text);
+  assert.equal(dataValue(rootTable, 'root', 'data', 'consent', 'language'), 'EN');
+  assert.equal(dataValue(rootTable, 'root', 'data', 'consent', 'country'), 'US');
+  const rootFields = Object.keys(dataValue(rootTable, 'root', 'data')).map((key) => rootTable[Number(key.slice(1))]);
+  assert.ok(!rootFields.includes('translations'), 'Root loader must not include translation dictionaries');
+  assert.ok(!rootFields.includes('selectedLocale'), 'Root loader must not select a UI locale');
+  const runtimeStore = dataValue(rootTable, 'root', 'data', 'publicStoreDomain');
+  pass('Root loader uses EN/US commerce context and contains no UI locale or translation dictionaries');
 
-  const search = await request('/ja/search?q=snowboard');
-  assertStatus(search, 200, 'Japanese full search');
+  const search = await request('/search?q=snowboard');
+  assertStatus(search, 200, 'English full search');
   const searchMarkup = initialMarkup(search.text);
-  assert.match(searchMarkup, /<html\b[^>]*lang="ja"/);
-  assert.match(searchMarkup, /<h1\b[^>]*>検索<\/h1>/);
-  assert.match(searchMarkup, /<h2\b[^>]*>商品<\/h2>/);
-  assert.match(searchMarkup, /<form\b[^>]*action="\/ja\/search"/);
-  pass('Japanese full-search heading, product label, and form locale are server-rendered');
+  assert.match(searchMarkup, /<html\b[^>]*lang="en"/);
+  assert.match(searchMarkup, /<h1\b[^>]*>Search<\/h1>/);
+  assert.match(searchMarkup, /<h2\b[^>]*>Products<\/h2>/);
+  assert.match(searchMarkup, /<form\b[^>]*action="\/search"/);
+  pass('English search heading, product label, and search form are server-rendered');
 
   const articlePaths = [...new Set([...searchMarkup.matchAll(/href="([^"]*\/blogs\/[^"]+)"/g)].map(([, path]) => decodeEntities(path)))];
   if (articlePaths.length) {
-    assert.match(searchMarkup, /<h2\b[^>]*>ブログ記事<\/h2>/);
+    assert.match(searchMarkup, /<h2\b[^>]*>Articles<\/h2>/);
     for (const path of articlePaths) {
-      assert.match(new URL(path, baseUrl).pathname, /^\/ja\/blogs\/journal\/[^/]+$/, 'Article URLs must retain locale, blog handle, and article handle');
+      assert.match(new URL(path, baseUrl).pathname, /^\/blogs\/journal\/[^/]+$/, 'Article URLs must include the blog handle and article handle');
     }
-    assertStatus(await request(articlePaths[0]), 200, 'Japanese article result destination');
-    pass('Japanese article result links include the blog handle and resolve successfully');
+    assertStatus(await request(articlePaths[0]), 200, 'Article result destination');
+    pass('Article result links include the blog handle and resolve successfully');
   } else {
     console.log('SKIP Article-link check: Shopify returned no articles for the sample query.');
   }
 
-  const noResults = await request('/ja/search?q=gtSmokeNoMatch7f96f8');
-  assertStatus(noResults, 200, 'Japanese search without matches');
-  assert.ok(visibleText(initialMarkup(noResults.text)).includes('見つかりませんでした。別のキーワードで検索してください。'), 'No-results message must be translated in SSR');
-  pass('Japanese empty-search state is translated before scripts');
+  const noResults = await request('/search?q=gtSmokeNoMatch7f96f8');
+  assertStatus(noResults, 200, 'English search without matches');
+  assert.ok(visibleText(initialMarkup(noResults.text)).includes('No results. Try a different search.'), 'English no-results message must appear in SSR');
+  pass('English empty-search state is present before scripts');
 
-  assertStatus(await request('/de'), 404, 'Unsupported locale homepage');
-  pass('Unsupported locale homepage returns 404');
+  for (const path of ['/fr', '/ja', '/fr/collections/all', '/ja/cart']) {
+    assertStatus(await request(path), 404, `Removed locale route ${path}`);
+  }
+  pass('French and Japanese locale-prefixed routes return 404');
 
   assert.equal(config.PUBLIC_STORE_DOMAIN, demoDomain, 'Refusing cart mutations: .env/process PUBLIC_STORE_DOMAIN must be Shopify’s official demo store');
   assert.equal(runtimeStore, demoDomain, 'Refusing cart mutations: running server does not report Shopify’s official demo store');
   console.log('Cart mutation guard: official Shopify demo store confirmed; using an isolated cookie jar.');
 
-  const invalidLocale = await request('/de/cart', {
+  const invalidLocale = await request('/fr/cart', {
     method: 'POST', body: formBody('LinesAdd', {lines: []}),
   });
-  assertStatus(invalidLocale, 404, 'Unsupported locale cart POST');
+  assert.ok([404, 405].includes(invalidLocale.response.status), `Removed locale cart POST must be rejected, got HTTP ${invalidLocale.response.status}`);
   assert.ok(!cookies.has('cart'), 'Invalid locale must not create a cart');
-  pass('Unsupported locale cart POST returns 404 before creating a cart');
+  pass('Removed locale cart POST is rejected before creating a cart');
 
   for (const redirectTo of ['https://example.com/', '//example.com/', '/\\example.com/']) {
-    const result = await request('/fr/cart', {
+    const result = await request('/cart', {
       method: 'POST', body: formBody('LinesAdd', {lines: []}, {redirectTo}),
     });
     assertStatus(result, 400, 'External cart redirect');
@@ -179,15 +176,15 @@ async function main() {
   }
   pass('Absolute, protocol-relative, and backslash external redirects are rejected before mutation');
 
-  const permalink = await request('/fr/cart/123:1');
+  const permalink = await request('/cart/123:1');
   assertStatus(permalink, 302, 'Sample cart permalink');
-  assert.equal(permalink.response.headers.get('Location'), '/fr/cart');
+  assert.equal(permalink.response.headers.get('Location'), '/cart');
   assert.ok(!cookies.has('cart'), 'Sample permalink must not create a cart or start checkout');
-  pass('Sample cart permalink stays on /fr/cart without creating a cart or visiting checkout');
+  pass('Sample cart permalink stays on /cart without creating a cart or visiting checkout');
 
-  const catalog = await request('/fr/collections/all');
+  const catalog = await request('/collections/all');
   assertStatus(catalog, 200, 'Sample catalog');
-  const productPaths = [...new Set([...initialMarkup(catalog.text).matchAll(/href="(\/fr\/products\/[^"?#]+)[^"]*"/g)].map(([, path]) => decodeEntities(path)))];
+  const productPaths = [...new Set([...initialMarkup(catalog.text).matchAll(/href="(\/products\/[^"?#]+)[^"]*"/g)].map(([, path]) => decodeEntities(path)))];
   assert.ok(productPaths.length, 'Expected real sample product links');
   let merchandiseId;
   for (const path of productPaths.slice(0, 8)) {
@@ -196,46 +193,46 @@ async function main() {
     const markup = initialMarkup(product.text);
     const add = cartInputs(markup).find((input) => input.action === 'LinesAdd' && input.inputs?.lines?.[0]?.selectedVariant?.availableForSale);
     if (!add) continue;
-    assert.ok(visibleText(markup).includes('Ajouter au panier'), 'Product add-to-cart label must be translated in SSR');
+    assert.ok(visibleText(markup).includes('Add to cart'), 'Product add-to-cart label must be present in SSR');
     merchandiseId = add.inputs.lines[0].merchandiseId;
     break;
   }
   assert.ok(merchandiseId, 'Expected an available Shopify sample product variant');
-  pass('French product SSR contains an available real Shopify variant and translated cart control');
+  pass('English product SSR contains an available real Shopify variant and cart control');
 
   const added = await cartAction('LinesAdd', {lines: [{merchandiseId, quantity: 1}]});
   assert.equal(dataValue(added, 'data', 'cart', 'totalQuantity'), 1);
   assert.ok(cookies.has('cart'), 'Add must set a cart cookie');
   pass('Real sample cart add succeeds and returns an isolated cart cookie');
 
-  const reloaded = await request('/fr/cart');
+  const reloaded = await request('/cart');
   assertStatus(reloaded, 200, 'Cart reload');
   const cartMarkup = initialMarkup(reloaded.text);
   createdLineId = cartInputs(cartMarkup).find((input) => input.action === 'LinesRemove')?.inputs.lineIds[0];
   assert.ok(createdLineId, 'Reloaded cart must expose the added line ID in its removal form');
   assert.ok(cartInputs(cartMarkup).some((input) => input.action === 'LinesUpdate' && input.inputs.lines.some((line) => line.id === createdLineId)), 'Cart cookie must retain the added line on a new document request');
-  assert.ok(visibleText(cartMarkup).includes('Boutique de démonstration. Le paiement est désactivé.'), 'Sample checkout-disabled message must be server-rendered');
+  assert.ok(visibleText(cartMarkup).includes('Sample storefront. Checkout is disabled.'), 'Sample checkout-disabled message must be server-rendered');
   assert.doesNotMatch(cartMarkup, /<a\b[^>]*href="https?:\/\/[^"\s]*(?:checkout|checkouts)/i, 'Sample cart must not offer an external checkout link');
   pass('Cart survives a document reload and renders disabled sample checkout');
 
-  const updated = await request('/fr/cart', {
+  const updated = await request('/cart', {
     method: 'POST',
-    body: formBody('LinesUpdate', {lines: [{id: createdLineId, quantity: 2}]}, {redirectTo: '/fr/cart?smoke=1'}),
+    body: formBody('LinesUpdate', {lines: [{id: createdLineId, quantity: 2}]}, {redirectTo: '/cart?smoke=1'}),
   });
   assertStatus(updated, 303, 'Valid same-origin cart redirect');
-  assert.equal(updated.response.headers.get('Location'), '/fr/cart?smoke=1');
-  const cartAfterUpdate = await request('/fr/cart');
+  assert.equal(updated.response.headers.get('Location'), '/cart?smoke=1');
+  const cartAfterUpdate = await request('/cart');
   assertStatus(cartAfterUpdate, 200, 'Cart after update');
-  assert.ok(visibleText(initialMarkup(cartAfterUpdate.text)).includes('Quantité : 2'), 'Real sample line quantity should be two after update');
-  pass('Real sample cart update succeeds and preserves an allowed localized redirect');
+  assert.ok(visibleText(initialMarkup(cartAfterUpdate.text)).includes('Quantity: 2'), 'Real sample line quantity should be two after update');
+  pass('Real sample cart update succeeds and preserves an allowed same-origin redirect');
 
   const removed = await cartAction('LinesRemove', {lineIds: [createdLineId]});
   assert.equal(dataValue(removed, 'data', 'cart', 'totalQuantity'), 0);
   createdLineId = undefined;
-  const emptyCart = await request('/ja/cart');
-  assertStatus(emptyCart, 200, 'Japanese empty cart');
-  assert.ok(visibleText(initialMarkup(emptyCart.text)).includes('カートは空です。お気に入りの商品を見つけましょう。'));
-  pass('Real sample cart remove succeeds; the same cookie renders an empty Japanese cart');
+  const emptyCart = await request('/cart');
+  assertStatus(emptyCart, 200, 'English empty cart');
+  assert.ok(visibleText(initialMarkup(emptyCart.text)).includes('Your cart is empty. Find something you love.'));
+  pass('Real sample cart remove succeeds; the same cookie renders an empty English cart');
   console.log(`\n${checks} smoke checks passed. No checkout was visited or order placed.`);
 }
 

@@ -1,4 +1,3 @@
-import {useLocalePath} from '~/lib/i18n';
 import {useRef, useEffect} from 'react';
 import {Form, type FormProps} from 'react-router';
 
@@ -28,7 +27,7 @@ type SearchFormProps = Omit<FormProps, 'children'> & {
  *  </SearchForm>
  */
 export function SearchForm({children, ...props}: SearchFormProps) {
-  const localize = useLocalePath();
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useFocusOnCmdK(inputRef);
@@ -38,7 +37,7 @@ export function SearchForm({children, ...props}: SearchFormProps) {
   }
 
   return (
-    <Form method="get" action={localize('/search')} {...props}>
+    <Form method="get" action={'/search'} {...props}>
       {children({inputRef})}
     </Form>
   );

@@ -1,4 +1,3 @@
-import {getStoreLocale, localePath} from '~/lib/i18n';
 import {redirect} from 'react-router';
 import type {Route} from './+types/cart.$lines';
 
@@ -22,12 +21,11 @@ import type {Route} from './+types/cart.$lines';
  */
 export async function loader({request, context, params}: Route.LoaderArgs) {
   const {cart} = context;
-  const locale = getStoreLocale(new URL(request.url).pathname).locale;
   if (!context.env.PUBLIC_STORE_DOMAIN || context.env.PUBLIC_STORE_DOMAIN === 'hydrogen-preview.myshopify.com') {
-    return redirect(localePath('/cart', locale));
+    return redirect('/cart');
   }
   const {lines} = params;
-  if (!lines) return redirect(localePath('/cart', locale));
+  if (!lines) return redirect('/cart');
   const linesMap = lines.split(',').map((line) => {
     const lineDetails = line.split(':');
     const variantId = lineDetails[0];

@@ -1,18 +1,12 @@
-# Running Locadex against this storefront
+# Run Locadex on the English storefront
 
-**Status:** the storefront's current i18n markup and French/Japanese translations were prepared manually. An actual Locadex setup or internationalization run has not been completed because model-provider credentials are missing. The wrapper below makes the follow-up reproducible; it is not a record of a successful run.
+This project starts with ordinary English JSX and strings. There is no GT SDK integration, GT configuration, translation markup, translation bundle, or language routing. **No actual Locadex run has been completed; model-provider credentials are not configured.**
 
-## Which Locadex this uses
+## Configure the optional local wrapper
 
-The published `locadex@1.0.230` package's `start` command opens the General Translation dashboard. It does not provide the internal local agent's `auto` and `i18n` commands. Public npm does not expose `@generaltranslation/locadex-core`.
+`scripts/locadex.mjs` runs the implementation in an existing internal `gt-cloud/packages/locadex-core` checkout. That checkout needs its workspace dependencies installed. The inspected core version is `0.8.20`; source execution uses its `tsx` loader, so a compiled `dist` directory is not required.
 
-This project's `scripts/locadex.mjs` uses an existing **internal `gt-cloud/packages/locadex-core` source checkout**, with that checkout's workspace dependencies already installed. The inspected core version is `0.8.20`. It launches `src/cli.ts` with that checkout's `tsx` loader, so a compiled `dist` directory is not required. This path is for someone who already has access to the internal repository; it is not a public installation recipe.
-
-The wrapper creates a temporary `locadex-mcp` executable, puts it on the child process's `PATH`, and removes it after the run. That executable starts the core's MCP guide/validation server. Application edits and `.locadex` run artifacts are created by Locadex in the storefront's working directory.
-
-## Configure credentials
-
-Run these commands from the storefront root:
+From this storefront's root:
 
 ```bash
 cp .env.locadex.example .env.locadex
@@ -26,26 +20,31 @@ LOCADEX_AGENT=openai
 OPENAI_API_KEY=your-provider-key
 ```
 
-Alternatively use `LOCADEX_AGENT=anthropic` with `ANTHROPIC_API_KEY`. A valid internal `LOCADEX_SESSION_TOKEN` is another supported authentication mechanism, but requires the appropriate internal service configuration; an arbitrary token is not sufficient. The inspected core defaults to `gpt-5.6-sol` for OpenAI and `claude-opus-5` for Anthropic, so the selected provider must grant access to that model. An existing desktop Codex sign-in alone does not meet the core's API-key/session-token validation.
+For Anthropic, use `LOCADEX_AGENT=anthropic` and `ANTHROPIC_API_KEY` instead. The inspected core defaults to `gpt-5.6-sol` for OpenAI and `claude-opus-5` for Anthropic; your provider account needs access to the selected model. An existing desktop Codex sign-in alone does not satisfy the core's provider-key validation. An internal `LOCADEX_SESSION_TOKEN` is also recognized when the corresponding internal service is configured.
 
-Keep provider credentials out of `.env.example`, browser code, and version control. The wrapper reads `.env.locadex` itself; it does not require exporting secret values in shell commands.
+The wrapper loads `.env.locadex` automatically. Keep credentials in that ignored file, outside browser code and version control.
 
 ```bash
 npm run locadex:check
 ```
 
-This reports only source availability, runner availability, and whether the expected credential is present. It does not contact the provider or verify the key/model permissions. **The `check` command exits successfully even when configuration is incomplete; read its status lines.**
+The check reports source availability, runner availability, and whether the expected credential exists. It does not authenticate with the provider. It exits successfully even when configuration is incomplete, so read the status lines.
 
-## Commands and fixed options
+## Run setup, then internationalize
+
+Save a checkpoint of the English storefront so the resulting changes are easy to review. Then run:
 
 ```bash
 npm run locadex:setup
 npm run locadex:i18n
 ```
 
-`locadex:setup` invokes the core's `auto` command, which configures the application for i18n. `locadex:i18n` runs the separate source-internationalization workflow. Setup is already present in this POC, so the new-copy demonstration below only needs `locadex:i18n`.
+- `locadex:setup` invokes the internal `auto` command to install/configure GT for the app's rendering model.
+- `locadex:i18n` invokes the separate source-internationalization workflow to mark user-facing copy with GT APIs.
 
-Both commands use these supported internal flags:
+Choose your desired target languages when configuring the generated GT setup; this English baseline deliberately does not preselect them. Review the resulting configuration and diff before generating translations. Model-provider credentials for Locadex are separate from credentials for GT's translation service.
+
+Both commands pass these supported internal flags:
 
 ```text
 --framework react-router
@@ -55,56 +54,32 @@ Both commands use these supported internal flags:
 --max-concurrency 1
 ```
 
-Additional flags after npm's `--` are forwarded to the core. For example:
+The wrapper creates a temporary `locadex-mcp` executable on the child process's `PATH`, then removes it after the run. Locadex's application edits and run artifacts remain in the storefront directory for review.
+
+Additional arguments after npm's `--` are forwarded. To try source internationalization on only the home page after setup:
 
 ```bash
 npm run locadex:i18n -- --file-filters 'app/routes/_index.tsx'
 ```
 
-The framework setting above is **Locadex's** adapter selection. If an SDK framework field is added to `gt.config.json`, the internal setup guide uses `"react"` for React Router applications; `"react-router"` is not the SDK configuration value. The current POC's GT configuration omits that optional field.
+`--framework react-router` selects Locadex's adapter. If the generated SDK configuration includes a `framework` field, the internal guide uses `"react"` for React Router; the two configuration values are distinct.
 
-Before running an agent, save a reviewable checkpoint of the current work. The original skeleton is commit `40af3da`; that commit predates this wrapper and the GT integration. Do not reset the finished demo to it merely to run these commands.
+## Review the result
 
-## Reproducible new-copy demonstration
+After the agent finishes, inspect the source changes and run:
 
-1. Confirm the current app builds, the existing translations render, and `locadex:check` reports that the source, runner, and credentials are configured.
-2. Add an **unwrapped English paragraph** inside the home page JSX in `app/routes/_index.tsx`, for example:
+```bash
+npm run typecheck
+npm run build
+npm run preview:built
+```
 
-   ```tsx
-   <p>Ready for your next adventure?</p>
-   ```
+In a second terminal, run `npm run test:smoke`. Inspect the browser as well, including product variants, search, and cart updates. The baseline smoke checks establish commerce behavior; they do not automatically verify languages or copy introduced by your subsequent Locadex run.
 
-3. Run the actual agent on that file:
+For a follow-up change demonstration, add a fresh English sentence to a page after the initial run, run `locadex:i18n` on that file, and review the new GT markup. Generating translated values is a further step using the translation workflow you configure. Keep actual agent output as evidence of automation.
 
-   ```bash
-   npm run locadex:i18n -- --file-filters 'app/routes/_index.tsx'
-   ```
+## Public package versus internal agent
 
-4. Review the diff to confirm Locadex marked the new copy using GT APIs without changing unrelated behavior. Keep the command output/run artifacts as evidence of the actual run. A manually added `<T>` wrapper would demonstrate the SDK, not Locadex automation.
-5. Extract and validate the resulting source:
+The inspected public `locadex@1.0.230` package's `start` command opens the General Translation dashboard; it does not expose this internal local agent's `auto` and `i18n` commands. `@generaltranslation/locadex-core` is not available from public npm. This wrapper is intended for someone with access to the existing internal checkout.
 
-   ```bash
-   npm run i18n:extract
-   npm run i18n:validate
-   npm run typecheck
-   npm test
-   ```
-
-6. Translate the new French/Japanese entries. For a **manual runtime demonstration**, edit the generated target values while retaining their generated keys and JSX structure, and label that work as manual. For an **automated GT service demonstration**, configure a GT project with `GT_PROJECT_ID` and `GT_API_KEY` in the CLI environment and run:
-
-   ```bash
-   npm run i18n:translate
-   ```
-
-   Model-provider credentials used by Locadex do not authorize GT translation service calls. Neither service authentication nor GT-generated translations has been demonstrated by the current POC.
-
-7. Rebuild, run the production preview, and verify the new copy in all three languages:
-
-   ```bash
-   npm run build
-   npm run preview:built
-   ```
-
-   In a second terminal, run `npm run test:smoke`. Inspect the new sentence directly as well; existing smoke assertions do not automatically verify newly authored copy.
-
-This sequence separates three claims: Locadex changed the source, the GT CLI extracted valid content, and `gt-react` rendered the chosen translations. The current storefront demonstrates the latter two with manually prepared translations; the first remains a credential-dependent follow-up. It also does not establish compatibility with an older Remix 2 Hydrogen version or a deployed Oxygen environment.
+This baseline uses current Hydrogen with React Router 7. A run here does not by itself validate an older Remix 2 Hydrogen release or an Oxygen deployment.

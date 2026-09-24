@@ -1,5 +1,3 @@
-import {T, useGT} from 'gt-react';
-import {useLocalePath} from '~/lib/i18n';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import {Link, useFetchers} from 'react-router';
 import type {action} from '~/routes/cart';
@@ -40,7 +38,7 @@ function getLineItemChildrenMap(lines: CartLine[]): LineItemChildrenMap {
  * It is used by both the /cart route and the cart aside dialog.
  */
 export function CartMain({layout, cart: originalCart}: CartMainProps) {
-  const gt = useGT();
+
   const fetchers = useFetchers();
   const failedActions = fetchers.flatMap((fetcher) => {
     const result: Awaited<ReturnType<typeof action>>['data'] | undefined = fetcher.data;
@@ -63,11 +61,11 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   return (
     <section
       className={className}
-      aria-label={layout === 'page' ? gt('Cart page') : gt('Cart drawer')}
+      aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
     >
       {failedActions.map((fetcher) => (
         <div key={fetcher.key} role="alert" className="cart-error">
-          <p><T>We could not update your cart.</T></p>
+          <p>We could not update your cart.</p>
           {fetcher.userErrors?.map((error, index) => (
             <p key={index}>{error.message}</p>
           ))}
@@ -76,7 +74,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
       <CartEmpty hidden={linesCount} layout={layout} />
       <div className="cart-details">
         <p id="cart-lines" className="sr-only">
-          <T>Line items</T>
+          Line items
         </p>
         <div>
           <ul aria-labelledby="cart-lines">
@@ -111,17 +109,17 @@ function CartEmpty({
   hidden: boolean;
   layout?: CartMainProps['layout'];
 }) {
-  const localize = useLocalePath();
+
   const {close} = useAside();
   return (
     <div hidden={hidden}>
       <br />
       <p>
-        <T>Your cart is empty. Find something you love.</T>
+        Your cart is empty. Find something you love.
       </p>
       <br />
-      <Link to={localize('/collections')} onClick={close} prefetch="viewport">
-        <T>Continue shopping →</T>
+      <Link to={'/collections'} onClick={close} prefetch="viewport">
+        Continue shopping →
       </Link>
     </div>
   );

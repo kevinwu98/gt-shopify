@@ -1,5 +1,3 @@
-import {T, Var, useGT} from 'gt-react';
-import {useLocalePath} from '~/lib/i18n';
 import type {CartLineUpdateInput} from '@shopify/hydrogen/storefront-api-types';
 import type {CartLayout, LineItemChildrenMap} from '~/components/CartMain';
 import {CartForm, Image, type OptimisticCartLine} from '@shopify/hydrogen';
@@ -29,7 +27,7 @@ export function CartLineItem({
   line: CartLine;
   childrenMap: LineItemChildrenMap;
 }) {
-  const localize = useLocalePath();
+
   const {id, merchandise} = line;
   const {product, title, image, selectedOptions} = merchandise;
   const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
@@ -54,7 +52,7 @@ export function CartLineItem({
         <div>
           <Link
             prefetch="intent"
-            to={localize(lineItemUrl)}
+            to={lineItemUrl}
             onClick={() => {
               if (layout === 'aside') {
                 close();
@@ -82,7 +80,7 @@ export function CartLineItem({
       {lineItemChildren ? (
         <div>
           <p id={childrenLabelId} className="sr-only">
-            <T>Line items with <Var name="productTitle">{product.title}</Var></T>
+            Line items with {product.title}
           </p>
           <ul aria-labelledby={childrenLabelId} className="cart-line-children">
             {lineItemChildren.map((childLine) => (
@@ -106,7 +104,7 @@ export function CartLineItem({
  * hasn't yet responded that it was successfully added to the cart.
  */
 function CartLineQuantity({line}: {line: CartLine}) {
-  const gt = useGT();
+
   if (!line || typeof line?.quantity === 'undefined') return null;
   const {id: lineId, quantity, isOptimistic} = line;
   const prevQuantity = Number(Math.max(0, quantity - 1).toFixed(0));
@@ -114,10 +112,10 @@ function CartLineQuantity({line}: {line: CartLine}) {
 
   return (
     <div className="cart-line-quantity">
-      <small><T>Quantity: <Var name="quantity">{quantity}</Var></T> &nbsp;&nbsp;</small>
+      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
-          aria-label={gt('Decrease quantity')}
+          aria-label={'Decrease quantity'}
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
@@ -128,7 +126,7 @@ function CartLineQuantity({line}: {line: CartLine}) {
       &nbsp;
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
-          aria-label={gt('Increase quantity')}
+          aria-label={'Increase quantity'}
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
@@ -154,16 +152,16 @@ function CartLineRemoveButton({
   lineIds: string[];
   disabled: boolean;
 }) {
-  const localize = useLocalePath();
+
   return (
     <CartForm
       fetcherKey={getUpdateKey(lineIds)}
-      route={localize('/cart')}
+      route={'/cart'}
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
       <button disabled={disabled} type="submit">
-        <T>Remove</T>
+        Remove
       </button>
     </CartForm>
   );
@@ -176,13 +174,13 @@ function CartLineUpdateButton({
   children: React.ReactNode;
   lines: CartLineUpdateInput[];
 }) {
-  const localize = useLocalePath();
+
   const lineIds = lines.map((line) => line.id);
 
   return (
     <CartForm
       fetcherKey={getUpdateKey(lineIds)}
-      route={localize('/cart')}
+      route={'/cart'}
       action={CartForm.ACTIONS.LinesUpdate}
       inputs={{lines}}
     >

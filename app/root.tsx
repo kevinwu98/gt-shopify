@@ -1,6 +1,3 @@
-import '~/lib/gt';
-import {GTProvider, getTranslationsSnapshot} from 'gt-react';
-import {getStoreLocale} from '~/lib/i18n';
 import {Analytics, getShopAnalytics, useNonce} from '@shopify/hydrogen';
 import {
   Outlet,
@@ -30,8 +27,6 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
   currentUrl,
   nextUrl,
 }): boolean => {
-  if (getStoreLocale(currentUrl.pathname).locale !== getStoreLocale(nextUrl.pathname).locale) return true;
-
   // revalidate when a mutation is performed e.g add to cart, login...
   if (formMethod && formMethod !== 'GET') return true;
 
@@ -75,22 +70,13 @@ export async function loader(args: Route.LoaderArgs) {
   const deferredData = loadDeferredData(args);
 
   // Await the critical data required to render initial state of the page
-  const selectedLocale = getStoreLocale(new URL(args.request.url).pathname);
-  if (args.params.locale && !['en', 'fr', 'ja'].includes(args.params.locale)) {
-    throw new Response('Not found', {status: 404});
-  }
-  const [criticalData, translations] = await Promise.all([
-    loadCriticalData(args),
-    getTranslationsSnapshot(selectedLocale.locale),
-  ]);
+  const criticalData = await loadCriticalData(args);
 
   const {storefront, env} = args.context;
   const isDemoStore = !env.PUBLIC_STORE_DOMAIN || env.PUBLIC_STORE_DOMAIN === 'hydrogen-preview.myshopify.com';
 
   return {
     isDemoStore,
-    selectedLocale,
-    translations,
     ...deferredData,
     ...criticalData,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
@@ -159,10 +145,9 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
-  const data = useRouteLoaderData<RootLoader>('root');
 
   return (
-    <html lang={data?.selectedLocale.locale ?? 'en'}>
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -188,7 +173,6 @@ export default function App() {
   }
 
   return (
-    <GTProvider locale={data.selectedLocale.locale} translations={data.translations}>
     <Analytics.Provider
       cart={data.cart}
       shop={data.shop}
@@ -198,7 +182,6 @@ export default function App() {
         <Outlet />
       </PageLayout>
     </Analytics.Provider>
-    </GTProvider>
   );
 }
 

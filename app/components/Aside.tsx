@@ -1,4 +1,3 @@
-import {useGT} from 'gt-react';
 import {
   createContext,
   type ReactNode,
@@ -34,7 +33,7 @@ export function Aside({
   type: AsideType;
   heading: React.ReactNode;
 }) {
-  const gt = useGT();
+
   const {type: activeType, close} = useAside();
   const expanded = type === activeType;
   const id = useId();
@@ -62,11 +61,11 @@ export function Aside({
       role="dialog"
       aria-labelledby={id}
     >
-      <button className="close-outside" onClick={close} aria-label={gt('Close')} />
+      <button className="close-outside" onClick={close} aria-label={'Close'} />
       <aside>
         <header>
           <h3 id={id}>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label={gt('Close')}>
+          <button className="close reset" onClick={close} aria-label={'Close'}>
             &times;
           </button>
         </header>

@@ -1,4 +1,3 @@
-import {useLocalePath} from '~/lib/i18n';
 import {
   useFetcher,
   useNavigate,
@@ -30,7 +29,7 @@ export function SearchFormPredictive({
   className = 'predictive-search-form',
   ...props
 }: SearchFormPredictiveProps) {
-  const localize = useLocalePath();
+
   const fetcher = useFetcher<PredictiveSearchReturn>({key: 'search'});
   const inputRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
@@ -48,7 +47,7 @@ export function SearchFormPredictive({
   /** Navigate to the search page with the current input value */
   function goToSearch() {
     const term = inputRef?.current?.value;
-    void navigate(localize(SEARCH_ENDPOINT) + (term ? `?q=${encodeURIComponent(term)}` : ''));
+    void navigate(SEARCH_ENDPOINT + (term ? `?q=${encodeURIComponent(term)}` : ''));
     aside.close();
   }
 
@@ -56,7 +55,7 @@ export function SearchFormPredictive({
   function fetchResults(event: React.ChangeEvent<HTMLInputElement>) {
     void fetcher.submit(
       {q: event.target.value || '', limit: 5, predictive: true},
-      {method: 'GET', action: localize(SEARCH_ENDPOINT)},
+      {method: 'GET', action: SEARCH_ENDPOINT},
     );
   }
 
@@ -71,7 +70,7 @@ export function SearchFormPredictive({
   }
 
   return (
-    <fetcher.Form action={localize(SEARCH_ENDPOINT)} {...props} className={className} onSubmit={resetInput}>
+    <fetcher.Form action={SEARCH_ENDPOINT} {...props} className={className} onSubmit={resetInput}>
       {children({inputRef, fetcher, fetchResults, goToSearch})}
     </fetcher.Form>
   );

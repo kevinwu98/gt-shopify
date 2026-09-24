@@ -5,11 +5,10 @@ import {
   useAnalytics,
   useOptimisticCart,
 } from '@shopify/hydrogen';
-import {T, useGT} from 'gt-react';
+
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {LocaleSwitcher} from '~/components/LocaleSwitcher';
-import {useLocalePath} from '~/lib/i18n';
+
 
 type HeaderProps = {
   header: HeaderQuery;
@@ -19,20 +18,19 @@ type HeaderProps = {
 };
 
 export function Header({cart}: HeaderProps) {
-  const localePath = useLocalePath();
-  const gt = useGT();
+
   return (
     <header className="header">
-      <NavLink className="brand" prefetch="intent" to={localePath('/')} end>
+      <NavLink className="brand" prefetch="intent" to={'/'} end>
         <span translate="no">GT Supply<span className="brand-period">.</span></span>
       </NavLink>
-      <nav className="header-shop" aria-label={gt('Main navigation')}>
-        <NavLink prefetch="intent" to={localePath('/collections/all')}>
-          <T>Shop</T>
+      <nav className="header-shop" aria-label={'Main navigation'}>
+        <NavLink prefetch="intent" to={'/collections/all'}>
+          Shop
         </NavLink>
       </nav>
       <div className="header-ctas">
-        <LocaleSwitcher />
+
         <SearchToggle />
         <CartToggle cart={cart} />
       </div>
@@ -47,15 +45,14 @@ export function HeaderMenu({viewport}: {
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
   const {close} = useAside();
-  const localePath = useLocalePath();
-  const gt = useGT();
+
   return (
-    <nav className={`header-menu-${viewport}`} aria-label={gt('Main navigation')}>
-      <NavLink onClick={close} prefetch="intent" to={localePath('/')} end>
-        <T>Home</T>
+    <nav className={`header-menu-${viewport}`} aria-label={'Main navigation'}>
+      <NavLink onClick={close} prefetch="intent" to={'/'} end>
+        Home
       </NavLink>
-      <NavLink onClick={close} prefetch="intent" to={localePath('/collections/all')}>
-        <T>Shop</T>
+      <NavLink onClick={close} prefetch="intent" to={'/collections/all'}>
+        Shop
       </NavLink>
     </nav>
   );
@@ -63,14 +60,14 @@ export function HeaderMenu({viewport}: {
 
 function SearchToggle() {
   const {open} = useAside();
-  const gt = useGT();
+
   return (
-    <button className="header-search reset" onClick={() => open('search')} aria-label={gt('Search')}>
+    <button className="header-search reset" onClick={() => open('search')} aria-label={'Search'}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
         <circle cx="10.5" cy="10.5" r="6.5" />
         <path d="m16 16 4.5 4.5" />
       </svg>
-      <span><T>Search</T></span>
+      <span>Search</span>
     </button>
   );
 }
@@ -78,12 +75,11 @@ function SearchToggle() {
 function CartBadge({count}: {count: number}) {
   const {open} = useAside();
   const {publish, shop, cart, prevCart} = useAnalytics();
-  const localePath = useLocalePath();
-  const gt = useGT();
+
   return (
     <a
       className="header-cart"
-      href={localePath('/cart')}
+      href={'/cart'}
       onClick={(event) => {
         event.preventDefault();
         open('cart');
@@ -95,8 +91,8 @@ function CartBadge({count}: {count: number}) {
         } as CartViewPayload);
       }}
     >
-      <T>Cart</T>
-      <span className="cart-count" aria-label={gt('Items in cart')}>{count}</span>
+      Cart
+      <span className="cart-count" aria-label={'Items in cart'}>{count}</span>
     </a>
   );
 }

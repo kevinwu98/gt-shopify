@@ -1,4 +1,3 @@
-import {T, useGT} from 'gt-react';
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/search';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
@@ -38,26 +37,26 @@ export async function loader({request, context}: Route.LoaderArgs) {
  * Renders the /search route
  */
 export default function SearchPage() {
-  const gt = useGT();
+
   const {type, term, result, error} = useLoaderData<typeof loader>();
   if (type === 'predictive') return null;
 
   return (
     <div className="search">
-      <h1><T>Search</T></h1>
+      <h1>Search</h1>
       <SearchForm>
         {({inputRef}) => (
           <>
             <input
               defaultValue={term}
               name="q"
-              placeholder={gt('Search…')}
-              aria-label={gt('Search products')}
+              placeholder={'Search…'}
+              aria-label={'Search products'}
               ref={inputRef}
               type="search"
             />
             &nbsp;
-            <button type="submit"><T>Search</T></button>
+            <button type="submit">Search</button>
           </>
         )}
       </SearchForm>
