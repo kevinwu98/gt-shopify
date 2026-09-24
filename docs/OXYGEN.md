@@ -14,6 +14,12 @@ Storefront URL: https://gt-supply-demo-d4eecb57c0a4e7a633e0.o2.myshopify.dev
 
 Manage deployments: https://admin.shopify.com/store/gt-supply-demo/hydrogen/1000180871
 
+## Verified English baseline
+
+On September 24, 2026, commit `5319dc1` deployed successfully through GitHub Actions. Seven automated checks passed on its protected Oxygen preview: English server-rendered HTML/CSP, 15 JavaScript/CSS assets, catalog, purchasable product, full search, empty search, and fresh empty cart. Browser checks on the production environment confirmed variant switching, cart add/update/remove, reload persistence, and checkout handoff with the correct variant and quantity. Shopify displayed its Test Payment Gateway; no order was placed.
+
+The development-store checkout requires the store password on first access. Find the existing password under **Online Store → Preferences**; keep it private. Oxygen itself uses your Shopify store login.
+
 ## Link the local checkout
 
 Keep the shared sample-store configuration in `.env.example`. Pull the linked store's configuration into the ignored `.env` file:
@@ -58,7 +64,7 @@ process.exitCode = result.status ?? 1;
 NODE
 ```
 
-Tokens work only with the exact Oxygen deployment URL from the log, not custom domains. They expire after two hours by default; use `--auth-bypass-token-duration=HOURS` when deploying to select 1–12 hours. Generate a fresh deployment/token when one expires. The check sends the `oxygen-auth-bypass-token` header only to that origin, follows no redirects, and redacts the token from errors. [Shopify's authenticated testing guide](https://shopify.dev/docs/storefronts/headless/hydrogen/debugging/end-to-end-testing)
+Tokens work only with the exact Oxygen deployment URL from the log, not custom domains. They expire after two hours by default; use `--auth-bypass-token-duration=HOURS` when deploying to select 1–12 hours. Generate a fresh deployment/token when one expires. The check sends the `oxygen-auth-bypass-token` header only to the storefront origin, also validates JavaScript and CSS under `https://cdn.shopify.com/oxygen-v2/` without the token, follows no redirects, and redacts the token from errors. [Shopify's authenticated testing guide](https://shopify.dev/docs/storefronts/headless/hydrogen/debugging/end-to-end-testing)
 
 If the token is already configured privately in the environment, or the deployment is unprotected, run:
 

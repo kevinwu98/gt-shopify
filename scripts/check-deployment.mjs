@@ -5,13 +5,21 @@ const baseUrl = new URL(process.argv[2] || 'http://localhost:3101');
 assert.ok(['http:', 'https:'].includes(baseUrl.protocol), 'Use an HTTP(S) storefront URL');
 assert.ok(!baseUrl.username && !baseUrl.password, 'Do not put credentials in the URL');
 const authBypassToken = process.env.OXYGEN_AUTH_BYPASS_TOKEN;
+const oxygenCdnOrigin = 'https://cdn.shopify.com';
 let checks = 0;
 
-async function get(path) {
+function isOxygenCdnAsset(url) {
+  return url.origin === oxygenCdnOrigin && url.pathname.startsWith('/oxygen-v2/');
+}
+
+async function get(path, {asset = false} = {}) {
   const url = new URL(path, baseUrl);
-  assert.equal(url.origin, baseUrl.origin, 'Checks must stay on the storefront origin');
+  const sameOrigin = url.origin === baseUrl.origin;
+  assert.ok(sameOrigin || (asset && isOxygenCdnAsset(url)), 'Checks must stay on the storefront origin or use an allowed Oxygen CDN asset');
   const response = await fetch(url, {
-    headers: authBypassToken ? {'oxygen-auth-bypass-token': authBypassToken} : undefined,
+    headers: authBypassToken && sameOrigin && url.origin !== oxygenCdnOrigin
+      ? {'oxygen-auth-bypass-token': authBypassToken}
+      : undefined,
     redirect: 'manual',
     signal: AbortSignal.timeout(30000),
   });
@@ -46,11 +54,14 @@ async function main() {
 
   const assets = [...new Set([...home.text.matchAll(/(?:src|href)="([^"<>]+\.(?:js|css)(?:\?[^"<>]*)?)"/g)]
     .map(([, path]) => decodeEntities(path))
-    .filter((path) => new URL(path, baseUrl).origin === baseUrl.origin))];
+    .filter((path) => {
+      const url = new URL(path, baseUrl);
+      return url.origin === baseUrl.origin || isOxygenCdnAsset(url);
+    }))];
   assert.ok(assets.some((path) => path.includes('.js')), 'Expected a client JavaScript entry');
   assert.ok(assets.some((path) => path.includes('.css')), 'Expected a stylesheet');
   for (const path of assets) {
-    const {response} = await get(path);
+    const {response} = await get(path, {asset: true});
     const contentType = response.headers.get('content-type') || '';
     assert.match(contentType, new URL(path, baseUrl).pathname.endsWith('.css')
       ? /^text\/css(?:;|$)/i

@@ -13,11 +13,21 @@ const fixture = `
   import assert from 'node:assert/strict';
   const mode = process.env.DEPLOYMENT_CHECK_FIXTURE;
   const token = process.env.OXYGEN_AUTH_BYPASS_TOKEN;
+  let cdnRequests = 0;
+  process.on('exit', () => {
+    if (mode === 'cdn') assert.equal(cdnRequests, 2, 'Validate both CDN JavaScript and CSS');
+  });
   globalThis.fetch = async (input, options) => {
     const url = new URL(input);
-    assert.equal(url.origin, 'https://preview.myshopify.dev', 'No cross-origin requests');
+    const cdn = url.origin === 'https://cdn.shopify.com';
+    if (cdn) {
+      assert.ok(url.pathname.startsWith('/oxygen-v2/'), 'Only Oxygen assets are allowed on the CDN');
+      cdnRequests += 1;
+    } else {
+      assert.equal(url.origin, 'https://preview.myshopify.dev', 'No other cross-origin requests');
+    }
     assert.equal(options.redirect, 'manual', 'Redirects must not forward the token');
-    assert.equal(new Headers(options.headers).get('oxygen-auth-bypass-token'), token || null);
+    assert.equal(new Headers(options.headers).get('oxygen-auth-bypass-token'), cdn ? null : token || null);
     if (mode === 'redirect') {
       return new Response('', {status: 302, headers: {location: 'https://other.example/'}});
     }
@@ -33,7 +43,10 @@ const fixture = `
     }
     let body;
     if (url.pathname === '/') {
-      body = '<html lang="en"><h1>Good things, worn often.</h1><link href="/assets/app.css"><script src="/assets/app.js"></script><script src="https://other.example/foreign.js"></script>';
+      const assetRoot = mode === 'cdn'
+        ? 'https://cdn.shopify.com/oxygen-v2/61555/179082/365980/4550792/assets'
+        : '/assets';
+      body = '<html lang="en"><h1>Good things, worn often.</h1><link href="' + assetRoot + '/app.css"><script src="' + assetRoot + '/app.js"></script><script src="https://other.example/foreign.js"></script><script src="http://cdn.shopify.com/oxygen-v2/insecure.js"></script><script src="https://cdn.shopify.com/s/files/non-oxygen.js"></script><script src="https://cdn.shopify.com.evil.example/oxygen-v2/spoof.js"></script>';
     } else if (url.pathname === '/collections/all') {
       body = '<a href="/products/shirt">Shirt</a>';
     } else if (url.pathname === '/products/shirt') {
@@ -71,6 +84,14 @@ test('public deployment checks omit the bypass header when no token is configure
   const {stdout, stderr} = await check('public', '');
   assert.match(stdout, /7 deployment checks passed/);
   assert.equal(stderr, '');
+});
+
+test('Oxygen CDN assets are checked without forwarding the storefront token', async () => {
+  const {stdout, stderr} = await check('cdn');
+  assert.match(stdout, /All 2 referenced JavaScript and CSS assets load/);
+  assert.match(stdout, /7 deployment checks passed/);
+  assert.equal(stderr, '');
+  assert.ok(!stdout.includes(token));
 });
 
 test('protected deployment redirects fail with authentication guidance instead of following another origin', async () => {
