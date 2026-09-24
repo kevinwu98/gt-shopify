@@ -24,6 +24,7 @@ Browse the catalog, select a product variant, search for products, and add/updat
 
 ```bash
 npm run typecheck
+npm test
 npm run build
 npm run preview:built
 ```
@@ -36,7 +37,15 @@ npm run test:smoke
 
 The smoke script uses Node built-ins and needs no browser installation. It checks the storefront and exercises a sample cart without checking out; cart mutations are restricted to Shopify's demo store. Use `SMOKE_BASE_URL=http://localhost:3100 npm run test:smoke` to target the development server instead. `npm run preview` rebuilds before starting a preview server.
 
-The English-only baseline passes typechecking, the production build, and all 14 smoke checks. During browser automation, Codex-injected overlay elements outside the app document triggered React 18 hydration warnings; the interactive storefront recovered. No browser-tool-specific workaround is included in the application.
+The English-only baseline has four search-recovery regression tests and 14 commerce smoke checks. `npm run test:deployment -- https://your-storefront.example` adds seven read-only checks for English server rendering, JavaScript/CSS delivery, published products, search, and an empty visitor cart. This HTTP check needs an unprotected URL; inspect login-protected Oxygen previews in a signed-in browser.
+
+GitHub Actions runs lint, typechecking, regression tests, the production build, and both smoke suites against Shopify's public sample catalog. Vite is pinned to 7.3.6, which is supported by this Hydrogen release and produces the bundle-analysis artifacts expected by the pinned Shopify CLI.
+
+Browser automation can modify the favicon and document before React hydrates. The developer console confirms a `data-codex-favicon-badge` mismatch in controlled Chrome tabs, followed by hydration recovery. The application contains no automation-specific workaround. Verify the final preview in a normal browser tab as well as with the HTTP checks.
+
+## Deploy the English baseline to Oxygen
+
+See [docs/OXYGEN.md](docs/OXYGEN.md) for the development-store setup, GitHub connection, environment configuration, and deployment checks. The application remains English-only throughout this deployment milestone.
 
 ## Run Locadex yourself
 

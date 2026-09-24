@@ -96,11 +96,15 @@ function SearchAside() {
         </SearchFormPredictive>
 
         <SearchResultsPredictive>
-          {({items, total, term, state, closeSearch}) => {
+          {({items, total, term, error, state, closeSearch}) => {
             const {articles, collections, pages, products, queries} = items;
 
             if (state === 'loading' && term.current) {
               return <div>Loading…</div>;
+            }
+
+            if (error && state === 'idle') {
+              return <p role="alert">Search is temporarily unavailable. Please try again.</p>;
             }
 
             if (!total) {

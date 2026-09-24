@@ -1,0 +1,42 @@
+name: English storefront checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Configure the public Shopify demo catalog
+        run: cp .env.example .env
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Start the production preview
+        run: |
+          npm run preview:built > "$RUNNER_TEMP/hydrogen-preview.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:3101/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/hydrogen-preview.log"
+          exit 1
+      - run: npm run test:smoke
+      - run: npm run test:deployment
+      - name: Show preview logs on failure
+        if: failure()
+        run: cat "$RUNNER_TEMP/hydrogen-preview.log" 2>/dev/null || true

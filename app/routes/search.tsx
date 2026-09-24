@@ -7,6 +7,7 @@ import {
   type RegularSearchReturn,
   type PredictiveSearchReturn,
   getEmptyPredictiveSearchResult,
+  resolveSearchResult,
 } from '~/lib/search';
 import type {
   RegularSearchQuery,
@@ -25,12 +26,11 @@ export async function loader({request, context}: Route.LoaderArgs) {
       ? predictiveSearch({request, context})
       : regularSearch({request, context});
 
-  searchPromise.catch((error: Error) => {
-    console.error(error);
-    return {term: '', result: null, error: error.message};
+  const term = url.searchParams.get('q') || '';
+  return resolveSearchResult(searchPromise, {
+    type: isPredictive ? 'predictive' : 'regular',
+    term: isPredictive ? term.trim() : term,
   });
-
-  return await searchPromise;
 }
 
 /**
@@ -60,8 +60,9 @@ export default function SearchPage() {
           </>
         )}
       </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      {!term || !result?.total ? (
+      {error ? (
+        <p role="alert">Search is temporarily unavailable. Please try again.</p>
+      ) : !term || !result?.total ? (
         <SearchResults.Empty />
       ) : (
         <SearchResults result={result} term={term}>

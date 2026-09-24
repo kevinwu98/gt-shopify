@@ -1,6 +1,7 @@
-import {NavLink} from 'react-router';
+import {NavLink, useRouteLoaderData} from 'react-router';
 
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import type {RootLoader} from '~/root';
 
 type FooterProps = {
   footer: Promise<FooterQuery | null>;
@@ -9,6 +10,7 @@ type FooterProps = {
 };
 
 export function Footer(_props: FooterProps) {
+  const root = useRouteLoaderData<RootLoader>('root');
 
   return (
     <footer className="footer">
@@ -25,8 +27,12 @@ export function Footer(_props: FooterProps) {
         </nav>
       </div>
       <div className="footer-bottom">
-        <p>A sample storefront, open to everyone.</p>
-        <p>Sample storefront. Checkout is disabled.</p>
+        <p>Thoughtful essentials for every day.</p>
+        <p>
+          {root?.isDemoStore
+            ? 'Sample storefront. Checkout is disabled.'
+            : 'Powered by Shopify.'}
+        </p>
       </div>
     </footer>
   );

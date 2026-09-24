@@ -19,6 +19,47 @@ export type PredictiveSearchReturn = ResultWithItems<
   NonNullable<PredictiveSearchQuery['predictiveSearch']>
 >;
 
+/** Keep search failures in the search UI instead of the route error boundary. */
+export async function resolveSearchResult(
+  searchPromise: Promise<RegularSearchReturn | PredictiveSearchReturn>,
+  {type, term}: {type: 'regular' | 'predictive'; term: string},
+): Promise<RegularSearchReturn | PredictiveSearchReturn> {
+  try {
+    return await searchPromise;
+  } catch (error) {
+    console.error(error);
+    const message = error instanceof Error
+      ? error.message
+      : 'Search is temporarily unavailable. Please try again.';
+
+    if (type === 'predictive') {
+      return {type, term, error: message, result: getEmptyPredictiveSearchResult()};
+    }
+
+    return {
+      type,
+      term,
+      error: message,
+      result: {
+        total: 0,
+        items: {
+          articles: {nodes: []},
+          pages: {nodes: []},
+          products: {
+            nodes: [],
+            pageInfo: {
+              hasNextPage: false,
+              hasPreviousPage: false,
+              startCursor: null,
+              endCursor: null,
+            },
+          },
+        },
+      },
+    };
+  }
+}
+
 /**
  * Returns the empty state of a predictive search result to reset the search state.
  */

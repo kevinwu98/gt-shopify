@@ -22,6 +22,7 @@ type SearchResultsPredictiveArgs = Pick<
   UsePredictiveSearchReturn,
   'term' | 'total' | 'inputRef' | 'items'
 > & {
+  error?: string;
   state: Fetcher['state'];
   closeSearch: () => void;
 };
@@ -67,6 +68,7 @@ export function SearchResultsPredictive({
     items,
     closeSearch,
     inputRef,
+    error: fetcher.data?.error,
     state: fetcher.state,
     term,
     total,

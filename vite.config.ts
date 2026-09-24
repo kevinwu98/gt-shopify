@@ -8,11 +8,9 @@ export default defineConfig({
   plugins: [hydrogen(), oxygen(), reactRouter()],
   resolve: {
     alias: {
-      // Vite's native tsconfig path resolver does not cover JavaScript
-      // projects that use jsconfig.json, so define Hydrogen's app alias here.
+      // Keep Hydrogen's app alias explicit for both JavaScript and TypeScript.
       '~': fileURLToPath(new URL('./app', import.meta.url)),
     },
-    tsconfigPaths: true,
   },
   build: {
     // Allow a strict Content-Security-Policy

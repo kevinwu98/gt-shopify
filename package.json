@@ -16,7 +16,9 @@
     "locadex:check": "node scripts/locadex.mjs check",
     "locadex:setup": "node scripts/locadex.mjs auto",
     "locadex:i18n": "node scripts/locadex.mjs i18n",
+    "test": "node --test tests/*.test.mjs",
     "test:smoke": "node scripts/smoke.mjs",
+    "test:deployment": "node scripts/check-deployment.mjs",
     "preview:built": "shopify hydrogen preview --port 3101"
   },
   "prettier": "@shopify/prettier-config",
@@ -61,7 +63,7 @@
     "graphql-config": "^5.0.3",
     "prettier": "^3.4.2",
     "typescript": "^5.9.2",
-    "vite": "^8.0.1"
+    "vite": "7.3.6"
   },
   "engines": {
     "node": "^22 || ^24"
