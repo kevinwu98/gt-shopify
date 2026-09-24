@@ -4,16 +4,18 @@ import assert from 'node:assert/strict';
 const baseUrl = new URL(process.argv[2] || 'http://localhost:3101');
 assert.ok(['http:', 'https:'].includes(baseUrl.protocol), 'Use an HTTP(S) storefront URL');
 assert.ok(!baseUrl.username && !baseUrl.password, 'Do not put credentials in the URL');
+const authBypassToken = process.env.OXYGEN_AUTH_BYPASS_TOKEN;
 let checks = 0;
 
 async function get(path) {
   const url = new URL(path, baseUrl);
   assert.equal(url.origin, baseUrl.origin, 'Checks must stay on the storefront origin');
   const response = await fetch(url, {
+    headers: authBypassToken ? {'oxygen-auth-bypass-token': authBypassToken} : undefined,
     redirect: 'manual',
     signal: AbortSignal.timeout(30000),
   });
-  assert.equal(response.status, 200, `${url.pathname}: expected 200, received ${response.status}. Protected Oxygen previews require store login; use a public environment for this HTTP check.`);
+  assert.equal(response.status, 200, `${url.pathname}: expected 200, received ${response.status}. Protected Oxygen previews require a valid OXYGEN_AUTH_BYPASS_TOKEN for the exact deployment URL from h2_deploy_log.json.`);
   return {response, text: await response.text()};
 }
 
@@ -100,6 +102,8 @@ async function main() {
 try {
   await main();
 } catch (error) {
-  console.error(`FAIL ${error instanceof Error ? error.message : String(error)}`);
+  const message = error instanceof Error ? error.message : String(error);
+  // Assertion errors can include response content; redact a token echoed by a server.
+  console.error(`FAIL ${authBypassToken ? message.split(authBypassToken).join('[REDACTED]') : message}`);
   process.exitCode = 1;
 }

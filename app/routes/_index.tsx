@@ -22,7 +22,7 @@ export async function loader(args: Route.LoaderArgs) {
 
 async function loadCriticalData({context}: Route.LoaderArgs) {
   const {collections} = await context.storefront.query(FEATURED_COLLECTION_QUERY);
-  return {featuredCollection: collections.nodes[0]};
+  return {featuredCollection: collections.nodes[0] ?? null};
 }
 
 function loadDeferredData({context}: Route.LoaderArgs) {
@@ -52,9 +52,9 @@ export default function Homepage() {
   );
 }
 
-function FeaturedCollection({collection}: {collection: FeaturedCollectionFragment}) {
+function FeaturedCollection({collection}: {collection: FeaturedCollectionFragment | null}) {
 
-  const image = collection?.image;
+  const image = collection?.image ?? collection?.products.nodes[0]?.featuredImage;
   return (
     <section className="store-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
@@ -71,7 +71,7 @@ function FeaturedCollection({collection}: {collection: FeaturedCollectionFragmen
           <Image
             data={image}
             sizes="(min-width: 900px) 60vw, 100vw"
-            alt={image.altText || collection.title}
+            alt={image.altText || collection?.title || ''}
             loading="eager"
           />
         ) : null}
@@ -121,6 +121,17 @@ const FEATURED_COLLECTION_QUERY = `#graphql
       altText
       width
       height
+    }
+    products(first: 1) {
+      nodes {
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
     }
     handle
   }
