@@ -1,3 +1,4 @@
+import {getStoreLocale, localePath} from '~/lib/i18n';
 import {redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/collections.$handle';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
@@ -32,7 +33,7 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   });
 
   if (!handle) {
-    throw redirect('/collections');
+    throw redirect(localePath('/collections', getStoreLocale(new URL(request.url).pathname).locale));
   }
 
   const [{collection}] = await Promise.all([

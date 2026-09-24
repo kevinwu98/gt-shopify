@@ -1,20 +1,12 @@
+import {T} from 'gt-react';
+
 export function MockShopNotice() {
   return (
-    <section
-      className="mock-shop-notice"
-      aria-labelledby="mock-shop-notice-heading"
-    >
-      <div className="inner">
-        <h2 id="mock-shop-notice-heading">Welcome to Hydrogen!</h2>
-        <p>
-          You&rsquo;re seeing mocked products because no store is connected to
-          this project yet.
-        </p>
-        <p>
-          Link a store by running <code>npx shopify hydrogen link</code> in your
-          terminal.
-        </p>
-      </div>
-    </section>
+    <div className="mock-shop-notice">
+      <span className="sample-store-dot" aria-hidden="true" />
+      <p><T>Sample store</T></p>
+      <span className="sample-store-divider" aria-hidden="true">/</span>
+      <p><T>Explore in your language.</T></p>
+    </div>
   );
 }

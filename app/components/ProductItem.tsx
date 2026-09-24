@@ -1,3 +1,4 @@
+import {useLocalePath} from '~/lib/i18n';
 import {Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
 import type {
@@ -17,6 +18,7 @@ export function ProductItem({
     | RecommendedProductFragment;
   loading?: 'eager' | 'lazy';
 }) {
+  const localize = useLocalePath();
   const variantUrl = useVariantUrl(product.handle);
   const image = product.featuredImage;
   return (
@@ -24,7 +26,7 @@ export function ProductItem({
       className="product-item"
       key={product.id}
       prefetch="intent"
-      to={variantUrl}
+      to={localize(variantUrl)}
     >
       {image && (
         <Image

@@ -1,3 +1,5 @@
+import {LOCALES} from '~/lib/i18n';
+import {T} from 'gt-react';
 import {useLoaderData, data, type HeadersFunction} from 'react-router';
 import type {Route} from './+types/cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
@@ -10,10 +12,22 @@ export const meta: Route.MetaFunction = () => {
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
 
-export async function action({request, context}: Route.ActionArgs) {
+export async function action({request, context, params}: Route.ActionArgs) {
+  if (params.locale && !LOCALES.some(({locale}) => locale === params.locale)) {
+    throw new Response('Not found', {status: 404});
+  }
   const {cart} = context;
 
   const formData = await request.formData();
+  const redirectTo = formData.get('redirectTo');
+  let redirectPath: string | undefined;
+  if (typeof redirectTo === 'string' && redirectTo) {
+    const target = new URL(redirectTo, request.url);
+    if (!redirectTo.startsWith('/') || target.origin !== new URL(request.url).origin) {
+      throw new Response('Invalid redirect', {status: 400});
+    }
+    redirectPath = target.pathname + target.search + target.hash;
+  }
 
   const {action, inputs} = CartForm.getFormInput(formData);
 
@@ -75,18 +89,19 @@ export async function action({request, context}: Route.ActionArgs) {
 
   const cartId = result?.cart?.id;
   const headers = cartId ? cart.setCartId(result.cart.id) : new Headers();
-  const {cart: cartResult, errors, warnings} = result;
+  const {cart: cartResult, errors, userErrors, warnings} = result;
 
-  const redirectTo = formData.get('redirectTo') ?? null;
-  if (typeof redirectTo === 'string') {
+  if (redirectPath) {
     status = 303;
-    headers.set('Location', redirectTo);
+    headers.set('Location', redirectPath);
   }
 
   return data(
     {
+      cartAction: action,
       cart: cartResult,
       errors,
+      userErrors,
       warnings,
       analytics: {
         cartId,
@@ -106,7 +121,7 @@ export default function Cart() {
 
   return (
     <div className="cart">
-      <h1>Cart</h1>
+      <h1><T>Cart</T></h1>
       <CartMain layout="page" cart={cart} />
     </div>
   );

@@ -12,3 +12,6 @@ coverage/
 playwright-report/
 test-results/
 *.log
+!.env.locadex.example
+*.tsbuildinfo
+.locadex/

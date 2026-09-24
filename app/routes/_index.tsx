@@ -1,125 +1,112 @@
-import {Await, useLoaderData, Link} from 'react-router';
-import type {Route} from './+types/_index';
 import {Suspense} from 'react';
+import {Await, useLoaderData, useRouteLoaderData, Link} from 'react-router';
 import {Image} from '@shopify/hydrogen';
+import {T} from 'gt-react';
+import type {Route} from './+types/_index';
 import type {
   FeaturedCollectionFragment,
   RecommendedProductsQuery,
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
+import {useLocalePath} from '~/lib/i18n';
+import type {RootLoader} from '~/root';
 
-export const meta: Route.MetaFunction = () => {
-  return [{title: 'Hydrogen | Home'}];
-};
+export const meta: Route.MetaFunction = () => [{title: 'GT Supply'}];
 
 export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
-
   return {...deferredData, ...criticalData};
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
 async function loadCriticalData({context}: Route.LoaderArgs) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-
-  return {
-    isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
-    featuredCollection: collections.nodes[0],
-  };
+  const {collections} = await context.storefront.query(FEATURED_COLLECTION_QUERY);
+  return {featuredCollection: collections.nodes[0]};
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
 function loadDeferredData({context}: Route.LoaderArgs) {
   const recommendedProducts = context.storefront
     .query(RECOMMENDED_PRODUCTS_QUERY)
     .catch((error: Error) => {
-      // Log query errors, but don't throw them so the page can still render
       console.error(error);
       return null;
     });
-
-  return {
-    recommendedProducts,
-  };
+  return {recommendedProducts};
 }
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
+  const rootData = useRouteLoaderData<RootLoader>('root');
   return (
     <div className="home">
-      {data.isShopLinked ? null : <MockShopNotice />}
+      {rootData?.isDemoStore ? <MockShopNotice /> : null}
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
+      <section className="everyday-note">
+        <p className="eyebrow"><T>Less fuss. More living.</T></p>
+        <h2><T>Find your everyday.</T></h2>
+        <p><T>Simple pieces that make getting dressed feel effortless.</T></p>
+      </section>
     </div>
   );
 }
 
-function FeaturedCollection({
-  collection,
-}: {
-  collection: FeaturedCollectionFragment;
-}) {
-  if (!collection) return null;
+function FeaturedCollection({collection}: {collection: FeaturedCollectionFragment}) {
+  const localePath = useLocalePath();
   const image = collection?.image;
   return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
+    <section className="store-hero" aria-labelledby="hero-title">
+      <div className="hero-copy">
+        <p className="eyebrow"><T>Everyday essentials</T></p>
+        <h1 id="hero-title"><T>Good things,<br />worn often.</T></h1>
+        <p className="hero-description"><T>Easy layers. Familiar favorites. Find your everyday uniform.</T></p>
+        <Link className="button-primary" to={localePath('/collections/all')} prefetch="intent">
+          <T>Explore the collection</T><span aria-hidden="true">↗</span>
+        </Link>
+        <p className="hero-footnote"><T>Your next favorite is right here.</T></p>
+      </div>
+      <div className="hero-image">
+        {image ? (
           <Image
             data={image}
-            sizes="100vw"
+            sizes="(min-width: 900px) 60vw, 100vw"
             alt={image.altText || collection.title}
+            loading="eager"
           />
-        </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
+        ) : null}
+        {collection ? (
+          <Link className="hero-collection-link" to={localePath(`/collections/${collection.handle}`)}>
+            <span>{collection.title}</span><span aria-hidden="true">↗</span>
+          </Link>
+        ) : null}
+      </div>
+    </section>
   );
 }
 
-function RecommendedProducts({
-  products,
-}: {
-  products: Promise<RecommendedProductsQuery | null>;
-}) {
+function RecommendedProducts({products}: {products: Promise<RecommendedProductsQuery | null>}) {
+  const localePath = useLocalePath();
   return (
-    <section
-      className="recommended-products"
-      aria-labelledby="recommended-products"
-    >
-      <h2 id="recommended-products">Recommended Products</h2>
-      <Suspense fallback={<div>Loading...</div>}>
+    <section className="recommended-products" aria-labelledby="recommended-products">
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow"><T>On the shortlist</T></p>
+          <h2 id="recommended-products"><T>The everyday edit</T></h2>
+        </div>
+        <Link className="text-link" to={localePath('/collections/all')}>
+          <T>Shop all</T><span aria-hidden="true">↗</span>
+        </Link>
+      </div>
+      <Suspense fallback={<div className="products-loading"><T>Finding your next favorites…</T></div>}>
         <Await resolve={products}>
-          {(response) => (
+          {(response) => response ? (
             <div className="recommended-products-grid">
-              {response
-                ? response.products.nodes.map((product) => (
-                    <ProductItem key={product.id} product={product} />
-                  ))
-                : null}
+              {response.products.nodes.map((product) => <ProductItem key={product.id} product={product} />)}
             </div>
-          )}
+          ) : <p><T>We could not load the collection. Please try again.</T></p>}
         </Await>
       </Suspense>
-      <br />
     </section>
   );
 }

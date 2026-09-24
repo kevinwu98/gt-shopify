@@ -1,3 +1,5 @@
+import {T} from 'gt-react';
+import {useLocalePath} from '~/lib/i18n';
 import {Link, useNavigate} from 'react-router';
 import {type MappedProductOptions} from '@shopify/hydrogen';
 import type {
@@ -15,6 +17,7 @@ export function ProductForm({
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
 }) {
+  const localize = useLocalePath();
   const navigate = useNavigate();
   const {open} = useAside();
   return (
@@ -51,7 +54,7 @@ export function ProductForm({
                       prefetch="intent"
                       preventScrollReset
                       replace
-                      to={`/products/${handle}?${variantUriQuery}`}
+                      to={localize(`/products/${handle}?${variantUriQuery}`)}
                       style={{
                         border: selected
                           ? '1px solid black'
@@ -118,7 +121,7 @@ export function ProductForm({
             : []
         }
       >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+        {selectedVariant?.availableForSale ? <T>Add to cart</T> : <T>Sold out</T>}
       </AddToCartButton>
     </div>
   );

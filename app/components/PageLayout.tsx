@@ -1,3 +1,5 @@
+import {T, Var, useGT} from 'gt-react';
+import {useLocalePath} from '~/lib/i18n';
 import {Await, Link} from 'react-router';
 import {Suspense, useId} from 'react';
 import type {
@@ -57,8 +59,8 @@ export function PageLayout({
 
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   return (
-    <Aside type="cart" heading="CART">
-      <Suspense fallback={<p>Loading cart ...</p>}>
+    <Aside type="cart" heading={<T>Cart</T>}>
+      <Suspense fallback={<p><T>Loading cart…</T></p>}>
         <Await resolve={cart}>
           {(cart) => {
             return <CartMain cart={cart} layout="aside" />;
@@ -70,9 +72,11 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
 }
 
 function SearchAside() {
+  const gt = useGT();
+  const localize = useLocalePath();
   const queriesDatalistId = useId();
   return (
-    <Aside type="search" heading="SEARCH">
+    <Aside type="search" heading={<T>Search</T>}>
       <div className="predictive-search">
         <br />
         <SearchFormPredictive>
@@ -82,13 +86,14 @@ function SearchAside() {
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
-                placeholder="Search"
+                placeholder={gt('Search')}
+                aria-label={gt('Search products')}
                 ref={inputRef}
                 type="search"
                 list={queriesDatalistId}
               />
               &nbsp;
-              <button onClick={goToSearch}>Search</button>
+              <button onClick={goToSearch}><T>Search</T></button>
             </>
           )}
         </SearchFormPredictive>
@@ -98,7 +103,7 @@ function SearchAside() {
             const {articles, collections, pages, products, queries} = items;
 
             if (state === 'loading' && term.current) {
-              return <div>Loading...</div>;
+              return <div><T>Loading…</T></div>;
             }
 
             if (!total) {
@@ -134,11 +139,10 @@ function SearchAside() {
                 {term.current && total ? (
                   <Link
                     onClick={closeSearch}
-                    to={`${SEARCH_ENDPOINT}?q=${term.current}`}
+                    to={localize(`${SEARCH_ENDPOINT}?q=${encodeURIComponent(term.current)}`)}
                   >
                     <p>
-                      View all results for <q>{term.current}</q>
-                      &nbsp; →
+                      <T>View all results for <q><Var name="term">{term.current}</Var></q> →</T>
                     </p>
                   </Link>
                 ) : null}
@@ -161,7 +165,7 @@ function MobileMenuAside({
   return (
     header.menu &&
     header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading="MENU">
+      <Aside type="mobile" heading={<T>Menu</T>}>
         <HeaderMenu
           menu={header.menu}
           viewport="mobile"

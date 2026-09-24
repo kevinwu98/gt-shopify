@@ -1,5 +1,8 @@
+import {T, useGT} from 'gt-react';
+import {useLocalePath} from '~/lib/i18n';
 import {useOptimisticCart} from '@shopify/hydrogen';
-import {Link} from 'react-router';
+import {Link, useFetchers} from 'react-router';
+import type {action} from '~/routes/cart';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem, type CartLine} from '~/components/CartLineItem';
@@ -37,6 +40,14 @@ function getLineItemChildrenMap(lines: CartLine[]): LineItemChildrenMap {
  * It is used by both the /cart route and the cart aside dialog.
  */
 export function CartMain({layout, cart: originalCart}: CartMainProps) {
+  const gt = useGT();
+  const fetchers = useFetchers();
+  const failedActions = fetchers.flatMap((fetcher) => {
+    const result: Awaited<ReturnType<typeof action>>['data'] | undefined = fetcher.data;
+    if (fetcher.state !== 'idle' || !result?.cartAction ||
+      !(result.userErrors?.length || result.errors?.length)) return [];
+    return [{key: fetcher.key, userErrors: result.userErrors}];
+  });
   // The useOptimisticCart hook applies pending actions to the cart
   // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(originalCart);
@@ -52,12 +63,20 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   return (
     <section
       className={className}
-      aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
+      aria-label={layout === 'page' ? gt('Cart page') : gt('Cart drawer')}
     >
+      {failedActions.map((fetcher) => (
+        <div key={fetcher.key} role="alert" className="cart-error">
+          <p><T>We could not update your cart.</T></p>
+          {fetcher.userErrors?.map((error, index) => (
+            <p key={index}>{error.message}</p>
+          ))}
+        </div>
+      ))}
       <CartEmpty hidden={linesCount} layout={layout} />
       <div className="cart-details">
         <p id="cart-lines" className="sr-only">
-          Line items
+          <T>Line items</T>
         </p>
         <div>
           <ul aria-labelledby="cart-lines">
@@ -92,17 +111,17 @@ function CartEmpty({
   hidden: boolean;
   layout?: CartMainProps['layout'];
 }) {
+  const localize = useLocalePath();
   const {close} = useAside();
   return (
     <div hidden={hidden}>
       <br />
       <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
+        <T>Your cart is empty. Find something you love.</T>
       </p>
       <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+      <Link to={localize('/collections')} onClick={close} prefetch="viewport">
+        <T>Continue shopping →</T>
       </Link>
     </div>
   );

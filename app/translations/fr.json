@@ -1,0 +1,139 @@
+{
+  "844d0b58acce190d": "Ajout en cours…",
+  "4f543b047014df7c": "Impossible d’ajouter cet article à votre panier.",
+  "86d287aa1993a091": "Fermer",
+  "4b71561e661a9664": "Diminuer la quantité",
+  "6f9647f746db650d": "Augmenter la quantité",
+  "8dad64ad1b707fd8": [
+    "Articles associés à ",
+    {
+      "i": 1,
+      "k": "productTitle",
+      "v": "v"
+    }
+  ],
+  "f66bef8112e37d06": [
+    "Quantité : ",
+    {
+      "i": 1,
+      "k": "quantity",
+      "v": "v"
+    }
+  ],
+  "111a44209dc6e701": "Supprimer",
+  "13444050c5b513f5": "Page du panier",
+  "efe83cd60db1efec": "Volet du panier",
+  "3f6aaf0e44f48172": "Impossible de mettre à jour votre panier.",
+  "73765feb9b38a3c8": "Articles du panier",
+  "ca04f5df6ddbcf53": "Votre panier est vide. Trouvez votre prochain coup de cœur.",
+  "7770e338662c6665": "Continuer vos achats →",
+  "e4c79046b2d1eb03": "Réductions",
+  "cac66e3632bcd05e": "Supprimer la réduction",
+  "c0dc347278df9357": "Code de réduction",
+  "2502493024656b43": "Appliquer le code de réduction",
+  "ab8adec6e0f4cc95": "Cartes-cadeaux",
+  "013c24d26065d84f": "Code de carte-cadeau",
+  "7574a17c6108ffd5": "Appliquer le code de carte-cadeau",
+  "c45a9109c05e9dab": "Supprimer la carte-cadeau se terminant par {lastCharacters}",
+  "b3481abb98960bd9": "Total du panier",
+  "ddb3355a8b5d810f": "Sous-total",
+  "685b61c5e0691025": "Boutique de démonstration. Le paiement est désactivé.",
+  "f47fbacfdb3a6df9": "Passer à la caisse →",
+  "79ad4a6d257a9cdd": "Réductions",
+  "8bf23f9ae70ee004": "Code de réduction",
+  "e321d312eb7386a8": "Appliquer",
+  "e8cbcd6e00b71365": "Cartes-cadeaux appliquées",
+  "d4d41a4cbaa2ab05": "Code de carte-cadeau",
+  "9494f23145fcc12d": "Navigation de pied de page",
+  "b7975b451fc659d4": "Les essentiels du quotidien. Un monde de possibilités.",
+  "246f1a8279b7682b": "Tout découvrir",
+  "44dc395ee9b6b46d": "Votre panier",
+  "e30ef330815526cf": "Une boutique de démonstration, ouverte à tous.",
+  "74b1e2c17ea2e0f3": "Navigation principale",
+  "ee3e8bd8b7918aec": "Rechercher",
+  "ad085d614979e97a": "Articles dans le panier",
+  "54a81779c21144af": "Boutique",
+  "ca749b12449e9284": "Accueil",
+  "d05f56d2129e990b": "Rechercher",
+  "6eb807cd1232e8a8": "Panier",
+  "2c1c93a646bbea6e": "Langue",
+  "d3287c9f4847472f": "Boutique de démonstration",
+  "f5ddfc4f86102e47": "Découvrez la boutique dans votre langue.",
+  "6df57099a35b36bb": "Rechercher des produits",
+  "8c62f6026b5f56c9": "Chargement du panier…",
+  "5a0125dd9241cdec": "Chargement…",
+  "9ca10f2543c88248": [
+    "Voir tous les résultats pour ",
+    {
+      "t": "q",
+      "i": 1,
+      "c": {
+        "i": 2,
+        "k": "term",
+        "v": "v"
+      }
+    },
+    " →"
+  ],
+  "75353ce09ec3bfb8": "Menu",
+  "ceac893d1d8afcc9": [
+    {
+      "t": "span",
+      "i": 1,
+      "c": "↑"
+    },
+    " Afficher les éléments précédents"
+  ],
+  "e5322e3444b1b400": [
+    "Afficher plus ",
+    {
+      "t": "span",
+      "i": 1,
+      "c": "↓"
+    }
+  ],
+  "a73bbd58c20828fd": "Ajouter au panier",
+  "e288e63f891570db": "Épuisé",
+  "bf36824919f2a3d1": "Image du produit",
+  "254571787353df73": "Prix",
+  "c43a728480172dad": "Articles de blog",
+  "afcd3ff0d57176e6": "Pages",
+  "3f79c258354ef384": "Produits",
+  "72cd9aa9e720a344": "↑ Afficher les éléments précédents",
+  "90004d934a6fefcd": "Afficher plus ↓",
+  "f514790d72aa0bf0": "Aucun résultat. Essayez une autre recherche.",
+  "8b045bc1a6270fb5": "Collections",
+  "78a10389407a042a": [
+    "Aucun résultat pour ",
+    {
+      "t": "q",
+      "i": 1,
+      "c": {
+        "i": 2,
+        "k": "term",
+        "v": "v"
+      }
+    }
+  ],
+  "ca707d9feb2733b8": "Moins de complications. Plus de vie.",
+  "b4030089d4c9fc1b": "Trouvez votre style au quotidien.",
+  "0e95b04146bdf388": "Des pièces simples pour s’habiller sans effort.",
+  "5349962daf423e73": "Les essentiels du quotidien",
+  "aba694f082d072fd": [
+    "De belles pièces,",
+    {
+      "t": "br",
+      "i": 1
+    },
+    "à porter souvent."
+  ],
+  "ec73d97ec04cad30": "Des pièces à superposer, des valeurs sûres. Composez votre tenue de tous les jours.",
+  "1c3d3ee81f6bd8b6": "Découvrir la collection",
+  "a512e655b314b420": "Votre prochain coup de cœur est ici.",
+  "bfa98d53e54aebf6": "Notre sélection",
+  "37eaf62a2329cb71": "La sélection du quotidien",
+  "183896cef8767864": "Nous cherchons vos prochains coups de cœur…",
+  "ce0e69160dcd00a8": "Impossible de charger la collection. Veuillez réessayer.",
+  "ab8222ce9132da09": "Description",
+  "0a526f1ba3d398ce": "Rechercher…"
+}
