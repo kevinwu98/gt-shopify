@@ -1,5 +1,6 @@
 import {Money} from '@shopify/hydrogen';
 import type {MoneyV2} from '@shopify/hydrogen/storefront-api-types';
+import {useGT} from 'gt-react';
 
 export function ProductPrice({
   price,
@@ -8,9 +9,10 @@ export function ProductPrice({
   price?: MoneyV2;
   compareAtPrice?: MoneyV2 | null;
 }) {
+  const gt = useGT();
 
   return (
-    <div aria-label={'Price'} className="product-price" role="group">
+    <div aria-label={gt('Price')} className="product-price" role="group">
       {compareAtPrice ? (
         <div className="product-price-on-sale">
           {price ? <Money data={price} /> : null}

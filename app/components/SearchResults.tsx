@@ -1,6 +1,7 @@
 import {Link} from 'react-router';
 import {Image, Money, Pagination} from '@shopify/hydrogen';
 import {urlWithTrackingParams, type RegularSearchReturn} from '~/lib/search';
+import {T, Branch} from 'gt-react';
 
 type SearchItems = RegularSearchReturn['result']['items'];
 type PartialSearchResult<ItemType extends keyof SearchItems> = Pick<
@@ -41,7 +42,9 @@ function SearchResultsArticles({
 
   return (
     <div className="search-result">
-      <h2>Articles</h2>
+      <T>
+        <h2>Articles</h2>
+      </T>
       <div>
         {articles?.nodes?.map((article) => {
           const articleUrl = urlWithTrackingParams({
@@ -72,7 +75,9 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
 
   return (
     <div className="search-result">
-      <h2>Pages</h2>
+      <T>
+        <h2>Pages</h2>
+      </T>
       <div>
         {pages?.nodes?.map((page) => {
           const pageUrl = urlWithTrackingParams({
@@ -106,7 +111,9 @@ function SearchResultsProducts({
 
   return (
     <div className="search-result">
-      <h2>Products</h2>
+      <T>
+        <h2>Products</h2>
+      </T>
       <Pagination connection={products}>
         {({nodes, isLoading, NextLink, PreviousLink}) => {
           const ItemsMarkup = nodes.map((product) => {
@@ -137,18 +144,30 @@ function SearchResultsProducts({
           return (
             <div>
               <div>
-                <PreviousLink>
-                  {isLoading ? 'Loading…' : <span>↑ Load previous</span>}
-                </PreviousLink>
+                <T>
+                  <PreviousLink>
+                    <Branch
+                      branch={isLoading.toString()}
+                      true={<>Loading…</>}
+                      false={<span>↑ Load previous</span>}
+                    />
+                  </PreviousLink>
+                </T>
               </div>
               <div>
                 {ItemsMarkup}
                 <br />
               </div>
               <div>
-                <NextLink>
-                  {isLoading ? 'Loading…' : <span>Load more ↓</span>}
-                </NextLink>
+                <T>
+                  <NextLink>
+                    <Branch
+                      branch={isLoading.toString()}
+                      true={<>Loading…</>}
+                      false={<span>Load more ↓</span>}
+                    />
+                  </NextLink>
+                </T>
               </div>
             </div>
           );
@@ -160,5 +179,9 @@ function SearchResultsProducts({
 }
 
 function SearchResultsEmpty() {
-  return <p>No results. Try a different search.</p>;
+  return (
+    <T>
+      <p>No results. Try a different search.</p>
+    </T>
+  );
 }

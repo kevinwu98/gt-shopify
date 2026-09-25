@@ -4,6 +4,7 @@ import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useEffect, useId, useRef, useState} from 'react';
 import {useFetcher, useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
+import {T, useGT} from 'gt-react';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -21,9 +22,13 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
 
   return (
     <div aria-labelledby={summaryId} className={className}>
-      <h4 id={summaryId}>Totals</h4>
+      <T>
+        <h4 id={summaryId}>Totals</h4>
+      </T>
       <dl role="group" className="cart-subtotal">
-        <dt>Subtotal</dt>
+        <T>
+          <dt>Subtotal</dt>
+        </T>
         <dd>
           {cart?.cost?.subtotalAmount?.amount ? (
             <Money data={cart?.cost?.subtotalAmount} />
@@ -50,14 +55,22 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
 function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   const root = useRouteLoaderData<RootLoader>('root');
   if (root?.isDemoStore) {
-    return <p className="checkout-notice">Sample storefront. Checkout is disabled.</p>;
+    return (
+      <T>
+        <p className="checkout-notice">
+          Sample storefront. Checkout is disabled.
+        </p>
+      </T>
+    );
   }
   if (!checkoutUrl) return null;
 
   return (
     <div>
       <a href={checkoutUrl} target="_self">
-        <p>Continue to checkout →</p>
+        <T>
+          <p>Continue to checkout →</p>
+        </T>
       </a>
       <br />
     </div>
@@ -73,6 +86,7 @@ function CartDiscounts({
   discountsHeadingId: string;
   discountCodeInputId: string;
 }) {
+  const gt = useGT();
 
   const codes: string[] =
     discountCodes
@@ -80,11 +94,13 @@ function CartDiscounts({
       ?.map(({code}) => code) || [];
 
   return (
-    <section aria-label={'Discounts'}>
+    <section aria-label={gt('Discounts')}>
       {/* Have existing discount, display it with a remove option */}
       <dl hidden={!codes.length}>
         <div>
-          <dt id={discountsHeadingId}>Discounts</dt>
+          <T>
+            <dt id={discountsHeadingId}>Discounts</dt>
+          </T>
           <UpdateDiscountForm>
             <div
               className="cart-discount"
@@ -93,8 +109,8 @@ function CartDiscounts({
             >
               <code>{codes?.join(', ')}</code>
               &nbsp;
-              <button type="submit" aria-label={'Remove discount'}>
-                Remove
+              <button type="submit" aria-label={gt('Remove discount')}>
+                <T>Remove</T>
               </button>
             </div>
           </UpdateDiscountForm>
@@ -104,18 +120,20 @@ function CartDiscounts({
       {/* Show an input to apply a discount */}
       <UpdateDiscountForm discountCodes={codes}>
         <div>
-          <label htmlFor={discountCodeInputId} className="sr-only">
-            Discount code
-          </label>
+          <T>
+            <label htmlFor={discountCodeInputId} className="sr-only">
+              Discount code
+            </label>
+          </T>
           <input
             id={discountCodeInputId}
             type="text"
             name="discountCode"
-            placeholder={'Discount code'}
+            placeholder={gt('Discount code')}
           />
           &nbsp;
-          <button type="submit" aria-label={'Apply discount code'}>
-            Apply
+          <button type="submit" aria-label={gt('Apply discount code')}>
+            <T>Apply</T>
           </button>
         </div>
       </UpdateDiscountForm>
@@ -153,6 +171,7 @@ function CartGiftCard({
   giftCardHeadingId: string;
   giftCardInputId: string;
 }) {
+  const gt = useGT();
 
   const giftCardCodeInput = useRef<HTMLInputElement>(null);
   const removeButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -201,10 +220,12 @@ function CartGiftCard({
   };
 
   return (
-    <section aria-label={'Gift cards'}>
+    <section aria-label={gt('Gift cards')}>
       {giftCardCodes && giftCardCodes.length > 0 && (
         <dl>
-          <dt id={giftCardHeadingId}>Applied gift cards</dt>
+          <T>
+            <dt id={giftCardHeadingId}>Applied gift cards</dt>
+          </T>
           {giftCardCodes.map((giftCard) => (
             <dd key={giftCard.id} className="cart-discount">
               <RemoveGiftCardForm
@@ -230,23 +251,25 @@ function CartGiftCard({
 
       <AddGiftCardForm fetcherKey="gift-card-add">
         <div>
-          <label htmlFor={giftCardInputId} className="sr-only">
-            Gift card code
-          </label>
+          <T>
+            <label htmlFor={giftCardInputId} className="sr-only">
+              Gift card code
+            </label>
+          </T>
           <input
             id={giftCardInputId}
             type="text"
             name="giftCardCode"
-            placeholder={'Gift card code'}
+            placeholder={gt('Gift card code')}
             ref={giftCardCodeInput}
           />
           &nbsp;
           <button
             type="submit"
             disabled={giftCardAddFetcher.state !== 'idle'}
-            aria-label={'Apply gift card code'}
+            aria-label={gt('Apply gift card code')}
           >
-            Apply
+            <T>Apply</T>
           </button>
         </div>
       </AddGiftCardForm>
@@ -286,6 +309,7 @@ function RemoveGiftCardForm({
   onRemoveClick?: () => void;
   buttonRef?: (el: HTMLButtonElement | null) => void;
 }) {
+  const gt = useGT();
 
   return (
     <CartForm
@@ -299,11 +323,13 @@ function RemoveGiftCardForm({
       &nbsp;
       <button
         type="submit"
-        aria-label={`Remove gift card ending in ${lastCharacters}`}
+        aria-label={gt('Remove gift card ending in {lastCharacters}', {
+          lastCharacters,
+        })}
         onClick={onRemoveClick}
         ref={buttonRef}
       >
-        Remove
+        <T>Remove</T>
       </button>
     </CartForm>
   );

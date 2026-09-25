@@ -4,6 +4,7 @@ import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductItem} from '~/components/ProductItem';
 import type {CollectionItemFragment} from 'storefrontapi.generated';
+import {T} from 'gt-react';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Products`}];
@@ -52,7 +53,9 @@ export default function Collection() {
 
   return (
     <div className="collection">
-      <h1>Products</h1>
+      <T>
+        <h1>Products</h1>
+      </T>
       <PaginatedResourceSection<CollectionItemFragment>
         connection={products}
         resourcesClassName="products-grid"

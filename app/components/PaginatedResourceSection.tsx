@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Pagination} from '@shopify/hydrogen';
+import {T, Branch} from 'gt-react';
 
 /**
  * <PaginatedResourceSection> encapsulates the previous and next pagination behaviors throughout your application.
@@ -24,15 +25,19 @@ export function PaginatedResourceSection<NodesType>({
 
         return (
           <div>
-            <PreviousLink>
-              {isLoading ? (
-                'Loading…'
-              ) : (
-                <span>
-                  <span aria-hidden="true">↑</span> Load previous
-                </span>
-              )}
-            </PreviousLink>
+            <T>
+              <PreviousLink>
+                <Branch
+                  branch={isLoading.toString()}
+                  true={<>Loading…</>}
+                  false={
+                    <span>
+                      <span aria-hidden="true">↑</span> Load previous
+                    </span>
+                  }
+                />
+              </PreviousLink>
+            </T>
             {resourcesClassName ? (
               <div
                 aria-label={ariaLabel}
@@ -44,15 +49,19 @@ export function PaginatedResourceSection<NodesType>({
             ) : (
               resourcesMarkup
             )}
-            <NextLink>
-              {isLoading ? (
-                'Loading…'
-              ) : (
-                <span>
-                  Load more <span aria-hidden="true">↓</span>
-                </span>
-              )}
-            </NextLink>
+            <T>
+              <NextLink>
+                <Branch
+                  branch={isLoading.toString()}
+                  true={<>Loading…</>}
+                  false={
+                    <span>
+                      Load more <span aria-hidden="true">↓</span>
+                    </span>
+                  }
+                />
+              </NextLink>
+            </T>
           </div>
         );
       }}

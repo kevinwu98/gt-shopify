@@ -6,6 +6,7 @@ import type {
   OrderQuery,
 } from 'customer-accountapi.generated';
 import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
+import {T, Var, Num, DateTime} from 'gt-react';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `Order ${data?.order?.name}`}];
@@ -83,20 +84,38 @@ export default function OrderRoute() {
   } = useLoaderData<typeof loader>();
   return (
     <div className="account-order">
-      <h2>Order {order.name}</h2>
-      <p>Placed on {new Date(order.processedAt!).toDateString()}</p>
+      <T>
+        <h2>
+          Order <Var>{order.name}</Var>
+        </h2>
+        <p>
+          Placed on <DateTime>{new Date(order.processedAt!)}</DateTime>
+        </p>
+      </T>
       {order.confirmationNumber && (
-        <p>Confirmation: {order.confirmationNumber}</p>
+        <T>
+          <p>
+            Confirmation: <Var>{order.confirmationNumber}</Var>
+          </p>
+        </T>
       )}
       <br />
       <div>
         <table>
           <thead>
             <tr>
-              <th scope="col">Product</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Total</th>
+              <th scope="col">
+                <T>Product</T>
+              </th>
+              <th scope="col">
+                <T>Price</T>
+              </th>
+              <th scope="col">
+                <T>Quantity</T>
+              </th>
+              <th scope="col">
+                <T>Total</T>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -110,14 +129,22 @@ export default function OrderRoute() {
               discountPercentage) && (
               <tr>
                 <th scope="row" colSpan={3}>
-                  <p>Discounts</p>
+                  <T>
+                    <p>Discounts</p>
+                  </T>
                 </th>
                 <th scope="row">
-                  <p>Discounts</p>
+                  <T>
+                    <p>Discounts</p>
+                  </T>
                 </th>
                 <td>
                   {discountPercentage ? (
-                    <span>-{discountPercentage}% OFF</span>
+                    <T>
+                      <span>
+                        -<Num>{discountPercentage}</Num>% OFF
+                      </span>
+                    </T>
                   ) : (
                     discountValue && <Money data={discountValue!} />
                   )}
@@ -126,10 +153,14 @@ export default function OrderRoute() {
             )}
             <tr>
               <th scope="row" colSpan={3}>
-                <p>Subtotal</p>
+                <T>
+                  <p>Subtotal</p>
+                </T>
               </th>
               <th scope="row">
-                <p>Subtotal</p>
+                <T>
+                  <p>Subtotal</p>
+                </T>
               </th>
               <td>
                 <Money data={order.subtotal!} />
@@ -137,10 +168,12 @@ export default function OrderRoute() {
             </tr>
             <tr>
               <th scope="row" colSpan={3}>
-                Tax
+                <T>Tax</T>
               </th>
               <th scope="row">
-                <p>Tax</p>
+                <T>
+                  <p>Tax</p>
+                </T>
               </th>
               <td>
                 <Money data={order.totalTax!} />
@@ -148,10 +181,12 @@ export default function OrderRoute() {
             </tr>
             <tr>
               <th scope="row" colSpan={3}>
-                Total
+                <T>Total</T>
               </th>
               <th scope="row">
-                <p>Total</p>
+                <T>
+                  <p>Total</p>
+                </T>
               </th>
               <td>
                 <Money data={order.totalPrice!} />
@@ -160,7 +195,9 @@ export default function OrderRoute() {
           </tfoot>
         </table>
         <div>
-          <h3>Shipping Address</h3>
+          <T>
+            <h3>Shipping Address</h3>
+          </T>
           {order?.shippingAddress ? (
             <address>
               <p>{order.shippingAddress.name}</p>
@@ -176,9 +213,13 @@ export default function OrderRoute() {
               )}
             </address>
           ) : (
-            <p>No shipping address defined</p>
+            <T>
+              <p>No shipping address defined</p>
+            </T>
           )}
-          <h3>Status</h3>
+          <T>
+            <h3>Status</h3>
+          </T>
           <div>
             <p>{fulfillmentStatus}</p>
           </div>
@@ -186,9 +227,11 @@ export default function OrderRoute() {
       </div>
       <br />
       <p>
-        <a target="_blank" href={order.statusPageUrl} rel="noreferrer">
-          View Order Status →
-        </a>
+        <T>
+          <a target="_blank" href={order.statusPageUrl} rel="noreferrer">
+            View Order Status →
+          </a>
+        </T>
       </p>
     </div>
   );

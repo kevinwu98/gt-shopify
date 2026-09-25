@@ -7,6 +7,7 @@ import {
 } from 'react-router';
 import type {Route} from './+types/account';
 import {CUSTOMER_DETAILS_QUERY} from '~/graphql/customer-account/CustomerDetailsQuery';
+import {T, useGT} from 'gt-react';
 
 export function shouldRevalidate() {
   return true;
@@ -36,12 +37,13 @@ export async function loader({context}: Route.LoaderArgs) {
 
 export default function AccountLayout() {
   const {customer} = useLoaderData<typeof loader>();
+  const gt = useGT();
 
   const heading = customer
     ? customer.firstName
-      ? `Welcome, ${customer.firstName}`
-      : `Welcome to your account.`
-    : 'Account Details';
+      ? gt('Welcome, {firstName}', {firstName: customer.firstName})
+      : gt('Welcome to your account.')
+    : gt('Account Details');
 
   return (
     <div className="account">
@@ -71,18 +73,20 @@ function AccountMenu() {
 
   return (
     <nav role="navigation">
-      <NavLink to="/account/orders" style={isActiveStyle}>
-        Orders &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/profile" style={isActiveStyle}>
-        &nbsp; Profile &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
-      <NavLink to="/account/addresses" style={isActiveStyle}>
-        &nbsp; Addresses &nbsp;
-      </NavLink>
-      &nbsp;|&nbsp;
+      <T>
+        <NavLink to="/account/orders" style={isActiveStyle}>
+          Orders &nbsp;
+        </NavLink>
+        &nbsp;|&nbsp;
+        <NavLink to="/account/profile" style={isActiveStyle}>
+          &nbsp; Profile &nbsp;
+        </NavLink>
+        &nbsp;|&nbsp;
+        <NavLink to="/account/addresses" style={isActiveStyle}>
+          &nbsp; Addresses &nbsp;
+        </NavLink>
+        &nbsp;|&nbsp;
+      </T>
       <Logout />
     </nav>
   );
@@ -90,8 +94,10 @@ function AccountMenu() {
 
 function Logout() {
   return (
-    <Form className="account-logout" method="POST" action="/account/logout">
-      &nbsp;<button type="submit">Sign out</button>
-    </Form>
+    <T>
+      <Form className="account-logout" method="POST" action="/account/logout">
+        &nbsp;<button type="submit">Sign out</button>
+      </Form>
+    </T>
   );
 }

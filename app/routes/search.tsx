@@ -13,6 +13,7 @@ import type {
   RegularSearchQuery,
   PredictiveSearchQuery,
 } from 'storefrontapi.generated';
+import {T, useGT} from 'gt-react';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Search`}];
@@ -38,30 +39,39 @@ export async function loader({request, context}: Route.LoaderArgs) {
  */
 export default function SearchPage() {
 
+  const gt = useGT();
   const {type, term, result, error} = useLoaderData<typeof loader>();
   if (type === 'predictive') return null;
 
   return (
     <div className="search">
-      <h1>Search</h1>
+      <T>
+        <h1>Search</h1>
+      </T>
       <SearchForm>
         {({inputRef}) => (
           <>
             <input
               defaultValue={term}
               name="q"
-              placeholder={'Search…'}
-              aria-label={'Search products'}
+              placeholder={gt('Search…')}
+              aria-label={gt('Search products')}
               ref={inputRef}
               type="search"
             />
             &nbsp;
-            <button type="submit">Search</button>
+            <T>
+              <button type="submit">Search</button>
+            </T>
           </>
         )}
       </SearchForm>
       {error ? (
-        <p role="alert">Search is temporarily unavailable. Please try again.</p>
+        <T>
+          <p role="alert">
+            Search is temporarily unavailable. Please try again.
+          </p>
+        </T>
       ) : !term || !result?.total ? (
         <SearchResults.Empty />
       ) : (

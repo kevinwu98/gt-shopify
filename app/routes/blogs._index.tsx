@@ -3,6 +3,7 @@ import type {Route} from './+types/blogs._index';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import type {BlogsQuery} from 'storefrontapi.generated';
+import {T} from 'gt-react';
 
 type BlogNode = BlogsQuery['blogs']['nodes'][0];
 
@@ -55,7 +56,9 @@ export default function Blogs() {
 
   return (
     <div className="blogs">
-      <h1>Blogs</h1>
+      <T>
+        <h1>Blogs</h1>
+      </T>
       <div className="blogs-grid">
         <PaginatedResourceSection<BlogNode> connection={blogs}>
           {({node: blog}) => (

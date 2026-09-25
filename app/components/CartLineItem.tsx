@@ -9,6 +9,7 @@ import type {
   CartApiQueryFragment,
   CartLineFragment,
 } from 'storefrontapi.generated';
+import {Num, T, useGT, Var} from 'gt-react';
 
 export type CartLine = OptimisticCartLine<CartApiQueryFragment>;
 
@@ -67,9 +68,11 @@ export function CartLineItem({
           <ul>
             {selectedOptions.map((option) => (
               <li key={option.name}>
-                <small>
-                  {option.name}: {option.value}
-                </small>
+                <T>
+                  <small>
+                    <Var>{option.name}</Var>: <Var>{option.value}</Var>
+                  </small>
+                </T>
               </li>
             ))}
           </ul>
@@ -79,9 +82,11 @@ export function CartLineItem({
 
       {lineItemChildren ? (
         <div>
-          <p id={childrenLabelId} className="sr-only">
-            Line items with {product.title}
-          </p>
+          <T>
+            <p id={childrenLabelId} className="sr-only">
+              Line items with <Var>{product.title}</Var>
+            </p>
+          </T>
           <ul aria-labelledby={childrenLabelId} className="cart-line-children">
             {lineItemChildren.map((childLine) => (
               <CartLineItem
@@ -104,6 +109,7 @@ export function CartLineItem({
  * hasn't yet responded that it was successfully added to the cart.
  */
 function CartLineQuantity({line}: {line: CartLine}) {
+  const gt = useGT();
 
   if (!line || typeof line?.quantity === 'undefined') return null;
   const {id: lineId, quantity, isOptimistic} = line;
@@ -112,10 +118,14 @@ function CartLineQuantity({line}: {line: CartLine}) {
 
   return (
     <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
+      <T>
+        <small>
+          Quantity: <Num>{quantity}</Num> &nbsp;&nbsp;
+        </small>
+      </T>
       <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
         <button
-          aria-label={'Decrease quantity'}
+          aria-label={gt('Decrease quantity')}
           disabled={quantity <= 1 || !!isOptimistic}
           name="decrease-quantity"
           value={prevQuantity}
@@ -126,7 +136,7 @@ function CartLineQuantity({line}: {line: CartLine}) {
       &nbsp;
       <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
         <button
-          aria-label={'Increase quantity'}
+          aria-label={gt('Increase quantity')}
           name="increase-quantity"
           value={nextQuantity}
           disabled={!!isOptimistic}
@@ -160,9 +170,11 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
-        Remove
-      </button>
+      <T>
+        <button disabled={disabled} type="submit">
+          Remove
+        </button>
+      </T>
     </CartForm>
   );
 }

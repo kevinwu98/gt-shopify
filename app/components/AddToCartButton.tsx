@@ -1,6 +1,7 @@
 import {type FetcherWithComponents} from 'react-router';
 import type {action} from '~/routes/cart';
 import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
+import {T, useGT} from 'gt-react';
 
 export function AddToCartButton({
   analytics,
@@ -15,6 +16,7 @@ export function AddToCartButton({
   lines: Array<OptimisticCartLineInput>;
   onClick?: () => void;
 }) {
+  const gt = useGT();
 
   return (
     <CartForm route={'/cart'} inputs={{lines}} action={CartForm.ACTIONS.LinesAdd}>
@@ -30,12 +32,14 @@ export function AddToCartButton({
             onClick={onClick}
             disabled={disabled || fetcher.state !== 'idle'}
           >
-            {fetcher.state !== 'idle' ? 'Adding…' : children}
+            {fetcher.state !== 'idle' ? gt('Adding…') : children}
           </button>
           {fetcher.state === 'idle' &&
             (fetcher.data?.userErrors?.length || fetcher.data?.errors?.length) ? (
               <div role="alert" className="cart-error">
-                <p>Unable to add this item to your cart.</p>
+                <T>
+                  <p>Unable to add this item to your cart.</p>
+                </T>
                 {fetcher.data?.userErrors?.map((error, index) => (
                   <p key={index}>{error.message}</p>
                 ))}

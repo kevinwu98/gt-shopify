@@ -7,6 +7,7 @@ import type {
 import {AddToCartButton} from './AddToCartButton';
 import {useAside} from './Aside';
 import type {ProductFragment} from 'storefrontapi.generated';
+import {useGT} from 'gt-react';
 
 export function ProductForm({
   productOptions,
@@ -15,6 +16,8 @@ export function ProductForm({
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
 }) {
+
+  const gt = useGT();
 
   const navigate = useNavigate();
   const {open} = useAside();
@@ -119,7 +122,7 @@ export function ProductForm({
             : []
         }
       >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+        {selectedVariant?.availableForSale ? gt('Add to cart') : gt('Sold out')}
       </AddToCartButton>
     </div>
   );

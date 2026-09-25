@@ -12,6 +12,7 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {T} from 'gt-react';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
@@ -113,9 +114,11 @@ export default function Product() {
         />
         <br />
         <br />
-        <p>
-          <strong>Description</strong>
-        </p>
+        <T>
+          <p>
+            <strong>Description</strong>
+          </p>
+        </T>
         <br />
         <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
         <br />

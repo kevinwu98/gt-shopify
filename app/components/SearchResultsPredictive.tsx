@@ -7,6 +7,7 @@ import {
   type PredictiveSearchReturn,
 } from '~/lib/search';
 import {useAside} from './Aside';
+import {T, Var} from 'gt-react';
 
 type PredictiveSearchItems = PredictiveSearchReturn['result']['items'];
 
@@ -92,7 +93,9 @@ function SearchResultsPredictiveArticles({
 
   return (
     <div className="predictive-search-result" key="articles">
-      <h5>Articles</h5>
+      <T>
+        <h5>Articles</h5>
+      </T>
       <ul>
         {articles.map((article) => {
           const articleUrl = urlWithTrackingParams({
@@ -134,7 +137,9 @@ function SearchResultsPredictiveCollections({
 
   return (
     <div className="predictive-search-result" key="collections">
-      <h5>Collections</h5>
+      <T>
+        <h5>Collections</h5>
+      </T>
       <ul>
         {collections.map((collection) => {
           const collectionUrl = urlWithTrackingParams({
@@ -176,7 +181,9 @@ function SearchResultsPredictivePages({
 
   return (
     <div className="predictive-search-result" key="pages">
-      <h5>Pages</h5>
+      <T>
+        <h5>Pages</h5>
+      </T>
       <ul>
         {pages.map((page) => {
           const pageUrl = urlWithTrackingParams({
@@ -210,7 +217,9 @@ function SearchResultsPredictiveProducts({
 
   return (
     <div className="predictive-search-result" key="products">
-      <h5>Products</h5>
+      <T>
+        <h5>Products</h5>
+      </T>
       <ul>
         {products.map((product) => {
           const productUrl = urlWithTrackingParams({
@@ -274,9 +283,14 @@ function SearchResultsPredictiveEmpty({
   }
 
   return (
-    <p>
-      No results found for <q>{term.current}</q>
-    </p>
+    <T>
+      <p>
+        No results found for{' '}
+        <q>
+          <Var>{term.current}</Var>
+        </q>
+      </p>
+    </T>
   );
 }
 

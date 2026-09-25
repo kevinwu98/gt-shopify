@@ -9,6 +9,7 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
+import {T} from 'gt-react';
 
 import type {RootLoader} from '~/root';
 
@@ -43,11 +44,13 @@ export default function Homepage() {
       {rootData?.isDemoStore ? <MockShopNotice /> : null}
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
-      <section className="everyday-note">
-        <p className="eyebrow">Less fuss. More living.</p>
-        <h2>Find your everyday.</h2>
-        <p>Simple pieces that make getting dressed feel effortless.</p>
-      </section>
+      <T>
+        <section className="everyday-note">
+          <p className="eyebrow">Less fuss. More living.</p>
+          <h2>Find your everyday.</h2>
+          <p>Simple pieces that make getting dressed feel effortless.</p>
+        </section>
+      </T>
     </div>
   );
 }
@@ -57,15 +60,17 @@ function FeaturedCollection({collection}: {collection: FeaturedCollectionFragmen
   const image = collection?.image ?? collection?.products.nodes[0]?.featuredImage;
   return (
     <section className="store-hero" aria-labelledby="hero-title">
-      <div className="hero-copy">
-        <p className="eyebrow">Everyday essentials</p>
-        <h1 id="hero-title">Good things,<br />worn often.</h1>
-        <p className="hero-description">Easy layers. Familiar favorites. Find your everyday uniform.</p>
-        <Link className="button-primary" to={'/collections/all'} prefetch="intent">
-          Explore the collection<span aria-hidden="true">↗</span>
-        </Link>
-        <p className="hero-footnote">Your next favorite is right here.</p>
-      </div>
+      <T>
+        <div className="hero-copy">
+          <p className="eyebrow">Everyday essentials</p>
+          <h1 id="hero-title">Good things,<br />worn often.</h1>
+          <p className="hero-description">Easy layers. Familiar favorites. Find your everyday uniform.</p>
+          <Link className="button-primary" to={'/collections/all'} prefetch="intent">
+            Explore the collection<span aria-hidden="true">↗</span>
+          </Link>
+          <p className="hero-footnote">Your next favorite is right here.</p>
+        </div>
+      </T>
       <div className="hero-image">
         {image ? (
           <Image
@@ -89,22 +94,24 @@ function RecommendedProducts({products}: {products: Promise<RecommendedProductsQ
 
   return (
     <section className="recommended-products" aria-labelledby="recommended-products">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">On the shortlist</p>
-          <h2 id="recommended-products">The everyday edit</h2>
+      <T>
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">On the shortlist</p>
+            <h2 id="recommended-products">The everyday edit</h2>
+          </div>
+          <Link className="text-link" to={'/collections/all'}>
+            Shop all<span aria-hidden="true">↗</span>
+          </Link>
         </div>
-        <Link className="text-link" to={'/collections/all'}>
-          Shop all<span aria-hidden="true">↗</span>
-        </Link>
-      </div>
-      <Suspense fallback={<div className="products-loading">Finding your next favorites…</div>}>
+      </T>
+      <Suspense fallback={<T><div className="products-loading">Finding your next favorites…</div></T>}>
         <Await resolve={products}>
           {(response) => response ? (
             <div className="recommended-products-grid">
               {response.products.nodes.map((product) => <ProductItem key={product.id} product={product} />)}
             </div>
-          ) : <p>We could not load the collection. Please try again.</p>}
+          ) : <T><p>We could not load the collection. Please try again.</p></T>}
         </Await>
       </Suspense>
     </section>
