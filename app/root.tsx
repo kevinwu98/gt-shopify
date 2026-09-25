@@ -10,12 +10,26 @@ import {
   ScrollRestoration,
   useRouteLoaderData,
 } from 'react-router';
+import {
+  GTProvider,
+  getTranslationsSnapshot,
+  initializeGT,
+  parseLocale,
+} from 'gt-react';
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
+import gtConfig from '../gt.config.json';
+import loadTranslations from './loadTranslations';
+
+initializeGT({
+  defaultLocale: gtConfig.defaultLocale,
+  locales: gtConfig.locales,
+  loadTranslations,
+});
 
 export type RootLoader = typeof loader;
 
@@ -75,8 +89,12 @@ export async function loader(args: Route.LoaderArgs) {
   const {storefront, env} = args.context;
   const isDemoStore = !env.PUBLIC_STORE_DOMAIN || env.PUBLIC_STORE_DOMAIN === 'hydrogen-preview.myshopify.com';
 
+  const locale = parseLocale(args.request);
+
   return {
     isDemoStore,
+    locale,
+    translations: await getTranslationsSnapshot(locale),
     ...deferredData,
     ...criticalData,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
@@ -173,15 +191,17 @@ export default function App() {
   }
 
   return (
-    <Analytics.Provider
-      cart={data.cart}
-      shop={data.shop}
-      consent={data.consent}
-    >
-      <PageLayout {...data}>
-        <Outlet />
-      </PageLayout>
-    </Analytics.Provider>
+    <GTProvider locale={data.locale} translations={data.translations}>
+      <Analytics.Provider
+        cart={data.cart}
+        shop={data.shop}
+        consent={data.consent}
+      >
+        <PageLayout {...data}>
+          <Outlet />
+        </PageLayout>
+      </Analytics.Provider>
+    </GTProvider>
   );
 }
 

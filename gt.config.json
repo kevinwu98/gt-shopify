@@ -1,0 +1,13 @@
+{
+  "locales": [
+    "fr",
+    "ja"
+  ],
+  "defaultLocale": "en",
+  "framework": "react",
+  "files": {
+    "gt": {
+      "output": "public/_gt/[locale].json"
+    }
+  }
+}
