@@ -9,6 +9,7 @@ import {
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {T, useGT} from 'gt-react';
+import {LocaleSwitcher} from '~/components/LocaleSwitcher';
 
 
 type HeaderProps = {
@@ -36,6 +37,7 @@ export function Header({cart}: HeaderProps) {
       </nav>
       <div className="header-ctas">
 
+        <LocaleSwitcher />
         <SearchToggle />
         <CartToggle cart={cart} />
       </div>
