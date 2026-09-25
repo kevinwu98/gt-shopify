@@ -74,51 +74,7 @@
     "t": "PreviousLink"
   },
   "2281d9696aa45f4b": "Numéro de confirmation",
-  "24a85f1488ccabf6": {
-    "c": [
-      {
-        "c": "Les essentiels du quotidien",
-        "i": 2,
-        "t": "p"
-      },
-      {
-        "c": [
-          "De belles pièces,",
-          {
-            "i": 4,
-            "t": "br"
-          },
-          "à porter souvent."
-        ],
-        "i": 3,
-        "t": "h1"
-      },
-      {
-        "c": "Des pièces faciles à superposer. Des favoris qu’on aime retrouver. Composez votre tenue de tous les jours.",
-        "i": 5,
-        "t": "p"
-      },
-      {
-        "c": [
-          "Découvrez la collection",
-          {
-            "c": "↗",
-            "i": 7,
-            "t": "span"
-          }
-        ],
-        "i": 6,
-        "t": "Link"
-      },
-      {
-        "c": "Votre prochain coup de cœur est ici.",
-        "i": 8,
-        "t": "p"
-      }
-    ],
-    "i": 1,
-    "t": "div"
-  },
+  "229b14f1b1f11ac8": "Découvrez la collection",
   "2502493024656b43": "Appliquer le code de réduction",
   "254571787353df73": "Prix",
   "268a73c2221bfe7a": {
@@ -126,6 +82,7 @@
     "i": 1,
     "t": "div"
   },
+  "27fe90e6fee770e2": "Impossible de modifier votre langue et votre région. Veuillez réessayer.",
   "28b50cb5c1a73321": [
     {
       "c": "Accueil",
@@ -154,6 +111,24 @@
     "t": "p"
   },
   "2c1c93a646bbea6e": "Langue",
+  "2d74b2fa22ab10e6": {
+    "c": [
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      },
+      ":",
+      " ",
+      {
+        "i": 3,
+        "k": "_gt_value_3",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "small"
+  },
   "2e107ae81088ed2c": {
     "c": "Code postal*",
     "i": 1,
@@ -281,6 +256,22 @@
     "i": 1,
     "t": "div"
   },
+  "48b46937e0058355": {
+    "c": [
+      {
+        "c": "Voir tous les articles",
+        "i": 2,
+        "t": "NavLink"
+      },
+      {
+        "c": "Votre panier",
+        "i": 3,
+        "t": "NavLink"
+      }
+    ],
+    "i": 1,
+    "t": "nav"
+  },
   "4b71561e661a9664": "Diminuer la quantité",
   "4c433b0f79367bbd": [
     {
@@ -320,88 +311,6 @@
     "t": "label"
   },
   "508e49336de580a8": "État / Province",
-  "52ae50b5476973a0": {
-    "c": [
-      {
-        "c": [
-          {
-            "c": [
-              {
-                "c": {
-                  "c": "GT Supply.",
-                  "i": 5,
-                  "t": "span"
-                },
-                "i": 4,
-                "t": "NavLink"
-              },
-              {
-                "c": "Les essentiels du quotidien. Un monde de possibilités.",
-                "i": 6,
-                "t": "p"
-              }
-            ],
-            "i": 3,
-            "t": "div"
-          },
-          {
-            "c": [
-              {
-                "c": "Voir tous les articles",
-                "i": 8,
-                "t": "NavLink"
-              },
-              {
-                "c": "Votre panier",
-                "i": 9,
-                "t": "NavLink"
-              }
-            ],
-            "i": 7,
-            "t": "nav"
-          }
-        ],
-        "i": 2,
-        "t": "div"
-      },
-      {
-        "c": [
-          {
-            "c": "Des essentiels bien pensés pour chaque jour.",
-            "i": 11,
-            "t": "p"
-          },
-          {
-            "c": {
-              "d": {
-                "b": {
-                  "false": {
-                    "c": "Propulsé par Shopify.",
-                    "i": 14,
-                    "t": "C14"
-                  },
-                  "true": {
-                    "c": "Boutique de démonstration. Le paiement est désactivé.",
-                    "i": 14,
-                    "t": "C14"
-                  }
-                },
-                "t": "b"
-              },
-              "i": 13,
-              "t": "Branch"
-            },
-            "i": 12,
-            "t": "p"
-          }
-        ],
-        "i": 10,
-        "t": "div"
-      }
-    ],
-    "i": 1,
-    "t": "footer"
-  },
   "53d7c7e2950efbe3": {
     "c": "Panier",
     "i": 1,
@@ -514,27 +423,6 @@
   "6eb807cd1232e8a8": "Panier",
   "6f69c0102f16d2f9": "Code pays",
   "6f9647f746db650d": "Augmenter la quantité",
-  "73d59b18dc0d6b0b": {
-    "c": [
-      {
-        "c": "Moins de tracas. Plus de temps pour vivre.",
-        "i": 2,
-        "t": "p"
-      },
-      {
-        "c": "Trouvez votre style au quotidien.",
-        "i": 3,
-        "t": "h2"
-      },
-      {
-        "c": "Des pièces simples pour s’habiller sans se compliquer la vie.",
-        "i": 4,
-        "t": "p"
-      }
-    ],
-    "i": 1,
-    "t": "section"
-  },
   "74143df1de746e79": {
     "c": "Taxes",
     "i": 1,
@@ -576,40 +464,6 @@
     "i": 1,
     "t": "legend"
   },
-  "8f6eca9e3651152d": {
-    "c": [
-      {
-        "c": [
-          {
-            "c": "Notre sélection",
-            "i": 3,
-            "t": "p"
-          },
-          {
-            "c": "Les essentiels du quotidien",
-            "i": 4,
-            "t": "h2"
-          }
-        ],
-        "i": 2,
-        "t": "div"
-      },
-      {
-        "c": [
-          "Voir tous les articles",
-          {
-            "c": "↗",
-            "i": 6,
-            "t": "span"
-          }
-        ],
-        "i": 5,
-        "t": "Link"
-      }
-    ],
-    "i": 1,
-    "t": "div"
-  },
   "915dc556e9bef529": {
     "c": "Nom*",
     "i": 1,
@@ -622,23 +476,6 @@
   },
   "9494f23145fcc12d": "Navigation du pied de page",
   "99b547a01cbbe1d8": "Quantité",
-  "9e073b20d365838e": {
-    "c": [
-      {
-        "i": 2,
-        "k": "_gt_value_2",
-        "v": "v"
-      },
-      ": ",
-      {
-        "i": 3,
-        "k": "_gt_value_3",
-        "v": "v"
-      }
-    ],
-    "i": 1,
-    "t": "small"
-  },
   "9ea94e412590f53d": "Numéro de téléphone",
   "9ead38f30992e131": {
     "c": "Totaux",
@@ -790,6 +627,7 @@
     "i": 1,
     "t": "NextLink"
   },
+  "cd707bc456456d84": "Certains articles de votre panier ne sont pas disponibles dans cette région. Retirez-les du panier avant de changer de région.",
   "d0617f03f8e31553": {
     "c": "Nom",
     "i": 1,
@@ -847,6 +685,29 @@
     "c": "Politiques de la boutique",
     "i": 1,
     "t": "h1"
+  },
+  "e319f0775ce1638d": {
+    "c": [
+      {
+        "c": "Conçu pour vous accompagner partout",
+        "i": 2,
+        "t": "h2"
+      },
+      {
+        "c": [
+          "Voir tous les articles",
+          {
+            "c": "↗",
+            "i": 4,
+            "t": "span"
+          }
+        ],
+        "i": 3,
+        "t": "Link"
+      }
+    ],
+    "i": 1,
+    "t": "div"
   },
   "e321d312eb7386a8": "Appliquer",
   "e4c79046b2d1eb03": "Réductions",
@@ -929,6 +790,5 @@
       "t": "p"
     }
   ],
-  "fda8bbb4a0ef6d51": "Complément d’adresse",
-  "229b14f1b1f11ac8": "Découvrez la collection"
+  "fda8bbb4a0ef6d51": "Complément d’adresse"
 }
