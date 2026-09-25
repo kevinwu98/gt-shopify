@@ -75,7 +75,7 @@ function pageMarkup(html) {
   return main;
 }
 
-function assertLocale(html, locale) {
+function assertLocale(html, locale, locales) {
   const markup = initialMarkup(html);
   assert.match(markup, new RegExp(`<html\\b[^>]*lang="${locale}"`), `Expected initial HTML in ${locale}`);
   const select = [...markup.matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/gi)]
@@ -83,7 +83,7 @@ function assertLocale(html, locale) {
   assert.ok(select, 'Expected the locale selector in initial HTML');
   assert.doesNotMatch(select[1], /\bhidden(?:\s|=|$)|aria-hidden="true"|display\s*:\s*none|visibility\s*:\s*hidden/i);
   const options = [...select[2].matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option>/gi)];
-  for (const supported of ['en', 'fr', 'ja']) {
+  for (const supported of locales) {
     const option = options.find(([, attributes]) => new RegExp(`\\bvalue="${supported}"`).test(attributes));
     assert.ok(option && textContent(option[2]), `Expected the ${supported} language option`);
     if (supported === locale) assert.match(option[1], /\bselected(?:\s|=|$)/, 'Locale selector must match SSR language');
@@ -110,9 +110,9 @@ function purchaseInput(markup) {
   }
 }
 
-async function localCatalogs() {
+async function localCatalogs(locales) {
   const catalogs = {};
-  for (const locale of ['en', 'fr', 'ja']) {
+  for (const locale of locales) {
     try {
       catalogs[locale] = JSON.parse(await readFile(new URL(`../catalog/${locale}.json`, import.meta.url), 'utf8'));
     } catch (error) {
@@ -137,18 +137,20 @@ function expectedCatalogTitle(catalogs, locale, productId, liveEnglish) {
 }
 
 async function localizedChecks(productPath, productTitle, englishMarkup) {
-  const catalogs = await localCatalogs();
+  const config = JSON.parse(await readFile(new URL('../gt.config.json', import.meta.url), 'utf8'));
+  const locales = [...new Set([config.defaultLocale, ...config.locales])];
+  const catalogs = await localCatalogs(locales);
   const englishInput = purchaseInput(englishMarkup);
   const variant = englishInput?.inputs?.lines?.[0]?.selectedVariant;
   const productId = variant?.product?.id;
   const liveEnglish = typeof variant?.product?.title === 'string' ? variant.product.title : productTitle;
   const pages = new Map();
-  for (const locale of ['en', 'fr', 'ja']) {
+  for (const locale of locales) {
     const [home, search, cart, product] = await Promise.all([
       get('/', {locale}), get('/search?q=gtOxygenNoMatch7f96f8', {locale}),
       get('/cart', {locale}), get(productPath, {locale}),
     ]);
-    for (const page of [home, search, cart, product]) assertLocale(page.text, locale);
+    for (const page of [home, search, cart, product]) assertLocale(page.text, locale, locales);
     const searchMain = pageMarkup(search.text);
     const cartMain = pageMarkup(cart.text);
     assert.doesNotMatch(searchMain, /role="alert"|href="\/products\//, 'Empty search must not contain an error or product result');
@@ -184,22 +186,27 @@ async function localizedChecks(productPath, productTitle, englishMarkup) {
       cart: elementText(cartMain, 'p'),
       purchase: purchaseText(productMain),
     };
-    for (const previous of pages.values()) {
-      for (const key of Object.keys(copy)) assert.notEqual(copy[key], previous[key], `${locale} ${key} must contain translated copy, not another locale's fallback`);
+    const englishCopy = pages.get('en');
+    if (englishCopy) {
+      for (const key of Object.keys(copy)) assert.notEqual(copy[key], englishCopy[key], `${locale} ${key} must contain translated copy, not English fallback`);
     }
     pages.set(locale, copy);
     pass(`${locale} initial HTML, language selector, empty states, and catalog title are correct${checkCatalog ? '; catalog translations, purchase inputs, and currency checked' : ''}`);
   }
 
-  const preference = await get('/', {locale: 'ja', cookie: 'generaltranslation.locale=fr'});
-  assertLocale(preference.text, 'fr');
-  assert.equal(elementText(pageMarkup(preference.text), 'h1'), pages.get('fr').heading);
-  pass('French locale cookie overrides Japanese Accept-Language');
+  for (const locale of locales) {
+    const otherLocale = locales.find((supported) => supported !== locale);
+    if (!otherLocale) continue;
+    const preference = await get('/', {locale: otherLocale, cookie: `generaltranslation.locale=${locale}`});
+    assertLocale(preference.text, locale, locales);
+    assert.equal(elementText(pageMarkup(preference.text), 'h1'), pages.get(locale).heading);
+  }
+  pass('Locale cookies override conflicting Accept-Language preferences');
 
   // No response cookies are retained: each request represents an independent visitor.
-  for (const locale of ['ja', 'en', 'fr', 'ja']) {
+  for (const locale of [...locales].reverse().concat(locales)) {
     const page = await get('/', {locale});
-    assertLocale(page.text, locale);
+    assertLocale(page.text, locale, locales);
     assert.equal(elementText(pageMarkup(page.text), 'h1'), pages.get(locale).heading, 'Locale requests must remain isolated');
   }
   pass('Repeated language requests do not share locale state');

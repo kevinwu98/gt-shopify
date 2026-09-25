@@ -10,6 +10,7 @@ import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {T, useGT} from 'gt-react';
 import {LocaleSwitcher} from '~/components/LocaleSwitcher';
+import {MarketSwitcher} from '~/components/MarketSwitcher';
 
 
 type HeaderProps = {
@@ -38,6 +39,7 @@ export function Header({cart}: HeaderProps) {
       <div className="header-ctas">
 
         <LocaleSwitcher />
+        <MarketSwitcher />
         <SearchToggle />
         <CartToggle cart={cart} />
       </div>

@@ -33,6 +33,20 @@ Before deploying, check the Hydrogen channel's **Storefront settings → Environ
 
 Shopify owns environment variables for the deployed app; the checked-in `.env.example` does not configure Oxygen.
 
+## Deploy through the connected GitHub repository
+
+The repository now contains two Oxygen workflows, for storefronts `1000180871`
+and `1000180930`. Both run on every push; review both results under GitHub Actions.
+A feature-branch push produces previews. Merge the reviewed branch into the
+configured production branch (`main` for GT Supply Demo) to update that environment.
+The new catalog workflow bundles `catalog/<locale>.json`, so commit those files.
+The GT key stays in ignored `.env.catalog`; Oxygen does not need it for this mode.
+
+For a new language, update from the merged Locadex locale change, run
+`npm run catalog:sync`, `npm run catalog:translate`, and `npm run catalog:check`,
+then commit, push, and verify the preview before merging. The locale list comes
+from `gt.config.json`; the deployment checker tests every configured language.
+
 ## Validate and deploy
 
 ```bash
@@ -73,7 +87,7 @@ npm run test:deployment -- https://exact-deployment-url.myshopify.dev
 CHECK_LOCALIZATION=1 npm run test:deployment -- https://exact-deployment-url.myshopify.dev
 ```
 
-The script's seven default groups check initial English HTML, CSS/JavaScript assets, a published available product among the first eight catalog items, product search, empty search, and a fresh empty cart. `CHECK_LOCALIZATION=1` extends this to 12 groups covering en/fr/ja translated initial HTML, language controls, translated search/cart/purchase copy, unchanged Shopify product title, cookie precedence, and repeated-request isolation. It does not mutate carts or visit checkout. An optional second argument selects a known matching product-search term.
+The script's seven default groups check initial English HTML, CSS/JavaScript assets, a published available product among the first eight catalog items, product search, empty search, and a fresh empty cart. `CHECK_LOCALIZATION=1` extends this to all configured languages, covering translated initial HTML, language controls, translated search/cart/purchase copy, expected translated product title or current English fallback, cookie precedence, and repeated-request isolation. It does not mutate carts or visit checkout. An optional second argument selects a known matching product-search term.
 
 `npm run test:smoke` is deliberately restricted to Shopify's shared sample catalog. It performs isolated cart mutations and is the CI regression check, not a test to point at a live merchant store.
 
@@ -81,4 +95,4 @@ The script's seven default groups check initial English HTML, CSS/JavaScript ass
 
 The English checkpoint is [`f77447c`](https://github.com/kevinwu98/gt-shopify/commit/f77447c). [Locadex setup PR #2](https://github.com/kevinwu98/gt-shopify/pull/2) merged as `f91b4d2`. [PR #3](https://github.com/kevinwu98/gt-shopify/pull/3) contains the generated French/Japanese interface localization and has passed nine unit tests, 17 smoke checks, and all 12 localized deployment-check groups against its local runtime.
 
-Run the opt-in localized checks against the actual Oxygen preview, then verify language switching, product variants, search, and cart persistence in a browser. Keep GT responsible for authored interface copy and Shopify responsible for catalog content and EN/US market configuration. See [LOCADEX.md](LOCADEX.md) for the project and automation settings.
+Run the opt-in localized checks against the actual Oxygen preview, then verify language switching, product variants, search, and cart persistence in a browser. GT handles authored interface copy and the exported catalog display dictionaries. Shopify remains responsible for live commerce data and EN/US market configuration. See [LOCADEX.md](LOCADEX.md) for the project and automation settings.

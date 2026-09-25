@@ -5,7 +5,8 @@ This workflow belongs to the original `kevinwu98/gt-shopify` POC. The separate
 
 Shopify supplies the English catalog and live commerce data. A local script
 exports product titles, plain-text descriptions, and option labels; GT translates
-that text into French and Japanese. The storefront renders the resulting
+that text into the target languages in `gt.config.json` (currently French, Japanese,
+Korean, and Indonesian). The storefront renders the resulting
 dictionaries through `gt-react` during server rendering and in the browser.
 
 Prices use `gt-react`'s `Currency` component. It preserves Shopify's amount and
@@ -14,11 +15,10 @@ for the active language. For example, USD 1234.56 appears as `$1,234.56` in
 English and `1 234,56 $US` in French. Selecting Japanese does not convert USD
 to yen. Shopify Markets must supply a different currency if conversion is wanted.
 
-## 1. Open the original POC
+## 1. Open a checkout containing this integration
 
 ```sh
 cd /Users/kevinwu/Documents/gt-shopify
-git switch codex/catalog-localization
 npm ci
 ```
 
@@ -59,7 +59,7 @@ When English content changes, sync removes its outdated target entries. If the
 storefront encounters a new or changed source string before a new translation
 is available, it displays Shopify's current English text.
 
-## 4. Generate the French and Japanese catalog translations
+## 4. Generate the configured catalog translations
 
 ```sh
 npm run catalog:translate
@@ -69,7 +69,7 @@ npm run catalog:check
 The translation command reads `.env.catalog` and sends the exported product text
 to the GT translation service using `generaltranslation`'s `GT.translateMany`.
 This is the step that uses your GT translation quota. It writes successful
-results to `catalog/fr.json` and `catalog/ja.json`; it does not translate content
+results to `catalog/<locale>.json` for each target language; it does not translate content
 on shoppers' page requests. Re-running processes missing entries.
 
 Review the generated JSON, particularly product/model names and option labels.
@@ -83,8 +83,8 @@ presenting the fully translated catalog.
 npm run dev -- --port 3130
 ```
 
-Open [the original POC preview](http://localhost:3130/) and use the English,
-Français, and 日本語 selector. Restart an already-running dev server if it does
+Open [the original POC preview](http://localhost:3130/) and use the language
+selector. It includes English, Français, 日本語, 한국어, and Bahasa Indonesia. Restart an already-running dev server if it does
 not pick up the generated JSON.
 
 Check the same product on the home/collection page, product detail, search
@@ -119,13 +119,61 @@ existing Oxygen deployment workflow. Review the preview before merging to `main`
 Only public product translations ship with the storefront; the GT API key is
 not required in Oxygen for this workflow.
 
+There are currently two Oxygen workflows, for storefronts `1000180871` and
+`1000180930`. Each push starts both deployments. A feature branch produces
+preview deployments; merging into each storefront's configured production branch
+updates that environment. Check **GitHub → Actions**, then **Shopify Admin →
+Hydrogen → your storefront → Deployments**. No new Oxygen setup is needed.
+
+## Adding another language
+
+1. Merge the Locadex locale update so `gt.config.json` and the matching UI file
+   under `public/_gt` contain the language.
+2. Update your checkout to include that change, preserving any local work.
+3. Run `catalog:sync`, `catalog:translate`, and `catalog:check`.
+4. Review and commit the new `catalog/<locale>.json` and updated manifest with
+   the app changes, push the branch, verify the Oxygen preview, and merge.
+
+Both the catalog script and renderer now discover configured languages without
+hardcoded imports. This still requires running the catalog translation command;
+Locadex's existing UI automation does not run this separate catalog script.
+CI checks that every configured catalog language is complete.
+
+## Changing the currency
+
+Language controls text and number formatting. The country selector in the header
+controls Shopify's market prices independently. Choose a country and press
+**Update**. The choice is kept in the signed session; existing carts update their
+buyer country before the choice is saved, and new carts inherit it. GT formats
+the amount and currency Shopify returns. No exchange rate is calculated in GT.
+
+The linked **GT Supply Demo** store currently exposes United States and Canada,
+both priced in USD. Adding the selector does not change those merchant settings.
+To enable another currency:
+
+1. Open **Shopify Admin → Markets** and select the market (or create one for
+   France, Japan, South Korea, or Indonesia).
+2. Include the intended country and activate the market, with products and
+   shipping configured for it.
+3. Under **Currency**, click **Add currency customization**, choose the currency
+   (EUR, JPY, KRW, or IDR as appropriate), and save the market.
+4. Reload the storefront. Shopify's available-country list supplies the selector
+   options and currency codes, so changing Markets does not require a code edit.
+5. Select the market, then check a product and the cart before checkout. Country
+   changes can change product availability as well as the price/currency.
+
+Any additional Shopify payment-provider or account setup shown by Admin must be
+completed in Shopify. Never replace just the currency code on a USD amount.
+
+See [Shopify Markets for Hydrogen](https://shopify.dev/docs/storefronts/headless/hydrogen/markets).
+
 For subsequent product edits, repeat sync → translate → check → review → deploy.
 This is a manual refresh workflow, not a Shopify webhook connector.
 
 ## Scope and implementation
 
 - `scripts/catalog.mjs`: catalog export, batch GT translation, coverage checks.
-- `catalog/{en,fr,ja}.json`: plain-text source and translated product dictionaries.
+- `catalog/<locale>.json`: plain-text source and translated product dictionaries.
 - `app/lib/catalog.server.ts`: dictionaries in the server response and localized
   product-page metadata. These dictionaries are separate from GT's hash-keyed UI
   translation files under `public/_gt`.

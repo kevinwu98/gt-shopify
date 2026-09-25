@@ -5,9 +5,26 @@ import {dirname, isAbsolute, join, resolve} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {parseEnv} from 'node:util';
 import {catalogKey} from '../app/lib/catalogKeys.ts';
+import gtConfig from '../gt.config.json' with {type: 'json'};
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const TARGET_LOCALES = ['fr', 'ja'];
+export function catalogTargetLocales(config) {
+  if (config?.defaultLocale !== 'en') {
+    throw new Error('The catalog workflow requires gt.config.json defaultLocale to be en because Shopify catalog exports use English.');
+  }
+  if (!Array.isArray(config.locales)) throw new Error('gt.config.json locales must be an array of locale codes.');
+  for (const locale of config.locales) {
+    try {
+      if (typeof locale !== 'string') throw new Error();
+      new Intl.Locale(locale);
+    } catch {
+      throw new Error('gt.config.json locales must contain valid locale codes.');
+    }
+  }
+  return [...new Set(config.locales)].filter((locale) => locale !== config.defaultLocale);
+}
+
+export const TARGET_LOCALES = Object.freeze(catalogTargetLocales(gtConfig));
 const KEY_PATTERN = /^product_[1-9]\d*_(?:title|description|option_[a-f\d]*_(?:name|value_[a-f\d]*))$/;
 const QUERY = `#graphql
   query CatalogExport($first: Int!, $after: String) @inContext(language: EN) {
@@ -259,6 +276,18 @@ function entryContext(key) {
   return `Translate this Shopify storefront ${field} for shoppers. Translate descriptive words naturally. Preserve brand names, distinctive model names, measurements, sizes, and technical codes when appropriate. Return plain text without HTML, markdown, or commentary. Product IDs and purchasing data are managed separately.`;
 }
 
+function matchesRequestedLocale(resultLocale, targetLocale) {
+  try {
+    const requested = new Intl.Locale(targetLocale);
+    const actual = new Intl.Locale(resultLocale);
+    return actual.language === requested.language &&
+      (!requested.script || actual.script === requested.script) &&
+      (!requested.region || actual.region === requested.region);
+  } catch {
+    return false;
+  }
+}
+
 /** Runs at authoring time. Failed entries stay missing and fall back to English. */
 export async function translateCatalog({
   directory = join(ROOT, 'catalog'),
@@ -295,9 +324,7 @@ export async function translateCatalog({
       }
       for (let index = 0; index < batch.length; index++) {
         const result = results[index];
-        let language;
-        try { language = new Intl.Locale(result?.locale).language; } catch { /* invalid response */ }
-        if (result?.success === true && result.dataFormat === 'STRING' && language === locale &&
+        if (result?.success === true && result.dataFormat === 'STRING' && matchesRequestedLocale(result.locale, locale) &&
             typeof result.translation === 'string' && result.translation.trim()) {
           current[batch[index]] = result.translation;
         } else {

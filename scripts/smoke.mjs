@@ -5,6 +5,9 @@ import {parseEnv} from 'node:util';
 const baseUrl = new URL(process.env.SMOKE_BASE_URL || 'http://localhost:3101');
 const demoDomain = 'hydrogen-preview.myshopify.com';
 const config = {...parseEnv(await readFile(new URL('../.env', import.meta.url), 'utf8')), ...process.env};
+const gtConfig = JSON.parse(await readFile(new URL('../gt.config.json', import.meta.url), 'utf8'));
+const locales = [...new Set([gtConfig.defaultLocale, ...gtConfig.locales])];
+const translatedLocales = locales.filter((locale) => locale !== gtConfig.defaultLocale);
 const cookies = new Map();
 let checks = 0;
 let createdLineId;
@@ -50,6 +53,19 @@ function initialMarkup(html) {
 
 function visibleText(html) {
   return decodeEntities(html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' '));
+}
+
+function assertLocale(markup, locale) {
+  assert.match(markup, new RegExp(`<html\\b[^>]*lang="${locale}"`));
+  const select = [...markup.matchAll(/<select\b([^>]*)>([\s\S]*?)<\/select>/gi)]
+    .find(([, attributes]) => /class="[^"]*\blocale-switcher\b/.test(attributes));
+  assert.ok(select, 'Expected the language selector before scripts');
+  const options = [...select[2].matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option>/gi)];
+  for (const supported of locales) {
+    const option = options.find(([, attributes]) => new RegExp(`\\bvalue="${supported}"`).test(attributes));
+    assert.ok(option && visibleText(option[2]).trim(), `Expected the ${supported} language option`);
+    if (supported === locale) assert.match(option[1], /\bselected(?:\s|=|$)/, 'Language selector must match the document locale');
+  }
 }
 
 function cartInputs(html) {
@@ -100,17 +116,73 @@ async function cartAction(action, inputs) {
   return table;
 }
 
+function availableMarkets(table) {
+  const path = ['root', 'data', 'markets', 'availableCountries'];
+  const countries = dataValue(table, ...path);
+  assert.ok(Array.isArray(countries) && countries.length, 'Shopify must provide at least one available country');
+  return countries.map((_, index) => ({
+    country: dataValue(table, ...path, index, 'isoCode'),
+    currency: dataValue(table, ...path, index, 'currency', 'isoCode'),
+  }));
+}
+
+async function checkCartMarket(market, cartId) {
+  const change = await request('/market', {
+    method: 'POST', body: new URLSearchParams({country: market.country, returnTo: '/cart?smoke=market'}),
+  });
+  assertStatus(change, 303, `${market.country} market selection`);
+  assert.equal(change.response.headers.get('Location'), '/cart?smoke=market');
+  assert.ok(cookies.has('session'), 'A successful market selection must persist a signed session');
+
+  const result = await request('/cart.data?_routes=root,routes/cart');
+  assertStatus(result, 200, `${market.country} market and cart loaders`);
+  const table = dataTable(result.text);
+  assert.equal(dataValue(table, 'root', 'data', 'markets', 'country', 'isoCode'), market.country);
+  assert.equal(dataValue(table, 'root', 'data', 'markets', 'country', 'currency', 'isoCode'), market.currency);
+  assert.equal(dataValue(table, 'root', 'data', 'consent', 'country'), market.country);
+  assert.equal(dataValue(table, 'root', 'data', 'consent', 'language'), 'EN');
+  assert.equal(dataValue(table, 'root', 'data', 'locale'), gtConfig.defaultLocale);
+
+  const cartPath = ['routes/cart', 'data'];
+  assert.ok(dataValue(table, ...cartPath, 'id') === cartId, 'Changing country must retain the same Shopify cart');
+  assert.equal(dataValue(table, ...cartPath, 'buyerIdentity', 'countryCode'), market.country);
+  assert.equal(dataValue(table, ...cartPath, 'totalQuantity'), 1);
+  assert.equal(dataValue(table, ...cartPath, 'lines', 'nodes').length, 1);
+  assert.ok(dataValue(table, ...cartPath, 'lines', 'nodes', 0, 'id') === createdLineId, 'Changing country must retain the same Shopify cart line');
+  assert.equal(dataValue(table, ...cartPath, 'lines', 'nodes', 0, 'quantity'), 1);
+  assert.equal(dataValue(table, ...cartPath, 'lines', 'nodes', 0, 'cost', 'totalAmount', 'currencyCode'), market.currency);
+  for (const field of ['subtotalAmount', 'totalAmount']) {
+    assert.equal(dataValue(table, ...cartPath, 'cost', field, 'currencyCode'), market.currency);
+  }
+
+  const document = await request('/cart');
+  assertStatus(document, 200, `${market.country} cart document`);
+  const markup = initialMarkup(document.text);
+  assertLocale(markup, gtConfig.defaultLocale);
+  assert.ok(cartInputs(markup).some((input) => input.action === 'LinesRemove' && input.inputs.lineIds.includes(createdLineId)), 'Market selection must preserve the cart line in initial HTML');
+  assert.ok(visibleText(markup).includes('Quantity: 1'), 'Market selection must preserve the cart quantity in initial HTML');
+  // Use Shopify's returned subtotal; formatting must never invent an exchange rate.
+  const subtotal = dataValue(table, ...cartPath, 'cost', 'subtotalAmount', 'amount');
+  assert.ok(Number.isFinite(Number(subtotal)), 'Shopify must return a numeric market subtotal');
+  const expectedPrice = new Intl.NumberFormat(gtConfig.defaultLocale, {
+    style: 'currency', currency: market.currency,
+  }).format(Number(subtotal)).replace(/\s+/g, ' ');
+  assert.ok(visibleText(markup).includes(expectedPrice), 'Cart SSR must format Shopify’s subtotal in the selected market currency');
+}
+
 async function main() {
   console.log(`Checking production storefront at ${baseUrl.origin}`);
   const home = await request('/');
   assertStatus(home, 200, 'English homepage');
   const homeMarkup = initialMarkup(home.text);
-  assert.match(homeMarkup, /<html\b[^>]*lang="en"/);
+  assertLocale(homeMarkup, 'en');
   const heading = homeMarkup.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
   assert.ok(heading && visibleText(heading).includes('Good things,'), 'English headline must appear before scripts');
   assert.ok(visibleText(homeMarkup).includes('Cart'), 'English navigation must be server-rendered');
-  assert.doesNotMatch(homeMarkup, /href="\/(?:fr|ja)(?:[/?#"])/, 'English navigation must not expose locale-prefixed routes');
-  pass('English headline, navigation, and html lang are present before scripts');
+  for (const locale of translatedLocales) {
+    assert.doesNotMatch(homeMarkup, new RegExp(`href="/${locale}(?:[/?#"])`), 'English navigation must not expose locale-prefixed routes');
+  }
+  pass('English headline, navigation, html lang, and configured language options are present before scripts');
 
   const rootData = await request('/_root.data?_routes=root');
   assertStatus(rootData, 200, 'English single-fetch homepage');
@@ -121,12 +193,17 @@ async function main() {
   assert.ok(rootFields.includes('translations'), 'Root loader must include the GT translation snapshot');
   assert.equal(dataValue(rootTable, 'root', 'data', 'locale'), 'en');
   const runtimeStore = dataValue(rootTable, 'root', 'data', 'publicStoreDomain');
+  const markets = availableMarkets(rootTable);
+  const defaultMarket = markets.find((market) => market.country === 'US');
+  assert.ok(defaultMarket, 'The sample store must expose its default US market');
+  assert.equal(dataValue(rootTable, 'root', 'data', 'markets', 'country', 'isoCode'), defaultMarket.country);
+  assert.equal(dataValue(rootTable, 'root', 'data', 'markets', 'country', 'currency', 'isoCode'), defaultMarket.currency);
   pass('Root loader exposes the English GT snapshot while retaining EN/US commerce context');
 
-  for (const locale of ['fr', 'ja', 'en', 'ja', 'fr', 'en']) {
+  for (const locale of [...translatedLocales, gtConfig.defaultLocale, ...translatedLocales.toReversed(), gtConfig.defaultLocale]) {
     const localized = await request('/', {headers: {'Accept-Language': locale}});
     assertStatus(localized, 200, `${locale} homepage`);
-    assert.match(initialMarkup(localized.text), new RegExp(`<html\\b[^>]*lang="${locale}"`));
+    assertLocale(initialMarkup(localized.text), locale);
     const localizedData = await request('/_root.data?_routes=root', {headers: {'Accept-Language': locale}});
     assertStatus(localizedData, 200, `${locale} loader`);
     const localizedTable = dataTable(localizedData.text);
@@ -134,13 +211,15 @@ async function main() {
     assert.equal(dataValue(localizedTable, 'root', 'data', 'consent', 'language'), 'EN');
     assert.equal(dataValue(localizedTable, 'root', 'data', 'consent', 'country'), 'US');
   }
-  pass('French, Japanese, and English SSR select independent UI locales with unchanged Shopify market context');
+  pass('All configured languages select independent SSR UI locales with unchanged Shopify market context');
 
-  cookies.set('generaltranslation.locale', 'fr');
+  const preferredLocale = translatedLocales.at(-1) || gtConfig.defaultLocale;
+  const browserLocale = locales.find((locale) => locale !== preferredLocale) || gtConfig.defaultLocale;
+  cookies.set('generaltranslation.locale', preferredLocale);
   try {
-    const savedLocale = await request('/', {headers: {'Accept-Language': 'ja'}});
+    const savedLocale = await request('/', {headers: {'Accept-Language': browserLocale}});
     assertStatus(savedLocale, 200, 'Saved locale preference');
-    assert.match(initialMarkup(savedLocale.text), /<html\b[^>]*lang="fr"/);
+    assertLocale(initialMarkup(savedLocale.text), preferredLocale);
   } finally {
     cookies.delete('generaltranslation.locale');
   }
@@ -172,16 +251,34 @@ async function main() {
   assert.ok(visibleText(initialMarkup(noResults.text)).includes('No results. Try a different search.'), 'English no-results message must appear in SSR');
   pass('English empty-search state is present before scripts');
 
-  for (const path of ['/fr', '/ja', '/fr/collections/all', '/ja/cart']) {
-    assertStatus(await request(path), 404, `Removed locale route ${path}`);
+  for (const [index, locale] of translatedLocales.entries()) {
+    for (const path of [`/${locale}`, `/${locale}/${index % 2 ? 'cart' : 'collections/all'}`]) {
+      assertStatus(await request(path), 404, `Removed locale route ${path}`);
+    }
   }
-  pass('French and Japanese locale-prefixed routes return 404');
+  pass('Configured locale-prefixed routes return 404');
 
   assert.equal(config.PUBLIC_STORE_DOMAIN, demoDomain, 'Refusing cart mutations: .env/process PUBLIC_STORE_DOMAIN must be Shopify’s official demo store');
   assert.equal(runtimeStore, demoDomain, 'Refusing cart mutations: running server does not report Shopify’s official demo store');
   console.log('Cart mutation guard: official Shopify demo store confirmed; using an isolated cookie jar.');
 
-  const invalidLocale = await request('/fr/cart', {
+  assert.ok(!markets.some((market) => market.country === 'ZZ'), 'The unavailable-country fixture must not be a published market');
+  const invalidMarkets = [
+    {country: 'usa', returnTo: '/cart'},
+    {country: 'ZZ', returnTo: '/cart'},
+    ...['https://example.com/', '//example.com/', '/\\example.com/']
+      .map((returnTo) => ({country: defaultMarket.country, returnTo})),
+  ];
+  for (const selection of invalidMarkets) {
+    const result = await request('/market', {method: 'POST', body: new URLSearchParams(selection)});
+    assertStatus(result, 400, 'Invalid market selection or return destination');
+    assert.equal(result.response.headers.get('Location'), null);
+    assert.ok(!result.response.headers.getSetCookie().some((cookie) => /^(?:session|cart)=/.test(cookie)), 'Rejected market selections must not write a session or cart cookie');
+    assert.ok(!cookies.has('session') && !cookies.has('cart'), 'Rejected market selections must leave the visitor without a session or cart');
+  }
+  pass('Malformed and unavailable countries and external market returns are rejected before setting session or cart cookies');
+
+  const invalidLocale = await request(`/${translatedLocales[0] || gtConfig.defaultLocale}/cart`, {
     method: 'POST', body: formBody('LinesAdd', {lines: []}),
   });
   assert.ok([404, 405].includes(invalidLocale.response.status), `Removed locale cart POST must be rejected, got HTTP ${invalidLocale.response.status}`);
@@ -232,19 +329,31 @@ async function main() {
   const cartMarkup = initialMarkup(reloaded.text);
   createdLineId = cartInputs(cartMarkup).find((input) => input.action === 'LinesRemove')?.inputs.lineIds[0];
   assert.ok(createdLineId, 'Reloaded cart must expose the added line ID in its removal form');
+  assertLocale(cartMarkup, gtConfig.defaultLocale);
   assert.ok(cartInputs(cartMarkup).some((input) => input.action === 'LinesUpdate' && input.inputs.lines.some((line) => line.id === createdLineId)), 'Cart cookie must retain the added line on a new document request');
   assert.ok(visibleText(cartMarkup).includes('Sample storefront. Checkout is disabled.'), 'Sample checkout-disabled message must be server-rendered');
   assert.doesNotMatch(cartMarkup, /<a\b[^>]*href="https?:\/\/[^"\s]*(?:checkout|checkouts)/i, 'Sample cart must not offer an external checkout link');
   pass('Cart survives a document reload and renders disabled sample checkout');
 
-  for (const locale of ['fr', 'ja']) {
+  const alternateMarket = markets.find((market) => market.country !== 'US' && market.currency !== defaultMarket.currency)
+    || markets.find((market) => market.country !== 'US');
+  if (alternateMarket) {
+    const cartId = dataValue(added, 'data', 'cart', 'id');
+    await checkCartMarket(alternateMarket, cartId);
+    await checkCartMarket(defaultMarket, cartId);
+    pass(`Shopify market selection (${alternateMarket.country}/${alternateMarket.currency}) preserves the cart and quantity, verifies returned currency, and restores US`);
+  } else {
+    console.log('SKIP Market-switch check: Shopify exposes only the US country; no alternate country or currency is configured.');
+  }
+
+  for (const locale of translatedLocales) {
     const localizedCart = await request('/cart', {headers: {'Accept-Language': locale}});
     assertStatus(localizedCart, 200, `${locale} cart`);
     const localizedMarkup = initialMarkup(localizedCart.text);
-    assert.match(localizedMarkup, new RegExp(`<html\\b[^>]*lang="${locale}"`));
+    assertLocale(localizedMarkup, locale);
     assert.ok(cartInputs(localizedMarkup).some((input) => input.action === 'LinesRemove' && input.inputs.lineIds.includes(createdLineId)), 'Changing UI language must retain the same Shopify cart line');
   }
-  pass('The same cart line persists across French and Japanese document requests');
+  pass('The same cart line persists across document requests in every configured language');
 
   const updated = await request('/cart', {
     method: 'POST',

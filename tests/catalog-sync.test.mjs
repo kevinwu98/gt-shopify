@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
-import {mkdtemp, readFile, readdir, rm, writeFile} from 'node:fs/promises';
+import {mkdir, mkdtemp, readFile, readdir, rm, writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {test} from 'node:test';
+import {pathToFileURL} from 'node:url';
 import {catalogKey} from '../app/lib/catalogKeys.ts';
+import gtConfig from '../gt.config.json' with {type: 'json'};
 import {
+  TARGET_LOCALES,
   buildSource,
+  catalogTargetLocales,
   catalogStatus,
   fetchCatalog,
   normalizeStoreDomain,
@@ -41,6 +45,61 @@ async function files(path) {
   return Object.fromEntries(await Promise.all((await readdir(path)).map(async (file) =>
     [file, await readFile(join(path, file), 'utf8')])));
 }
+
+async function configuredCatalog(t, config) {
+  const root = await directory(t);
+  await mkdir(join(root, 'scripts'));
+  await mkdir(join(root, 'app/lib'), {recursive: true});
+  await writeFile(join(root, 'gt.config.json'), JSON.stringify(config));
+  for (const path of ['scripts/catalog.mjs', 'app/lib/catalogKeys.ts']) {
+    await writeFile(join(root, path), await readFile(new URL(`../${path}`, import.meta.url)));
+  }
+  return import(pathToFileURL(join(root, 'scripts/catalog.mjs')).href);
+}
+
+test('catalog targets follow GT configuration while keeping the English Shopify source', () => {
+  assert.deepEqual(TARGET_LOCALES, [...new Set(gtConfig.locales)].filter((locale) => locale !== gtConfig.defaultLocale));
+  assert.deepEqual(catalogTargetLocales({defaultLocale: 'en', locales: ['en', 'ko', 'id', 'pt-BR', 'ko']}), ['ko', 'id', 'pt-BR']);
+  assert.throws(() => catalogTargetLocales({defaultLocale: 'fr', locales: ['en']}), /defaultLocale to be en/);
+  for (const locales of [undefined, 'fr', [null], ['../fr'], ['']]) {
+    assert.throws(() => catalogTargetLocales({defaultLocale: 'en', locales}), /locale codes/);
+  }
+});
+
+test('new configured locales automatically participate in sync, status, and translation', async (t) => {
+  const locales = ['es', 'pt-BR', 'zh-Hant'];
+  const catalog = await configuredCatalog(t, {defaultLocale: 'en', locales});
+  const path = await directory(t);
+  const synced = await catalog.syncCatalog({...syncOptions, directory: path, fetchImpl: async () => page([product()])});
+  assert.deepEqual(synced.manifest.targetLocales, locales);
+  assert.deepEqual(Object.keys(synced.translations), locales);
+  assert.deepEqual(Object.keys(catalog.catalogStatus(synced)), locales);
+  assert.ok(Object.values(catalog.catalogStatus(synced)).every(({missing}) => missing > 0));
+  assert.deepEqual((await readdir(path)).sort(), ['en.json', 'manifest.json', ...locales.map((locale) => `${locale}.json`)].sort());
+  const requests = [];
+  const translated = await catalog.translateCatalog({directory: path, translator: {translateMany: async (entries, options) => {
+    requests.push(options);
+    return entries.map((entry) => ({success: true, translation: `${options.targetLocale}: ${entry.source}`, locale: options.targetLocale, dataFormat: 'STRING'}));
+  }}});
+  assert.deepEqual(requests.map(({targetLocale}) => targetLocale), locales);
+  assert.ok(requests.every(({sourceLocale}) => sourceLocale === 'en'));
+  assert.deepEqual(translated.failures, []);
+  const loaded = await catalog.readCatalog(path);
+  assert.ok(Object.values(catalog.catalogStatus(loaded)).every(({missing}) => missing === 0));
+  for (const locale of locales) assert.equal(loaded.translations[locale].product_1_title, `${locale}: Board`);
+  const repeated = await catalog.syncCatalog({...syncOptions, directory: path, fetchImpl: async () => page([product()])});
+  assert.deepEqual(repeated.translations, loaded.translations);
+});
+
+test('regional and script targets reject responses for a different region or script', async (t) => {
+  const catalog = await configuredCatalog(t, {defaultLocale: 'en', locales: ['pt-BR', 'zh-Hant']});
+  const path = await directory(t);
+  await catalog.syncCatalog({...syncOptions, directory: path, fetchImpl: async () => page([product()])});
+  const translated = await catalog.translateCatalog({directory: path, translator: {translateMany: async (entries, options) =>
+    entries.map(() => ({success: true, translation: 'Wrong locale', locale: options.targetLocale === 'pt-BR' ? 'pt-PT' : 'zh-Hans', dataFormat: 'STRING'}))}});
+  assert.ok(translated.failures.length > 0);
+  assert.deepEqual(translated.catalog.translations, {'pt-BR': {}, 'zh-Hant': {}});
+});
 
 test('catalog keys distinguish products and punctuation/non-Latin option values without dictionary path separators', () => {
   const id = 'gid://shopify/Product/123';
@@ -141,7 +200,7 @@ test('translation saves valid successes, rejects wrong-language/format failures,
         : {success: false, error: 'service error', code: 500});
   }}});
   assert.ok(result.failures.length);
-  assert.equal(calls.length, 2);
+  assert.equal(calls.length, TARGET_LOCALES.length);
   assert.ok(calls[0].entries.every((entry) => entry.metadata.dataFormat === 'STRING' && entry.metadata.context));
   assert.equal(Object.keys(result.catalog.translations.fr).length, 1);
   const succeeded = calls[0].entries[0].metadata.id;

@@ -4,7 +4,9 @@
   "sourceLocale": "en",
   "targetLocales": [
     "fr",
-    "ja"
+    "ja",
+    "ko",
+    "id"
   ],
   "productCount": 6,
   "exportedAt": "2026-09-25T19:01:06.913Z",

@@ -1,12 +1,19 @@
 import english from '../../catalog/en.json';
-import french from '../../catalog/fr.json';
-import japanese from '../../catalog/ja.json';
 
 type Catalog = Record<string, string>;
 type CatalogDictionary = Record<string, [string, {$format: 'STRING'}]>;
 
 const source: Catalog = english;
-const targets: Record<string, Catalog> = {fr: french, ja: japanese};
+// Vite includes generated catalog files at build time, including newly added
+// languages. Adding a GT locale no longer requires another import or map entry.
+const catalogs = import.meta.glob<Catalog>(
+  ['../../catalog/*.json', '!../../catalog/manifest.json'],
+  {eager: true, import: 'default'},
+);
+
+function targetCatalog(locale: string): Catalog {
+  return catalogs[`../../catalog/${locale}.json`] ?? {};
+}
 
 function dictionary(entries: Catalog): CatalogDictionary {
   // Merchant text is literal content, never an ICU template. This preserves
@@ -20,7 +27,7 @@ function dictionary(entries: Catalog): CatalogDictionary {
 export function getCatalogDictionaries(locale: string) {
   const dictionaries: Record<string, CatalogDictionary> = {en: dictionary(source)};
   if (locale !== 'en') {
-    const target = targets[locale] ?? {};
+    const target = targetCatalog(locale);
     const entries = Object.fromEntries(
       Object.entries(source).map(([key, value]) => [key, target[key] || value]),
     );
@@ -32,5 +39,5 @@ export function getCatalogDictionaries(locale: string) {
 /** Server-side metadata uses the same source guard as the React lookup. */
 export function getCatalogText(locale: string, key: string, liveEnglish: string) {
   if (source[key] !== liveEnglish) return liveEnglish;
-  return targets[locale]?.[key] || liveEnglish;
+  return targetCatalog(locale)[key] || liveEnglish;
 }

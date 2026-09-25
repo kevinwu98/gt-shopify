@@ -27,6 +27,7 @@ import {PageLayout} from './components/PageLayout';
 import gtConfig from '../gt.config.json';
 import loadTranslations from './loadTranslations';
 import {getCatalogDictionaries} from './lib/catalog.server';
+import {getMarkets} from './lib/markets.server';
 
 initializeGT({
   defaultLocale: gtConfig.defaultLocale,
@@ -124,17 +125,18 @@ export async function loader(args: Route.LoaderArgs) {
 async function loadCriticalData({context}: Route.LoaderArgs) {
   const {storefront} = context;
 
-  const [header] = await Promise.all([
+  const [header, markets] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
         headerMenuHandle: 'main-menu', // Adjust to your header menu handle
       },
     }),
+    getMarkets(storefront),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return {header};
+  return {header, markets};
 }
 
 /**

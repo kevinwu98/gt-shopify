@@ -9,6 +9,9 @@ import {test} from 'node:test';
 
 const run = promisify(execFile);
 const script = fileURLToPath(new URL('../scripts/check-deployment.mjs', import.meta.url));
+const gtConfig = JSON.parse(await readFile(new URL('../gt.config.json', import.meta.url), 'utf8'));
+const configuredLocales = [...new Set([gtConfig.defaultLocale, ...gtConfig.locales])];
+const expectedChecks = 9 + configuredLocales.length;
 const token = 'test-only-oxygen-bypass-token';
 
 // Run the actual CLI with a deterministic fetch fixture, without network access.
@@ -16,6 +19,8 @@ const fixture = `
   import assert from 'node:assert/strict';
   const mode = process.env.DEPLOYMENT_CHECK_FIXTURE;
   const token = process.env.OXYGEN_AUTH_BYPASS_TOKEN;
+  const locales = JSON.parse(process.env.DEPLOYMENT_CHECK_LOCALES);
+  const fallbackLocale = process.env.DEPLOYMENT_CHECK_FALLBACK_LOCALE;
   let cdnRequests = 0;
   process.on('exit', () => {
     if (mode === 'cdn') assert.equal(cdnRequests, 2, 'Validate both CDN JavaScript and CSS');
@@ -45,18 +50,22 @@ const fixture = `
       return new Response('body {}', {headers: {'content-type': 'text/css'}});
     }
     const requestHeaders = new Headers(options.headers);
-    const locale = requestHeaders.get('Cookie')?.includes('generaltranslation.locale=fr')
-      ? 'fr' : requestHeaders.get('Accept-Language') || 'en';
+    const cookieLocale = requestHeaders.get('Cookie')?.split('generaltranslation.locale=')[1];
+    const locale = cookieLocale || requestHeaders.get('Accept-Language') || 'en';
+    const copyLocale = mode === 'localized-fallback' && locale === fallbackLocale ? 'en' : locale;
     const copy = {
       en: {heading: 'Good things, worn often.', search: 'No results. Try a different search.', cart: 'Your cart is empty. Find something you love.', purchase: 'Add to cart'},
       fr: {heading: 'De belles choses, souvent portées.', search: 'Aucun résultat. Essayez une autre recherche.', cart: 'Votre panier est vide. Trouvez votre bonheur.', purchase: 'Ajouter au panier'},
       ja: {heading: '毎日を彩る、お気に入り。', search: '結果がありません。別の検索をお試しください。', cart: 'カートは空です。お気に入りを見つけましょう。', purchase: 'カートに追加'},
-    }[locale];
+      ko: {heading: '좋은 옷, 자주 입는 옷.', search: '검색 결과가 없습니다. 다른 검색어를 입력해 보세요.', cart: '장바구니가 비어 있습니다. 마음에 드는 상품을 찾아보세요.', purchase: '장바구니에 추가'},
+      id: {heading: 'Barang bagus, sering dipakai.', search: 'Tidak ada hasil. Coba pencarian lain.', cart: 'Keranjang Anda kosong. Temukan yang Anda sukai.', purchase: 'Tambahkan ke keranjang'},
+    }[copyLocale];
     const translatedCatalog = mode.startsWith('catalog') && mode !== 'catalog-stale-fallback';
+    const titleLocale = mode === 'catalog-locale-title-fallback' && locale === fallbackLocale ? 'en' : locale;
     const title = translatedCatalog && mode !== 'catalog-brand' && mode !== 'catalog-wrong-title'
-      ? {en: 'Shirt', fr: 'Chemise', ja: 'シャツ'}[locale] : 'Shirt';
+      ? {en: 'Shirt', fr: 'Chemise', ja: 'シャツ', ko: '셔츠', id: 'Kemeja'}[titleLocale] : 'Shirt';
     const description = translatedCatalog
-      ? {en: 'A soft cotton shirt.', fr: 'Une chemise en coton doux.', ja: '柔らかなコットンのシャツ。'}[locale]
+      ? {en: 'A soft cotton shirt.', fr: 'Une chemise en coton doux.', ja: '柔らかなコットンのシャツ。', ko: '부드러운 면 셔츠.', id: 'Kemeja katun yang lembut.'}[locale]
       : 'A soft cotton shirt.';
     let body;
     if (url.pathname === '/') {
@@ -82,18 +91,19 @@ const fixture = `
     } else {
       throw new Error('Unexpected request path');
     }
-    const select = '<select class="locale-switcher">' + ['en', 'fr', 'ja'].map((value) => '<option value="' + value + '"' + (value === locale ? ' selected' : '') + '>' + value + '</option>').join('') + '</select>';
+    const select = '<select class="locale-switcher">' + locales.map((value) => '<option value="' + value + '"' + (value === locale ? ' selected' : '') + '>' + value + '</option>').join('') + '</select>';
     return new Response('<html lang="' + locale + '">' + select + body + '</html>', {headers});
   };
 `;
 
-async function check(mode, bypassToken = token, {localization = false, catalog = false, dictionaries} = {}) {
+async function check(mode, bypassToken = token, {localization = false, catalog = false, dictionaries, locales = gtConfig.locales, fallbackLocale} = {}) {
   // Isolate local catalogs from real merchant content while exercising the CLI.
   const root = await mkdtemp(join(tmpdir(), 'gt-deployment-check-'));
   try {
     await mkdir(join(root, 'scripts'));
     const fixtureScript = join(root, 'scripts/check-deployment.mjs');
     await writeFile(fixtureScript, await readFile(script));
+    await writeFile(join(root, 'gt.config.json'), JSON.stringify({...gtConfig, locales}));
     if (dictionaries) {
       await mkdir(join(root, 'catalog'));
       for (const [locale, dictionary] of Object.entries(dictionaries)) {
@@ -105,6 +115,8 @@ async function check(mode, bypassToken = token, {localization = false, catalog =
       fixtureScript, 'https://preview.myshopify.dev',
     ], {
       env: {...process.env, DEPLOYMENT_CHECK_FIXTURE: mode, OXYGEN_AUTH_BYPASS_TOKEN: bypassToken,
+        DEPLOYMENT_CHECK_LOCALES: JSON.stringify([...new Set([gtConfig.defaultLocale, ...locales])]),
+        DEPLOYMENT_CHECK_FALLBACK_LOCALE: fallbackLocale || '',
         CHECK_LOCALIZATION: localization ? '1' : '0', CHECK_CATALOG: catalog ? '1' : '0'},
     });
   } finally {
@@ -116,6 +128,8 @@ const dictionaries = {
   en: {product_123_title: 'Shirt', product_123_description: 'A soft cotton shirt.'},
   fr: {product_123_title: 'Chemise', product_123_description: 'Une chemise en coton doux.'},
   ja: {product_123_title: 'シャツ', product_123_description: '柔らかなコットンのシャツ。'},
+  ko: {product_123_title: '셔츠', product_123_description: '부드러운 면 셔츠.'},
+  id: {product_123_title: 'Kemeja', product_123_description: 'Kemeja katun yang lembut.'},
 };
 
 test('protected deployment checks authenticate same-origin pages and assets without printing the token', async () => {
@@ -158,30 +172,65 @@ test('assertion errors redact a token echoed in a response', async () => {
 });
 
 test('localization-only checks preserve the twelve groups for older deployments without catalog files or product IDs', async () => {
-  const {stdout, stderr} = await check('localized', token, {localization: true});
+  const {stdout, stderr} = await check('localized', token, {localization: true, locales: ['fr', 'ja']});
   assert.match(stdout, /12 deployment checks passed/);
   assert.equal(stderr, '');
 });
 
 test('catalog checks verify translated SSR titles and descriptions, canonical purchase inputs, and currency formats', async () => {
   const {stdout, stderr} = await check('catalog', token, {catalog: true, dictionaries});
-  assert.match(stdout, /12 deployment checks passed/);
+  assert.ok(stdout.includes(`${expectedChecks} deployment checks passed`));
+  for (const locale of configuredLocales) assert.ok(stdout.includes(`PASS ${locale} initial HTML`));
   assert.match(stdout, /catalog translations, purchase inputs, and currency checked/);
   assert.equal(stderr, '');
+});
+
+test('localization checks use configured Korean and Indonesian locales without requiring French or Japanese', async () => {
+  const {stdout, stderr} = await check('localized', token, {localization: true, locales: ['ko', 'id']});
+  assert.match(stdout, /12 deployment checks passed/);
+  for (const locale of ['en', 'ko', 'id']) assert.ok(stdout.includes(`PASS ${locale} initial HTML`));
+  assert.doesNotMatch(stdout, /PASS (?:fr|ja) initial HTML/);
+  assert.match(stdout, /Locale cookies override conflicting Accept-Language preferences/);
+  assert.match(stdout, /Repeated language requests do not share locale state/);
+  assert.equal(stderr, '');
+});
+
+test('configured Korean and Indonesian locales cannot silently serve English UI or catalog titles', async () => {
+  for (const fallbackLocale of ['ko', 'id']) {
+    await assert.rejects(check('localized-fallback', token, {localization: true, fallbackLocale}), (error) => {
+      assert.ok(error.stderr.includes(`${fallbackLocale} heading must contain translated copy, not English fallback`));
+      return true;
+    });
+    await assert.rejects(check('catalog-locale-title-fallback', token, {catalog: true, dictionaries, fallbackLocale}), (error) => {
+      assert.match(error.stderr, /Product title must match the current GT catalog translation/);
+      return true;
+    });
+  }
+});
+
+test('catalog checks require files for every configured locale', async () => {
+  for (const locale of ['ko', 'id']) {
+    const missing = {...dictionaries};
+    delete missing[locale];
+    await assert.rejects(check('catalog', token, {catalog: true, dictionaries: missing}), (error) => {
+      assert.ok(error.stderr.includes(`requires catalog/${locale}.json`));
+      return true;
+    });
+  }
 });
 
 test('catalog checks allow unchanged branded product titles', async () => {
   const branded = Object.fromEntries(Object.entries(dictionaries)
     .map(([locale, entries]) => [locale, {...entries, product_123_title: 'Shirt'}]));
   const {stdout, stderr} = await check('catalog-brand', token, {catalog: true, dictionaries: branded});
-  assert.match(stdout, /12 deployment checks passed/);
+  assert.ok(stdout.includes(`${expectedChecks} deployment checks passed`));
   assert.equal(stderr, '');
 });
 
 test('localization checks fall back to live English for a stale catalog source', async () => {
   const stale = {...dictionaries, en: {...dictionaries.en, product_123_title: 'Old shirt'}};
   const {stdout, stderr} = await check('catalog-stale-fallback', token, {localization: true, dictionaries: stale});
-  assert.match(stdout, /12 deployment checks passed/);
+  assert.ok(stdout.includes(`${expectedChecks} deployment checks passed`));
   assert.equal(stderr, '');
 });
 
