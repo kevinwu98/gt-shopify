@@ -1,5 +1,5 @@
 import {Link, useFetcher, type Fetcher} from 'react-router';
-import {Image, Money} from '@shopify/hydrogen';
+import {Image} from '@shopify/hydrogen';
 import React, {useRef, useEffect} from 'react';
 import {
   getEmptyPredictiveSearchResult,
@@ -8,6 +8,8 @@ import {
 } from '~/lib/search';
 import {useAside} from './Aside';
 import {T, Var} from 'gt-react';
+import {useCatalog} from '~/lib/useCatalog';
+import {LocalizedMoney} from './LocalizedMoney';
 
 type PredictiveSearchItems = PredictiveSearchReturn['result']['items'];
 
@@ -88,7 +90,6 @@ function SearchResultsPredictiveArticles({
   articles,
   closeSearch,
 }: PartialPredictiveSearchResult<'articles'>) {
-
   if (!articles.length) return null;
 
   return (
@@ -132,7 +133,6 @@ function SearchResultsPredictiveCollections({
   collections,
   closeSearch,
 }: PartialPredictiveSearchResult<'collections'>) {
-
   if (!collections.length) return null;
 
   return (
@@ -176,7 +176,6 @@ function SearchResultsPredictivePages({
   pages,
   closeSearch,
 }: PartialPredictiveSearchResult<'pages'>) {
-
   if (!pages.length) return null;
 
   return (
@@ -212,7 +211,7 @@ function SearchResultsPredictiveProducts({
   products,
   closeSearch,
 }: PartialPredictiveSearchResult<'products'>) {
-
+  const catalog = useCatalog();
   if (!products.length) return null;
 
   return (
@@ -222,6 +221,7 @@ function SearchResultsPredictiveProducts({
       </T>
       <ul>
         {products.map((product) => {
+          const title = catalog(product.id, 'title', product.title);
           const productUrl = urlWithTrackingParams({
             baseUrl: `/products/${product.handle}`,
             trackingParams: product.trackingParameters,
@@ -235,15 +235,15 @@ function SearchResultsPredictiveProducts({
               <Link to={productUrl} onClick={closeSearch}>
                 {image && (
                   <Image
-                    alt={image.altText ?? ''}
+                    alt={image.altText || title}
                     src={image.url}
                     width={50}
                     height={50}
                   />
                 )}
                 <div>
-                  <p>{product.title}</p>
-                  <small>{price && <Money data={price} />}</small>
+                  <p>{title}</p>
+                  <small>{price && <LocalizedMoney data={price} />}</small>
                 </div>
               </Link>
             </li>

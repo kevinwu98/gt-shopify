@@ -2,6 +2,7 @@ import {createHydrogenContext} from '@shopify/hydrogen';
 
 import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
+import {getMarketCountry} from '~/lib/markets.server';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 
 // Define the additional context object
@@ -45,6 +46,7 @@ export async function createHydrogenRouterContext(
     caches.open('hydrogen'),
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
+  const country = getMarketCountry(session);
 
   const hydrogenContext = createHydrogenContext(
     {
@@ -53,7 +55,8 @@ export async function createHydrogenRouterContext(
       cache,
       waitUntil,
       session,
-      i18n: {language: 'EN', country: 'US'},
+      i18n: {language: 'EN', country},
+      buyerIdentity: {countryCode: country},
       cart: {
         queryFragment: CART_QUERY_FRAGMENT,
       },

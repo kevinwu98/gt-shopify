@@ -1,7 +1,9 @@
 import {Link} from 'react-router';
-import {Image, Money, Pagination} from '@shopify/hydrogen';
+import {Image, Pagination} from '@shopify/hydrogen';
 import {urlWithTrackingParams, type RegularSearchReturn} from '~/lib/search';
 import {T, Branch} from 'gt-react';
+import {useCatalog} from '~/lib/useCatalog';
+import {LocalizedMoney} from './LocalizedMoney';
 
 type SearchItems = RegularSearchReturn['result']['items'];
 type PartialSearchResult<ItemType extends keyof SearchItems> = Pick<
@@ -35,7 +37,6 @@ function SearchResultsArticles({
   term,
   articles,
 }: PartialSearchResult<'articles'>) {
-
   if (!articles?.nodes.length) {
     return null;
   }
@@ -68,7 +69,6 @@ function SearchResultsArticles({
 }
 
 function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
-
   if (!pages?.nodes.length) {
     return null;
   }
@@ -104,7 +104,7 @@ function SearchResultsProducts({
   term,
   products,
 }: PartialSearchResult<'products'>) {
-
+  const catalog = useCatalog();
   if (!products?.nodes.length) {
     return null;
   }
@@ -117,6 +117,7 @@ function SearchResultsProducts({
       <Pagination connection={products}>
         {({nodes, isLoading, NextLink, PreviousLink}) => {
           const ItemsMarkup = nodes.map((product) => {
+            const title = catalog(product.id, 'title', product.title);
             const productUrl = urlWithTrackingParams({
               baseUrl: `/products/${product.handle}`,
               trackingParams: product.trackingParameters,
@@ -129,12 +130,10 @@ function SearchResultsProducts({
             return (
               <div className="search-results-item" key={product.id}>
                 <Link prefetch="intent" to={productUrl}>
-                  {image && (
-                    <Image data={image} alt={product.title} width={50} />
-                  )}
+                  {image && <Image data={image} alt={title} width={50} />}
                   <div>
-                    <p>{product.title}</p>
-                    <small>{price && <Money data={price} />}</small>
+                    <p>{title}</p>
+                    <small>{price && <LocalizedMoney data={price} />}</small>
                   </div>
                 </Link>
               </div>

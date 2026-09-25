@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "storeDomain": "gt-supply-demo.myshopify.com",
+  "sourceLocale": "en",
+  "targetLocales": [
+    "fr",
+    "ja",
+    "ko",
+    "id"
+  ],
+  "productCount": 8,
+  "exportedAt": "2026-09-25T23:03:36.339Z",
+  "sourceHash": "8accfba6f276a165fed0c7e2fa17d0a7b3e45b7a1924af6b2aeac7ba649d146a"
+}

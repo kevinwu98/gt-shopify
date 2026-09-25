@@ -1,6 +1,7 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
-import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
+import {CartForm, type OptimisticCart} from '@shopify/hydrogen';
+import {LocalizedMoney} from '~/components/LocalizedMoney';
 import {useEffect, useId, useRef, useState} from 'react';
 import {useFetcher, useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
@@ -31,7 +32,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
         </T>
         <dd>
           {cart?.cost?.subtotalAmount?.amount ? (
-            <Money data={cart?.cost?.subtotalAmount} />
+            <LocalizedMoney data={cart.cost.subtotalAmount} />
           ) : (
             '-'
           )}
@@ -242,7 +243,7 @@ function CartGiftCard({
               >
                 <code>***{giftCard.lastCharacters}</code>
                 &nbsp;
-                <Money data={giftCard.amountUsed} />
+                <LocalizedMoney data={giftCard.amountUsed} />
               </RemoveGiftCardForm>
             </dd>
           ))}

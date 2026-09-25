@@ -23,6 +23,7 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - run: npm run catalog:check
       - run: npm run build
       - name: Start the production preview
         run: |

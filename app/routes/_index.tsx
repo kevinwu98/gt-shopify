@@ -9,11 +9,12 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
-import {T} from 'gt-react';
+import {T, useGT} from 'gt-react';
+import {useCatalog} from '~/lib/useCatalog';
 
 import type {RootLoader} from '~/root';
 
-export const meta: Route.MetaFunction = () => [{title: 'GT Supply'}];
+export const meta: Route.MetaFunction = () => [{title: 'Great Things'}];
 
 export async function loader(args: Route.LoaderArgs) {
   const deferredData = loadDeferredData(args);
@@ -22,8 +23,10 @@ export async function loader(args: Route.LoaderArgs) {
 }
 
 async function loadCriticalData({context}: Route.LoaderArgs) {
-  const {collections} = await context.storefront.query(FEATURED_COLLECTION_QUERY);
-  return {featuredCollection: collections.nodes[0] ?? null};
+  const {collections, featuredProduct} = await context.storefront.query(
+    FEATURED_COLLECTION_QUERY,
+  );
+  return {featuredCollection: collections.nodes[0] ?? null, featuredProduct};
 }
 
 function loadDeferredData({context}: Route.LoaderArgs) {
@@ -42,47 +45,56 @@ export default function Homepage() {
   return (
     <div className="home">
       {rootData?.isDemoStore ? <MockShopNotice /> : null}
-      <FeaturedCollection collection={data.featuredCollection} />
+      <FeaturedCollection
+        collection={data.featuredCollection}
+        product={data.featuredProduct}
+      />
       <RecommendedProducts products={data.recommendedProducts} />
-      <T>
-        <section className="everyday-note">
-          <p className="eyebrow">Less fuss. More living.</p>
-          <h2>Find your everyday.</h2>
-          <p>Simple pieces that make getting dressed feel effortless.</p>
-        </section>
-      </T>
     </div>
   );
 }
 
-function FeaturedCollection({collection}: {collection: FeaturedCollectionFragment | null}) {
-
-  const image = collection?.image ?? collection?.products.nodes[0]?.featuredImage;
+function FeaturedCollection({
+  collection,
+  product,
+}: {
+  collection: FeaturedCollectionFragment | null;
+  product: Awaited<ReturnType<typeof loadCriticalData>>['featuredProduct'];
+}) {
+  const catalog = useCatalog();
+  const gt = useGT();
+  const image =
+    product?.featuredImage ??
+    collection?.image ??
+    collection?.products.nodes[0]?.featuredImage;
+  const title = product
+    ? catalog(product.id, 'title', product.title)
+    : (collection?.title ?? '');
+  const destination = product
+    ? `/products/${product.handle}`
+    : '/collections/all';
   return (
     <section className="store-hero" aria-labelledby="hero-title">
-      <T>
-        <div className="hero-copy">
-          <p className="eyebrow">Everyday essentials</p>
-          <h1 id="hero-title">Good things,<br />worn often.</h1>
-          <p className="hero-description">Easy layers. Familiar favorites. Find your everyday uniform.</p>
-          <Link className="button-primary" to={'/collections/all'} prefetch="intent">
-            Explore the collection<span aria-hidden="true">↗</span>
-          </Link>
-          <p className="hero-footnote">Your next favorite is right here.</p>
-        </div>
-      </T>
+      <div className="hero-copy">
+        <h1 id="hero-title" translate="no">Great Things</h1>
+        <p className="hero-description" translate="no">by General Translation</p>
+        <Link className="button-primary" to="/collections/all" prefetch="intent">
+          {gt('Explore the collection', {$format: 'STRING'})}<span aria-hidden="true">↗</span>
+        </Link>
+      </div>
       <div className="hero-image">
         {image ? (
           <Image
             data={image}
-            sizes="(min-width: 900px) 60vw, 100vw"
-            alt={image.altText || collection?.title || ''}
+            sizes="(min-width: 600px) 50vw, 100vw"
+            alt={title}
             loading="eager"
           />
         ) : null}
-        {collection ? (
-          <Link className="hero-collection-link" to={`/collections/${collection.handle}`}>
-            <span>{collection.title}</span><span aria-hidden="true">↗</span>
+        {image ? (
+          <Link className="hero-collection-link" to={destination}>
+            <span>{title}</span>
+            <span aria-hidden="true">↗</span>
           </Link>
         ) : null}
       </div>
@@ -90,28 +102,45 @@ function FeaturedCollection({collection}: {collection: FeaturedCollectionFragmen
   );
 }
 
-function RecommendedProducts({products}: {products: Promise<RecommendedProductsQuery | null>}) {
-
+function RecommendedProducts({
+  products,
+}: {
+  products: Promise<RecommendedProductsQuery | null>;
+}) {
   return (
-    <section className="recommended-products" aria-labelledby="recommended-products">
+    <section
+      className="recommended-products"
+      aria-labelledby="recommended-products"
+    >
       <T>
         <div className="section-heading">
-          <div>
-            <p className="eyebrow">On the shortlist</p>
-            <h2 id="recommended-products">The everyday edit</h2>
-          </div>
+          <h2 id="recommended-products">Designed for everywhere you will go</h2>
           <Link className="text-link" to={'/collections/all'}>
             Shop all<span aria-hidden="true">↗</span>
           </Link>
         </div>
       </T>
-      <Suspense fallback={<T><div className="products-loading">Finding your next favorites…</div></T>}>
+      <Suspense
+        fallback={
+          <T>
+            <div className="products-loading">Finding your next favorites…</div>
+          </T>
+        }
+      >
         <Await resolve={products}>
-          {(response) => response ? (
-            <div className="recommended-products-grid">
-              {response.products.nodes.map((product) => <ProductItem key={product.id} product={product} />)}
-            </div>
-          ) : <T><p>We could not load the collection. Please try again.</p></T>}
+          {(response) =>
+            response ? (
+              <div className="recommended-products-grid">
+                {response.products.nodes.map((product) => (
+                  <ProductItem key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <T>
+                <p>We could not load the collection. Please try again.</p>
+              </T>
+            )
+          }
         </Await>
       </Suspense>
     </section>
@@ -144,6 +173,10 @@ const FEATURED_COLLECTION_QUERY = `#graphql
   }
   query FeaturedCollection($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
+    featuredProduct: product(handle: "soft-cotton-hoodie-in-ocean") {
+      id title handle
+      featuredImage { id url altText width height }
+    }
     collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...FeaturedCollection
@@ -173,7 +206,7 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
+    products(first: 8, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...RecommendedProduct
       }
