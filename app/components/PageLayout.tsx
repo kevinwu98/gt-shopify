@@ -14,6 +14,7 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
+import {T, Var, useGT} from 'gt-react';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -56,9 +57,17 @@ export function PageLayout({
 }
 
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
+
+  const gt = useGT();
   return (
-    <Aside type="cart" heading={'Cart'}>
-      <Suspense fallback={<p>Loading cart…</p>}>
+    <Aside type="cart" heading={gt('Cart')}>
+      <Suspense
+        fallback={
+          <T>
+            <p>Loading cart…</p>
+          </T>
+        }
+      >
         <Await resolve={cart}>
           {(cart) => {
             return <CartMain cart={cart} layout="aside" />;
@@ -71,9 +80,10 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
 
 function SearchAside() {
 
+  const gt = useGT();
   const queriesDatalistId = useId();
   return (
-    <Aside type="search" heading={'Search'}>
+    <Aside type="search" heading={gt('Search')}>
       <div className="predictive-search">
         <br />
         <SearchFormPredictive>
@@ -83,14 +93,16 @@ function SearchAside() {
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
-                placeholder={'Search'}
-                aria-label={'Search products'}
+                placeholder={gt('Search')}
+                aria-label={gt('Search products')}
                 ref={inputRef}
                 type="search"
                 list={queriesDatalistId}
               />
               &nbsp;
-              <button onClick={goToSearch}>Search</button>
+              <T>
+                <button onClick={goToSearch}>Search</button>
+              </T>
             </>
           )}
         </SearchFormPredictive>
@@ -100,11 +112,21 @@ function SearchAside() {
             const {articles, collections, pages, products, queries} = items;
 
             if (state === 'loading' && term.current) {
-              return <div>Loading…</div>;
+              return (
+                <T>
+                  <div>Loading…</div>
+                </T>
+              );
             }
 
             if (error && state === 'idle') {
-              return <p role="alert">Search is temporarily unavailable. Please try again.</p>;
+              return (
+                <T>
+                  <p role="alert">
+                    Search is temporarily unavailable. Please try again.
+                  </p>
+                </T>
+              );
             }
 
             if (!total) {
@@ -142,9 +164,15 @@ function SearchAside() {
                     onClick={closeSearch}
                     to={`${SEARCH_ENDPOINT}?q=${encodeURIComponent(term.current)}`}
                   >
-                    <p>
-                      View all results for <q>{term.current}</q> →
-                    </p>
+                    <T>
+                      <p>
+                        View all results for{' '}
+                        <q>
+                          <Var>{term.current}</Var>
+                        </q>{' '}
+                        →
+                      </p>
+                    </T>
                   </Link>
                 ) : null}
               </>
@@ -163,10 +191,12 @@ function MobileMenuAside({
   header: PageLayoutProps['header'];
   publicStoreDomain: PageLayoutProps['publicStoreDomain'];
 }) {
+
+  const gt = useGT();
   return (
     header.menu &&
     header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading={'Menu'}>
+      <Aside type="mobile" heading={gt('Menu')}>
         <HeaderMenu
           menu={header.menu}
           viewport="mobile"

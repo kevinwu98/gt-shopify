@@ -2,6 +2,7 @@ import {useLoaderData} from 'react-router';
 import type {Route} from './+types/blogs.$blogHandle.$articleHandle';
 import {Image} from '@shopify/hydrogen';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {T, Var, DateTime} from 'gt-react';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `Hydrogen | ${data?.article.title ?? ''} article`}];
@@ -69,20 +70,25 @@ export default function Article() {
   const {article} = useLoaderData<typeof loader>();
   const {title, image, contentHtml, author} = article;
 
-  const publishedDate = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(article.publishedAt));
-
   return (
     <div className="article">
       <h1>
         {title}
-        <div>
-          <time dateTime={article.publishedAt}>{publishedDate}</time> &middot;{' '}
-          <address>{author?.name}</address>
-        </div>
+        <T>
+          <div>
+            <time dateTime={article.publishedAt}>
+              <DateTime
+                options={{year: 'numeric', month: 'long', day: 'numeric'}}
+              >
+                {new Date(article.publishedAt)}
+              </DateTime>
+            </time>{' '}
+            &middot;{' '}
+            <address>
+              <Var>{author?.name}</Var>
+            </address>
+          </div>
+        </T>
       </h1>
 
       {image && <Image data={image} sizes="90vw" loading="eager" />}

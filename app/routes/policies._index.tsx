@@ -1,6 +1,7 @@
 import {useLoaderData, Link} from 'react-router';
 import type {Route} from './+types/policies._index';
 import type {PoliciesQuery, PolicyItemFragment} from 'storefrontapi.generated';
+import {T} from 'gt-react';
 
 export async function loader({context}: Route.LoaderArgs) {
   const data: PoliciesQuery = await context.storefront.query(POLICIES_QUERY);
@@ -26,7 +27,9 @@ export default function Policies() {
 
   return (
     <div className="policies">
-      <h1>Policies</h1>
+      <T>
+        <h1>Policies</h1>
+      </T>
       <div>
         {policies.map((policy) => (
           <fieldset key={policy.id}>

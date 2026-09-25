@@ -4,6 +4,7 @@ import {Image, getPaginationVariables} from '@shopify/hydrogen';
 import type {ArticleItemFragment} from 'storefrontapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {DateTime} from 'gt-react';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [{title: `Hydrogen | ${data?.blog.title ?? ''} blog`}];
@@ -89,11 +90,6 @@ function ArticleItem({
   article: ArticleItemFragment;
   loading?: HTMLImageElement['loading'];
 }) {
-  const publishedAt = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(article.publishedAt!));
   return (
     <div className="blog-article" key={article.id}>
       <Link to={`/blogs/${article.blog.handle}/${article.handle}`}>
@@ -109,7 +105,11 @@ function ArticleItem({
           </div>
         )}
         <h3>{article.title}</h3>
-        <small>{publishedAt}</small>
+        <small>
+          <DateTime options={{year: 'numeric', month: 'long', day: 'numeric'}}>
+            {new Date(article.publishedAt!)}
+          </DateTime>
+        </small>
       </Link>
     </div>
   );

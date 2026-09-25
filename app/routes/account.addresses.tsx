@@ -12,6 +12,7 @@ import {
   type Fetcher,
 } from 'react-router';
 import type {Route} from './+types/account.addresses';
+import {T, useGT} from 'gt-react';
 import {
   UPDATE_ADDRESS_MUTATION,
   DELETE_ADDRESS_MUTATION,
@@ -262,18 +263,24 @@ export default function Addresses() {
 
   return (
     <div className="account-addresses">
-      <h2>Addresses</h2>
+      <T>
+        <h2>Addresses</h2>
+      </T>
       <br />
       <div>
         <div>
-          <legend>Create address</legend>
+          <T>
+            <legend>Create address</legend>
+          </T>
           <NewAddressForm key={addresses.nodes.length} />
         </div>
         <br />
         <hr />
         <br />
         {!addresses.nodes.length ? (
-          <p>You have no addresses saved.</p>
+          <T>
+            <p>You have no addresses saved.</p>
+          </T>
         ) : (
           <ExistingAddresses
             addresses={addresses}
@@ -286,6 +293,7 @@ export default function Addresses() {
 }
 
 function NewAddressForm() {
+  const gt = useGT();
   const newAddress = {
     address1: '',
     address2: '',
@@ -313,7 +321,7 @@ function NewAddressForm() {
             formMethod="POST"
             type="submit"
           >
-            {stateForMethod('POST') !== 'idle' ? 'Creating' : 'Create'}
+            {stateForMethod('POST') !== 'idle' ? gt('Creating') : gt('Create')}
           </button>
         </div>
       )}
@@ -325,9 +333,12 @@ function ExistingAddresses({
   addresses,
   defaultAddress,
 }: Pick<CustomerFragment, 'addresses' | 'defaultAddress'>) {
+  const gt = useGT();
   return (
     <div>
-      <legend>Existing addresses</legend>
+      <T>
+        <legend>Existing addresses</legend>
+      </T>
       {addresses.nodes.map((address) => (
         <AddressForm
           key={address.id}
@@ -342,14 +353,16 @@ function ExistingAddresses({
                 formMethod="PUT"
                 type="submit"
               >
-                {stateForMethod('PUT') !== 'idle' ? 'Saving' : 'Save'}
+                {stateForMethod('PUT') !== 'idle' ? gt('Saving') : gt('Save')}
               </button>
               <button
                 disabled={stateForMethod('DELETE') !== 'idle'}
                 formMethod="DELETE"
                 type="submit"
               >
-                {stateForMethod('DELETE') !== 'idle' ? 'Deleting' : 'Delete'}
+                {stateForMethod('DELETE') !== 'idle'
+                  ? gt('Deleting')
+                  : gt('Delete')}
               </button>
             </div>
           )}
@@ -372,6 +385,7 @@ export function AddressForm({
     stateForMethod: (method: 'PUT' | 'POST' | 'DELETE') => Fetcher['state'];
   }) => React.ReactNode;
 }) {
+  const gt = useGT();
   const {state, formMethod} = useNavigation();
   const action = useActionData<ActionResponse>();
   const error = action?.error?.[addressId];
@@ -380,107 +394,127 @@ export function AddressForm({
     <Form id={addressId}>
       <fieldset>
         <input type="hidden" name="addressId" defaultValue={addressId} />
-        <label htmlFor="firstName">First name*</label>
+        <T>
+          <label htmlFor="firstName">First name*</label>
+        </T>
         <input
-          aria-label="First name"
+          aria-label={gt('First name')}
           autoComplete="given-name"
           defaultValue={address?.firstName ?? ''}
           id="firstName"
           name="firstName"
-          placeholder="First name"
+          placeholder={gt('First name')}
           required
           type="text"
         />
-        <label htmlFor="lastName">Last name*</label>
+        <T>
+          <label htmlFor="lastName">Last name*</label>
+        </T>
         <input
-          aria-label="Last name"
+          aria-label={gt('Last name')}
           autoComplete="family-name"
           defaultValue={address?.lastName ?? ''}
           id="lastName"
           name="lastName"
-          placeholder="Last name"
+          placeholder={gt('Last name')}
           required
           type="text"
         />
-        <label htmlFor="company">Company</label>
+        <T>
+          <label htmlFor="company">Company</label>
+        </T>
         <input
-          aria-label="Company"
+          aria-label={gt('Company')}
           autoComplete="organization"
           defaultValue={address?.company ?? ''}
           id="company"
           name="company"
-          placeholder="Company"
+          placeholder={gt('Company')}
           type="text"
         />
-        <label htmlFor="address1">Address line*</label>
+        <T>
+          <label htmlFor="address1">Address line*</label>
+        </T>
         <input
-          aria-label="Address line 1"
+          aria-label={gt('Address line 1')}
           autoComplete="address-line1"
           defaultValue={address?.address1 ?? ''}
           id="address1"
           name="address1"
-          placeholder="Address line 1*"
+          placeholder={gt('Address line 1*')}
           required
           type="text"
         />
-        <label htmlFor="address2">Address line 2</label>
+        <T>
+          <label htmlFor="address2">Address line 2</label>
+        </T>
         <input
-          aria-label="Address line 2"
+          aria-label={gt('Address line 2')}
           autoComplete="address-line2"
           defaultValue={address?.address2 ?? ''}
           id="address2"
           name="address2"
-          placeholder="Address line 2"
+          placeholder={gt('Address line 2')}
           type="text"
         />
-        <label htmlFor="city">City*</label>
+        <T>
+          <label htmlFor="city">City*</label>
+        </T>
         <input
-          aria-label="City"
+          aria-label={gt('City')}
           autoComplete="address-level2"
           defaultValue={address?.city ?? ''}
           id="city"
           name="city"
-          placeholder="City"
+          placeholder={gt('City')}
           required
           type="text"
         />
-        <label htmlFor="zoneCode">State / Province*</label>
+        <T>
+          <label htmlFor="zoneCode">State / Province*</label>
+        </T>
         <input
-          aria-label="State/Province"
+          aria-label={gt('State/Province')}
           autoComplete="address-level1"
           defaultValue={address?.zoneCode ?? ''}
           id="zoneCode"
           name="zoneCode"
-          placeholder="State / Province"
+          placeholder={gt('State / Province')}
           required
           type="text"
         />
-        <label htmlFor="zip">Zip / Postal Code*</label>
+        <T>
+          <label htmlFor="zip">Zip / Postal Code*</label>
+        </T>
         <input
-          aria-label="Zip"
+          aria-label={gt('Zip')}
           autoComplete="postal-code"
           defaultValue={address?.zip ?? ''}
           id="zip"
           name="zip"
-          placeholder="Zip / Postal Code"
+          placeholder={gt('Zip / Postal Code')}
           required
           type="text"
         />
-        <label htmlFor="territoryCode">Country Code*</label>
+        <T>
+          <label htmlFor="territoryCode">Country Code*</label>
+        </T>
         <input
-          aria-label="Country code"
+          aria-label={gt('Country code')}
           autoComplete="country"
           defaultValue={address?.territoryCode ?? ''}
           id="territoryCode"
           name="territoryCode"
-          placeholder="Country"
+          placeholder={gt('Country')}
           required
           type="text"
           maxLength={2}
         />
-        <label htmlFor="phoneNumber">Phone</label>
+        <T>
+          <label htmlFor="phoneNumber">Phone</label>
+        </T>
         <input
-          aria-label="Phone Number"
+          aria-label={gt('Phone Number')}
           autoComplete="tel"
           defaultValue={address?.phoneNumber ?? ''}
           id="phoneNumber"
@@ -496,7 +530,9 @@ export function AddressForm({
             name="defaultAddress"
             type="checkbox"
           />
-          <label htmlFor="defaultAddress">Set as default address</label>
+          <T>
+            <label htmlFor="defaultAddress">Set as default address</label>
+          </T>
         </div>
         {error ? (
           <p>

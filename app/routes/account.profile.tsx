@@ -9,6 +9,7 @@ import {
   useOutletContext,
 } from 'react-router';
 import type {Route} from './+types/account.profile';
+import {T, useGT} from 'gt-react';
 
 export type ActionResponse = {
   error: string | null;
@@ -80,6 +81,7 @@ export async function action({request, context}: Route.ActionArgs) {
 }
 
 export default function AccountProfile() {
+  const gt = useGT();
   const account = useOutletContext<{customer: CustomerFragment}>();
   const {state} = useNavigation();
   const action = useActionData<ActionResponse>();
@@ -87,30 +89,38 @@ export default function AccountProfile() {
 
   return (
     <div className="account-profile">
-      <h2>My profile</h2>
+      <T>
+        <h2>My profile</h2>
+      </T>
       <br />
       <Form method="PUT">
-        <legend>Personal information</legend>
+        <T>
+          <legend>Personal information</legend>
+        </T>
         <fieldset>
-          <label htmlFor="firstName">First name</label>
+          <T>
+            <label htmlFor="firstName">First name</label>
+          </T>
           <input
             id="firstName"
             name="firstName"
             type="text"
             autoComplete="given-name"
-            placeholder="First name"
-            aria-label="First name"
+            placeholder={gt('First name')}
+            aria-label={gt('First name')}
             defaultValue={customer.firstName ?? ''}
             minLength={2}
           />
-          <label htmlFor="lastName">Last name</label>
+          <T>
+            <label htmlFor="lastName">Last name</label>
+          </T>
           <input
             id="lastName"
             name="lastName"
             type="text"
             autoComplete="family-name"
-            placeholder="Last name"
-            aria-label="Last name"
+            placeholder={gt('Last name')}
+            aria-label={gt('Last name')}
             defaultValue={customer.lastName ?? ''}
             minLength={2}
           />
@@ -125,7 +135,7 @@ export default function AccountProfile() {
           <br />
         )}
         <button type="submit" disabled={state !== 'idle'}>
-          {state !== 'idle' ? 'Updating' : 'Update'}
+          {state !== 'idle' ? gt('Updating') : gt('Update')}
         </button>
       </Form>
     </div>

@@ -1,1 +1,932 @@
-{}
+{
+  "013c24d26065d84f": "Code de carte-cadeau",
+  "01b29c87fe1a4335": {
+    "c": "Articles",
+    "i": 1,
+    "t": "p"
+  },
+  "02e270b06de66d86": "Adresse (ligne 1)",
+  "057ee26b0ada0892": {
+    "c": [
+      "Confirmation : ",
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "08f54865b364957d": "Mettre à jour",
+  "0a526f1ba3d398ce": "Rechercher…",
+  "0bb02a2d56746f0b": {
+    "c": "Boutique",
+    "i": 1,
+    "t": "NavLink"
+  },
+  "0cdf86f656aa40cf": {
+    "c": "Passer commande →",
+    "i": 1,
+    "t": "p"
+  },
+  "0d97f9c66db79593": "Prénom",
+  "111a44209dc6e701": "Supprimer",
+  "13444050c5b513f5": "Page du panier",
+  "13cde4e88e525cdb": {
+    "c": "Code de réduction",
+    "i": 1,
+    "t": "label"
+  },
+  "14f369019b6c3af8": {
+    "c": "Blogs",
+    "i": 1,
+    "t": "h1"
+  },
+  "1b1f4ded89fc49db": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": [
+              {
+                "c": "↑",
+                "i": 4,
+                "t": "span"
+              },
+              " Charger les précédents"
+            ],
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Chargement…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "PreviousLink"
+  },
+  "2281d9696aa45f4b": "Numéro de confirmation",
+  "24a85f1488ccabf6": {
+    "c": [
+      {
+        "c": "Les essentiels du quotidien",
+        "i": 2,
+        "t": "p"
+      },
+      {
+        "c": [
+          "De belles pièces,",
+          {
+            "i": 4,
+            "t": "br"
+          },
+          "à porter souvent."
+        ],
+        "i": 3,
+        "t": "h1"
+      },
+      {
+        "c": "Des pièces faciles à superposer. Des favoris qu’on aime retrouver. Composez votre tenue de tous les jours.",
+        "i": 5,
+        "t": "p"
+      },
+      {
+        "c": [
+          "Découvrez la collection",
+          {
+            "c": "↗",
+            "i": 7,
+            "t": "span"
+          }
+        ],
+        "i": 6,
+        "t": "Link"
+      },
+      {
+        "c": "Votre prochain coup de cœur est ici.",
+        "i": 8,
+        "t": "p"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "2502493024656b43": "Appliquer le code de réduction",
+  "254571787353df73": "Prix",
+  "268a73c2221bfe7a": {
+    "c": "Chargement…",
+    "i": 1,
+    "t": "div"
+  },
+  "28b50cb5c1a73321": [
+    {
+      "c": "Accueil",
+      "i": 1,
+      "t": "NavLink"
+    },
+    {
+      "c": "Boutique",
+      "i": 2,
+      "t": "NavLink"
+    }
+  ],
+  "2a5e86a6abe6eab1": {
+    "c": "Adresse*",
+    "i": 1,
+    "t": "label"
+  },
+  "2a7216b1e497c21d": "Menu",
+  "2b4d1466a534f0ac": {
+    "c": {
+      "c": "Description",
+      "i": 2,
+      "t": "strong"
+    },
+    "i": 1,
+    "t": "p"
+  },
+  "2e107ae81088ed2c": {
+    "c": "Code postal*",
+    "i": 1,
+    "t": "label"
+  },
+  "2ea95ade2ae9e528": "Taxes",
+  "2eb39a53ad7f7c34": "Produit",
+  "33db514084afee56": "Code postal",
+  "3449a50f281a6b4e": "Rechercher des commandes",
+  "34cd57820252c5e9": {
+    "c": "Réductions",
+    "i": 1,
+    "t": "dt"
+  },
+  "35afbea89ac90df7": "Détails du compte",
+  "364a865e64c754e6": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": "Afficher plus ↓",
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Chargement…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "NextLink"
+  },
+  "36d5c5455a2d4887": "Bienvenue, {firstName}",
+  "38a26c59c5663394": {
+    "c": "Code de carte-cadeau",
+    "i": 1,
+    "t": "label"
+  },
+  "396e1ef1666d103e": {
+    "c": [
+      {
+        "c": {
+          "i": 3,
+          "k": "_gt_date_3",
+          "v": "d"
+        },
+        "i": 2,
+        "t": "time"
+      },
+      " ",
+      "·",
+      " ",
+      {
+        "c": {
+          "i": 5,
+          "k": "_gt_value_5",
+          "v": "v"
+        },
+        "i": 4,
+        "t": "address"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "3ae603950d0210bb": {
+    "c": "Supprimer",
+    "i": 1,
+    "t": "button"
+  },
+  "3b15dbf95568ddbb": {
+    "c": "Nous n’avons pas pu mettre à jour votre panier.",
+    "i": 1,
+    "t": "p"
+  },
+  "3b28878accf137fb": "Entreprise",
+  "3b50f848e56731dd": "Erreur inconnue",
+  "3b6ab1d5adbd75cf": {
+    "c": "← Retour aux politiques de la boutique",
+    "i": 1,
+    "t": "Link"
+  },
+  "3ca8f9aa64e74091": {
+    "c": "Ville*",
+    "i": 1,
+    "t": "label"
+  },
+  "4080d460a50cb87b": {
+    "c": [
+      "-",
+      {
+        "i": 2,
+        "k": "_gt_n_2",
+        "v": "n"
+      },
+      " %"
+    ],
+    "i": 1,
+    "t": "span"
+  },
+  "457e8505c5212321": {
+    "c": [
+      "Aucun résultat pour ",
+      {
+        "c": {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        "i": 2,
+        "t": "q"
+      }
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "46d1056f38b249eb": {
+    "c": "Nous recherchons vos prochains coups de cœur…",
+    "i": 1,
+    "t": "div"
+  },
+  "4b71561e661a9664": "Diminuer la quantité",
+  "4c433b0f79367bbd": [
+    {
+      "c": [
+        "Commande ",
+        {
+          "i": 2,
+          "k": "_gt_value_2",
+          "v": "v"
+        }
+      ],
+      "i": 1,
+      "t": "h2"
+    },
+    {
+      "c": [
+        "Passée le ",
+        {
+          "i": 4,
+          "k": "_gt_date_4",
+          "v": "d"
+        }
+      ],
+      "i": 3,
+      "t": "p"
+    }
+  ],
+  "4d25b014c4d42ab9": "État/Province",
+  "4f94e7beb32bcd47": {
+    "c": "Total",
+    "i": 1,
+    "t": "p"
+  },
+  "4fc8f086392c0852": {
+    "c": "État / Province*",
+    "i": 1,
+    "t": "label"
+  },
+  "508e49336de580a8": "État / Province",
+  "52ae50b5476973a0": {
+    "c": [
+      {
+        "c": [
+          {
+            "c": [
+              {
+                "c": {
+                  "c": "GT Supply.",
+                  "i": 5,
+                  "t": "span"
+                },
+                "i": 4,
+                "t": "NavLink"
+              },
+              {
+                "c": "Les essentiels du quotidien. Un monde de possibilités.",
+                "i": 6,
+                "t": "p"
+              }
+            ],
+            "i": 3,
+            "t": "div"
+          },
+          {
+            "c": [
+              {
+                "c": "Voir tous les articles",
+                "i": 8,
+                "t": "NavLink"
+              },
+              {
+                "c": "Votre panier",
+                "i": 9,
+                "t": "NavLink"
+              }
+            ],
+            "i": 7,
+            "t": "nav"
+          }
+        ],
+        "i": 2,
+        "t": "div"
+      },
+      {
+        "c": [
+          {
+            "c": "Des essentiels bien pensés pour chaque jour.",
+            "i": 11,
+            "t": "p"
+          },
+          {
+            "c": {
+              "d": {
+                "b": {
+                  "false": {
+                    "c": "Propulsé par Shopify.",
+                    "i": 14,
+                    "t": "C14"
+                  },
+                  "true": {
+                    "c": "Boutique de démonstration. Le paiement est désactivé.",
+                    "i": 14,
+                    "t": "C14"
+                  }
+                },
+                "t": "b"
+              },
+              "i": 13,
+              "t": "Branch"
+            },
+            "i": 12,
+            "t": "p"
+          }
+        ],
+        "i": 10,
+        "t": "div"
+      }
+    ],
+    "i": 1,
+    "t": "footer"
+  },
+  "53d7c7e2950efbe3": {
+    "c": "Panier",
+    "i": 1,
+    "t": "h1"
+  },
+  "544b5660bbe73707": "Ville",
+  "548f9db69b69ff04": "Ajout en cours…",
+  "54bad5f1a21abc79": {
+    "c": [
+      "Quantité : ",
+      {
+        "i": 2,
+        "k": "_gt_n_2",
+        "v": "n"
+      },
+      "   "
+    ],
+    "i": 1,
+    "t": "small"
+  },
+  "54d0addd8ed97a9e": {
+    "c": "Impossible d’ajouter cet article à votre panier.",
+    "i": 1,
+    "t": "p"
+  },
+  "5523f9e6e2969b90": {
+    "c": "Voir le statut de la commande →",
+    "i": 1,
+    "t": "a"
+  },
+  "595027176ad6da7e": "Prix",
+  "5b75ace301c59978": {
+    "c": "Rechercher",
+    "i": 1,
+    "t": "span"
+  },
+  "5d10339fea0ba689": {
+    "c": "Prénom",
+    "i": 1,
+    "t": "label"
+  },
+  "5dd8f53dee597d71": {
+    "c": "Effacer",
+    "i": 1,
+    "t": "button"
+  },
+  "5e13fc664cdd09a9": [
+    {
+      "c": "Commandes  ",
+      "i": 1,
+      "t": "NavLink"
+    },
+    " | ",
+    {
+      "c": "  Profil  ",
+      "i": 2,
+      "t": "NavLink"
+    },
+    " | ",
+    {
+      "c": "  Adresses  ",
+      "i": 3,
+      "t": "NavLink"
+    },
+    " | "
+  ],
+  "6169c607134e14aa": "Enregistrement en cours",
+  "622dac9d25bbd6a6": {
+    "c": "Vous n’avez aucune adresse enregistrée.",
+    "i": 1,
+    "t": "p"
+  },
+  "66297351c69f7123": {
+    "c": "Boutique de démonstration. La commande est désactivée.",
+    "i": 1,
+    "t": "p"
+  },
+  "68712d01cfab9713": {
+    "c": "Utiliser comme adresse par défaut",
+    "i": 1,
+    "t": "label"
+  },
+  "68959eb500bbc8ac": "Code postal",
+  "69c9ec6286ad234b": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": "↑ Afficher les précédents",
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Chargement…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "PreviousLink"
+  },
+  "69dcc85af3063c07": "Recherche en cours",
+  "6be86a17d8d0a4d7": "Mise à jour en cours",
+  "6df57099a35b36bb": "Rechercher des produits",
+  "6eb807cd1232e8a8": "Panier",
+  "6f69c0102f16d2f9": "Code pays",
+  "6f9647f746db650d": "Augmenter la quantité",
+  "73d59b18dc0d6b0b": {
+    "c": [
+      {
+        "c": "Moins de tracas. Plus de temps pour vivre.",
+        "i": 2,
+        "t": "p"
+      },
+      {
+        "c": "Trouvez votre style au quotidien.",
+        "i": 3,
+        "t": "h2"
+      },
+      {
+        "c": "Des pièces simples pour s’habiller sans se compliquer la vie.",
+        "i": 4,
+        "t": "p"
+      }
+    ],
+    "i": 1,
+    "t": "section"
+  },
+  "74143df1de746e79": {
+    "c": "Taxes",
+    "i": 1,
+    "t": "p"
+  },
+  "74b1e2c17ea2e0f3": "Navigation principale",
+  "754773f0c6feb550": {
+    "c": "Mon profil",
+    "i": 1,
+    "t": "h2"
+  },
+  "7574a17c6108ffd5": "Appliquer le code de carte-cadeau",
+  "762fcce45b65eea9": "Enregistrer",
+  "7853bd9e23f25bb6": "Total",
+  "7977a585d266cf99": "N° de confirmation",
+  "7bcf2a20ae3e6b46": {
+    "c": "Informations personnelles",
+    "i": 1,
+    "t": "legend"
+  },
+  "82720ab23f8e5ee6": {
+    "c": "Aucune adresse de livraison renseignée",
+    "i": 1,
+    "t": "p"
+  },
+  "86d287aa1993a091": "Fermer",
+  "89ea1163ab8dd8c7": {
+    "c": "Produits",
+    "i": 1,
+    "t": "h2"
+  },
+  "8deb483fdac192cb": {
+    "c": "La recherche est temporairement indisponible. Veuillez réessayer.",
+    "i": 1,
+    "t": "p"
+  },
+  "8e5c90de61b63f4e": {
+    "c": "Ajouter une adresse",
+    "i": 1,
+    "t": "legend"
+  },
+  "8f6eca9e3651152d": {
+    "c": [
+      {
+        "c": [
+          {
+            "c": "Notre sélection",
+            "i": 3,
+            "t": "p"
+          },
+          {
+            "c": "Les essentiels du quotidien",
+            "i": 4,
+            "t": "h2"
+          }
+        ],
+        "i": 2,
+        "t": "div"
+      },
+      {
+        "c": [
+          "Voir tous les articles",
+          {
+            "c": "↗",
+            "i": 6,
+            "t": "span"
+          }
+        ],
+        "i": 5,
+        "t": "Link"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "915dc556e9bef529": {
+    "c": "Nom*",
+    "i": 1,
+    "t": "label"
+  },
+  "930286395738f98e": {
+    "c": "Entreprise",
+    "i": 1,
+    "t": "label"
+  },
+  "9494f23145fcc12d": "Navigation du pied de page",
+  "99b547a01cbbe1d8": "Quantité",
+  "9e073b20d365838e": {
+    "c": [
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      },
+      ": ",
+      {
+        "i": 3,
+        "k": "_gt_value_3",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "small"
+  },
+  "9ea94e412590f53d": "Numéro de téléphone",
+  "9ead38f30992e131": {
+    "c": "Totaux",
+    "i": 1,
+    "t": "h4"
+  },
+  "9eeb5ee589d08542": "Panier",
+  "9fa2a817f1e9b55b": "Nom",
+  "a2eb15fbca9406b0": {
+    "c": [
+      {
+        "i": 2,
+        "t": "span"
+      },
+      {
+        "c": "Boutique de démonstration",
+        "i": 3,
+        "t": "p"
+      },
+      {
+        "c": "/",
+        "i": 4,
+        "t": "span"
+      },
+      {
+        "c": "Trouvez votre prochain coup de cœur.",
+        "i": 5,
+        "t": "p"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "a6acc9b9d54dc8ab": {
+    "c": [
+      "Voir tous les résultats pour ",
+      {
+        "c": {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        "i": 2,
+        "t": "q"
+      },
+      " →"
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "a7fd7cad363a7198": {
+    "c": "Code pays*",
+    "i": 1,
+    "t": "label"
+  },
+  "a8c1703d8a8cd727": {
+    "c": [
+      "Articles avec ",
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "ab8adec6e0f4cc95": "Cartes-cadeaux",
+  "ad085d614979e97a": "Articles dans le panier",
+  "ad5cf4639d0bae3f": {
+    "c": "Pages",
+    "i": 1,
+    "t": "h2"
+  },
+  "ae42a2b2828b1848": {
+    "c": "Chargement du panier…",
+    "i": 1,
+    "t": "p"
+  },
+  "b48dcb5b683e32b9": {
+    "c": "Adresse de livraison",
+    "i": 1,
+    "t": "h3"
+  },
+  "b548104df484699e": {
+    "c": "Filtrer les commandes",
+    "i": 1,
+    "t": "legend"
+  },
+  "b6dc0e92f64cc505": "Adresse (ligne 1)*",
+  "bba7e42194614be4": "Rupture de stock",
+  "bbecac783d914b1d": "Créer",
+  "bf36824919f2a3d1": "Image du produit",
+  "c07ebbe8ea1d9262": {
+    "c": [
+      " ",
+      {
+        "c": "Se déconnecter",
+        "i": 2,
+        "t": "button"
+      }
+    ],
+    "i": 1,
+    "t": "Form"
+  },
+  "c0dc347278df9357": "Code de réduction",
+  "c28ebfaf2972a07b": {
+    "c": "Adresses",
+    "i": 1,
+    "t": "h2"
+  },
+  "c45a9109c05e9dab": "Retirer la carte-cadeau se terminant par {lastCharacters}",
+  "c4e2b654be6de234": {
+    "c": "Cartes-cadeaux appliquées",
+    "i": 1,
+    "t": "dt"
+  },
+  "c5fdbd164f577b65": "Bienvenue dans votre espace client.",
+  "c9ff886ef7712e7b": "N° de commande",
+  "cac66e3632bcd05e": "Supprimer la réduction",
+  "cce0fabcbb06ec2f": "Numéro de commande",
+  "ccf22e4e15312880": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": [
+              "Afficher plus ",
+              {
+                "c": "↓",
+                "i": 4,
+                "t": "span"
+              }
+            ],
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Chargement…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "NextLink"
+  },
+  "d0617f03f8e31553": {
+    "c": "Nom",
+    "i": 1,
+    "t": "label"
+  },
+  "d09121888850ce06": {
+    "c": "Collections",
+    "i": 1,
+    "t": "h5"
+  },
+  "d568c6114a797c78": "Pays",
+  "d6bdb703a75da170": "Création en cours",
+  "da3e10dda5ea4c5b": [
+    {
+      "c": "Vous n'avez pas encore passé de commande.",
+      "i": 1,
+      "t": "p"
+    },
+    {
+      "i": 2,
+      "t": "br"
+    },
+    {
+      "c": {
+        "c": "Commencer mes achats →",
+        "i": 4,
+        "t": "Link"
+      },
+      "i": 3,
+      "t": "p"
+    }
+  ],
+  "da49b8271b9dffa0": "Supprimer",
+  "db5042a9d04fe5c7": {
+    "c": "Adresses enregistrées",
+    "i": 1,
+    "t": "legend"
+  },
+  "de2dbe5fab61d0c3": {
+    "c": "Sous-total",
+    "i": 1,
+    "t": "dt"
+  },
+  "e0012dac5e86934b": {
+    "c": "Prénom*",
+    "i": 1,
+    "t": "label"
+  },
+  "e0b4460d13982a86": {
+    "c": "Statut",
+    "i": 1,
+    "t": "h3"
+  },
+  "e17cd2600d6bf447": {
+    "c": "Politiques de la boutique",
+    "i": 1,
+    "t": "h1"
+  },
+  "e321d312eb7386a8": "Appliquer",
+  "e4c79046b2d1eb03": "Réductions",
+  "e64f4221ae48cef8": {
+    "c": "Impossible de charger la collection. Veuillez réessayer.",
+    "i": 1,
+    "t": "p"
+  },
+  "eb59bda30418bc0f": {
+    "c": "Complément d’adresse",
+    "i": 1,
+    "t": "label"
+  },
+  "eba6f410ffc4c9f8": "Suppression en cours",
+  "ee3e8bd8b7918aec": "Rechercher",
+  "efe83cd60db1efec": "Volet du panier",
+  "f07199bfab840857": {
+    "c": "Articles",
+    "i": 1,
+    "t": "h2"
+  },
+  "f2331e3b325286cb": [
+    {
+      "i": 1,
+      "t": "br"
+    },
+    {
+      "c": "Votre panier est vide. Trouvez votre bonheur.",
+      "i": 2,
+      "t": "p"
+    },
+    {
+      "i": 3,
+      "t": "br"
+    },
+    {
+      "c": "Continuer vos achats →",
+      "i": 4,
+      "t": "Link"
+    }
+  ],
+  "f28fdbd66fc9795b": "Ajouter au panier",
+  "f33d90c0974194b5": {
+    "c": "Téléphone",
+    "i": 1,
+    "t": "label"
+  },
+  "f3e567bdfc789496": {
+    "c": "Voir la commande →",
+    "i": 1,
+    "t": "Link"
+  },
+  "f465cf3bb3f6b9d5": {
+    "c": "Aucun résultat. Essayez une autre recherche.",
+    "i": 1,
+    "t": "p"
+  },
+  "f4e32ec497c1d21f": {
+    "c": "Oups",
+    "i": 1,
+    "t": "h1"
+  },
+  "fa1ea463c2ce0c8b": [
+    {
+      "c": "Aucune commande ne correspond à votre recherche.",
+      "i": 1,
+      "t": "p"
+    },
+    {
+      "i": 2,
+      "t": "br"
+    },
+    {
+      "c": {
+        "c": "Effacer les filtres →",
+        "i": 4,
+        "t": "Link"
+      },
+      "i": 3,
+      "t": "p"
+    }
+  ],
+  "fda8bbb4a0ef6d51": "Complément d’adresse"
+}

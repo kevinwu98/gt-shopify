@@ -12,9 +12,11 @@ import {
 } from 'react-router';
 import {
   GTProvider,
+  T,
   getTranslationsSnapshot,
   initializeGT,
   parseLocale,
+  useGT,
 } from 'gt-react';
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
@@ -208,8 +210,9 @@ export default function App() {
 }
 
 export function ErrorBoundary() {
+  const gt = useGT();
   const error = useRouteError();
-  let errorMessage = 'Unknown error';
+  let errorMessage = gt('Unknown error');
   let errorStatus = 500;
 
   if (isRouteErrorResponse(error)) {
@@ -221,7 +224,9 @@ export function ErrorBoundary() {
 
   return (
     <div className="route-error">
-      <h1>Oops</h1>
+      <T>
+        <h1>Oops</h1>
+      </T>
       <h2>{errorStatus}</h2>
       {errorMessage && (
         <fieldset>

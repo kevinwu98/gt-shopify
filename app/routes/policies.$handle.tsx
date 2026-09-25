@@ -1,6 +1,7 @@
 import {Link, useLoaderData} from 'react-router';
 import type {Route} from './+types/policies.$handle';
 import {type Shop} from '@shopify/hydrogen/storefront-api-types';
+import {T} from 'gt-react';
 
 type SelectedPolicies = keyof Pick<
   Shop,
@@ -49,7 +50,9 @@ export default function Policy() {
       <br />
       <br />
       <div>
-        <Link to="/policies">← Back to Policies</Link>
+        <T>
+          <Link to="/policies">← Back to Policies</Link>
+        </T>
       </div>
       <br />
       <h1>{policy.title}</h1>

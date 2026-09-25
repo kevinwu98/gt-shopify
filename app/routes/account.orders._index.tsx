@@ -23,6 +23,7 @@ import type {
   OrderItemFragment,
 } from 'customer-accountapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {T, Var, DateTime, useGT} from 'gt-react';
 
 type OrdersLoaderData = {
   customer: CustomerOrdersFragment;
@@ -96,21 +97,21 @@ function EmptyOrders({hasFilters = false}: {hasFilters?: boolean}) {
   return (
     <div>
       {hasFilters ? (
-        <>
+        <T>
           <p>No orders found matching your search.</p>
           <br />
           <p>
             <Link to="/account/orders">Clear filters →</Link>
           </p>
-        </>
+        </T>
       ) : (
-        <>
+        <T>
           <p>You haven&apos;t placed any orders yet.</p>
           <br />
           <p>
             <Link to="/collections">Start Shopping →</Link>
           </p>
-        </>
+        </T>
       )}
     </div>
   );
@@ -121,6 +122,7 @@ function OrderSearchForm({
 }: {
   currentFilters: OrderFilterParams;
 }) {
+  const gt = useGT();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigation = useNavigation();
   const isSearching =
@@ -153,25 +155,27 @@ function OrderSearchForm({
       ref={formRef}
       onSubmit={handleSubmit}
       className="order-search-form"
-      aria-label="Search orders"
+      aria-label={gt('Search orders')}
     >
       <fieldset className="order-search-fieldset">
-        <legend className="order-search-legend">Filter Orders</legend>
+        <T>
+          <legend className="order-search-legend">Filter Orders</legend>
+        </T>
 
         <div className="order-search-inputs">
           <input
             type="search"
             name={ORDER_FILTER_FIELDS.NAME}
-            placeholder="Order #"
-            aria-label="Order number"
+            placeholder={gt('Order #')}
+            aria-label={gt('Order number')}
             defaultValue={currentFilters.name || ''}
             className="order-search-input"
           />
           <input
             type="search"
             name={ORDER_FILTER_FIELDS.CONFIRMATION_NUMBER}
-            placeholder="Confirmation #"
-            aria-label="Confirmation number"
+            placeholder={gt('Confirmation #')}
+            aria-label={gt('Confirmation number')}
             defaultValue={currentFilters.confirmationNumber || ''}
             className="order-search-input"
           />
@@ -179,19 +183,21 @@ function OrderSearchForm({
 
         <div className="order-search-buttons">
           <button type="submit" disabled={isSearching}>
-            {isSearching ? 'Searching' : 'Search'}
+            {isSearching ? gt('Searching') : gt('Search')}
           </button>
           {hasFilters && (
-            <button
-              type="button"
-              disabled={isSearching}
-              onClick={() => {
-                setSearchParams(new URLSearchParams());
-                formRef.current?.reset();
-              }}
-            >
-              Clear
-            </button>
+            <T>
+              <button
+                type="button"
+                disabled={isSearching}
+                onClick={() => {
+                  setSearchParams(new URLSearchParams());
+                  formRef.current?.reset();
+                }}
+              >
+                Clear
+              </button>
+            </T>
           )}
         </div>
       </fieldset>
@@ -207,14 +213,22 @@ function OrderItem({order}: {order: OrderItemFragment}) {
         <Link to={`/account/orders/${btoa(order.id)}`}>
           <strong>#{order.number}</strong>
         </Link>
-        <p>{new Date(order.processedAt).toDateString()}</p>
+        <p>
+          <DateTime>{new Date(order.processedAt)}</DateTime>
+        </p>
         {order.confirmationNumber && (
-          <p>Confirmation: {order.confirmationNumber}</p>
+          <T>
+            <p>
+              Confirmation: <Var>{order.confirmationNumber}</Var>
+            </p>
+          </T>
         )}
         <p>{order.financialStatus}</p>
         {fulfillmentStatus && <p>{fulfillmentStatus}</p>}
         <Money data={order.totalPrice} />
-        <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
+        <T>
+          <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
+        </T>
       </fieldset>
       <br />
     </>

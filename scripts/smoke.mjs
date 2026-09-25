@@ -237,6 +237,15 @@ async function main() {
   assert.doesNotMatch(cartMarkup, /<a\b[^>]*href="https?:\/\/[^"\s]*(?:checkout|checkouts)/i, 'Sample cart must not offer an external checkout link');
   pass('Cart survives a document reload and renders disabled sample checkout');
 
+  for (const locale of ['fr', 'ja']) {
+    const localizedCart = await request('/cart', {headers: {'Accept-Language': locale}});
+    assertStatus(localizedCart, 200, `${locale} cart`);
+    const localizedMarkup = initialMarkup(localizedCart.text);
+    assert.match(localizedMarkup, new RegExp(`<html\\b[^>]*lang="${locale}"`));
+    assert.ok(cartInputs(localizedMarkup).some((input) => input.action === 'LinesRemove' && input.inputs.lineIds.includes(createdLineId)), 'Changing UI language must retain the same Shopify cart line');
+  }
+  pass('The same cart line persists across French and Japanese document requests');
+
   const updated = await request('/cart', {
     method: 'POST',
     body: formBody('LinesUpdate', {lines: [{id: createdLineId, quantity: 2}]}, {redirectTo: '/cart?smoke=1'}),

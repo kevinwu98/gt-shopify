@@ -5,6 +5,7 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem, type CartLine} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
+import {T, useGT} from 'gt-react';
 
 export type CartLayout = 'page' | 'aside';
 
@@ -38,6 +39,7 @@ function getLineItemChildrenMap(lines: CartLine[]): LineItemChildrenMap {
  * It is used by both the /cart route and the cart aside dialog.
  */
 export function CartMain({layout, cart: originalCart}: CartMainProps) {
+  const gt = useGT();
 
   const fetchers = useFetchers();
   const failedActions = fetchers.flatMap((fetcher) => {
@@ -61,11 +63,13 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   return (
     <section
       className={className}
-      aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
+      aria-label={layout === 'page' ? gt('Cart page') : gt('Cart drawer')}
     >
       {failedActions.map((fetcher) => (
         <div key={fetcher.key} role="alert" className="cart-error">
-          <p>We could not update your cart.</p>
+          <T>
+            <p>We could not update your cart.</p>
+          </T>
           {fetcher.userErrors?.map((error, index) => (
             <p key={index}>{error.message}</p>
           ))}
@@ -73,9 +77,11 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
       ))}
       <CartEmpty hidden={linesCount} layout={layout} />
       <div className="cart-details">
-        <p id="cart-lines" className="sr-only">
-          Line items
-        </p>
+        <T>
+          <p id="cart-lines" className="sr-only">
+            Line items
+          </p>
+        </T>
         <div>
           <ul aria-labelledby="cart-lines">
             {(cart?.lines?.nodes ?? []).map((line) => {
@@ -113,14 +119,14 @@ function CartEmpty({
   const {close} = useAside();
   return (
     <div hidden={hidden}>
-      <br />
-      <p>
-        Your cart is empty. Find something you love.
-      </p>
-      <br />
-      <Link to={'/collections'} onClick={close} prefetch="viewport">
-        Continue shopping →
-      </Link>
+      <T>
+        <br />
+        <p>Your cart is empty. Find something you love.</p>
+        <br />
+        <Link to={'/collections'} onClick={close} prefetch="viewport">
+          Continue shopping →
+        </Link>
+      </T>
     </div>
   );
 }
