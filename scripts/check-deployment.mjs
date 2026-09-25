@@ -182,13 +182,16 @@ async function localizedChecks(productPath, productTitle, englishMarkup) {
     }
     const copy = {
       heading: elementText(pageMarkup(home.text), 'h1'),
+      cta: textContent(pageMarkup(home.text).match(/<a\b[^>]*class="button-primary"[^>]*>([\s\S]*?)<\/a>/i)?.[1] || ''),
       search: elementText(searchMain, 'p'),
       cart: elementText(cartMain, 'p'),
       purchase: purchaseText(productMain),
     };
     const englishCopy = pages.get('en');
     if (englishCopy) {
-      for (const key of Object.keys(copy)) assert.notEqual(copy[key], englishCopy[key], `${locale} ${key} must contain translated copy, not English fallback`);
+      assert.equal(copy.heading, 'Great Things', 'Keep the store brand unchanged across locales');
+      assert.ok(copy.cta, 'Expected translated collection CTA');
+      for (const key of ['cta', 'search', 'cart', 'purchase']) assert.notEqual(copy[key], englishCopy[key], `${locale} ${key} must contain translated copy, not English fallback`);
     }
     pages.set(locale, copy);
     pass(`${locale} initial HTML, language selector, empty states, and catalog title are correct${checkCatalog ? '; catalog translations, purchase inputs, and currency checked' : ''}`);
@@ -219,7 +222,7 @@ async function main() {
   assert.ok(home.response.headers.get('content-security-policy'), 'Expected a Content Security Policy');
   const homeMarkup = initialMarkup(home.text);
   assert.match(homeMarkup, /<html\b[^>]*lang="en"/);
-  assert.match(elementText(homeMarkup, 'h1'), /Good things,/);
+  assert.match(elementText(homeMarkup, 'h1'), /Great Things/);
   pass('English home page and headline are server-rendered with a Content Security Policy');
 
   const assets = [...new Set([...home.text.matchAll(/(?:src|href)="([^"<>]+\.(?:js|css)(?:\?[^"<>]*)?)"/g)]

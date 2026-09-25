@@ -31,7 +31,7 @@ export function Header({cart}: HeaderProps) {
           width="42"
           height="27"
         />
-        <span translate="no">GT Supply</span>
+        <span translate="no">Great Things</span>
       </NavLink>
       <nav className="header-shop" aria-label={gt('Main navigation')}>
         <T>

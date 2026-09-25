@@ -9,12 +9,12 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
-import {T} from 'gt-react';
+import {T, useGT} from 'gt-react';
 import {useCatalog} from '~/lib/useCatalog';
 
 import type {RootLoader} from '~/root';
 
-export const meta: Route.MetaFunction = () => [{title: 'GT Supply'}];
+export const meta: Route.MetaFunction = () => [{title: 'Great Things'}];
 
 export async function loader(args: Route.LoaderArgs) {
   const deferredData = loadDeferredData(args);
@@ -62,6 +62,7 @@ function FeaturedCollection({
   product: Awaited<ReturnType<typeof loadCriticalData>>['featuredProduct'];
 }) {
   const catalog = useCatalog();
+  const gt = useGT();
   const image =
     product?.featuredImage ??
     collection?.image ??
@@ -74,27 +75,13 @@ function FeaturedCollection({
     : '/collections/all';
   return (
     <section className="store-hero" aria-labelledby="hero-title">
-      <T>
-        <div className="hero-copy">
-          <p className="eyebrow">Everyday essentials</p>
-          <h1 id="hero-title">
-            Good things,
-            <br />
-            worn often.
-          </h1>
-          <p className="hero-description">
-            Easy layers. Familiar favorites. Find your everyday uniform.
-          </p>
-          <Link
-            className="button-primary"
-            to={'/collections/all'}
-            prefetch="intent"
-          >
-            Explore the collection<span aria-hidden="true">↗</span>
-          </Link>
-          <p className="hero-footnote">Your next favorite is right here.</p>
-        </div>
-      </T>
+      <div className="hero-copy">
+        <h1 id="hero-title" translate="no">Great Things</h1>
+        <p className="hero-description" translate="no">by General Translation</p>
+        <Link className="button-primary" to="/collections/all" prefetch="intent">
+          {gt('Explore the collection', {$format: 'STRING'})}<span aria-hidden="true">↗</span>
+        </Link>
+      </div>
       <div className="hero-image">
         {image ? (
           <Image

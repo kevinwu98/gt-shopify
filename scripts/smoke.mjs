@@ -177,7 +177,7 @@ async function main() {
   const homeMarkup = initialMarkup(home.text);
   assertLocale(homeMarkup, 'en');
   const heading = homeMarkup.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
-  assert.ok(heading && visibleText(heading).includes('Good things,'), 'English headline must appear before scripts');
+  assert.ok(heading && visibleText(heading).includes('Great Things'), 'English headline must appear before scripts');
   assert.ok(visibleText(homeMarkup).includes('Cart'), 'English navigation must be server-rendered');
   for (const locale of translatedLocales) {
     assert.doesNotMatch(homeMarkup, new RegExp(`href="/${locale}(?:[/?#"])`), 'English navigation must not expose locale-prefixed routes');

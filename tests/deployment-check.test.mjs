@@ -72,7 +72,7 @@ const fixture = `
       const assetRoot = mode === 'cdn'
         ? 'https://cdn.shopify.com/oxygen-v2/61555/179082/365980/4550792/assets'
         : '/assets';
-      body = '<main><h1>' + copy.heading + '</h1></main><link href="' + assetRoot + '/app.css"><script src="' + assetRoot + '/app.js"></script><script src="https://other.example/foreign.js"></script><script src="http://cdn.shopify.com/oxygen-v2/insecure.js"></script><script src="https://cdn.shopify.com/s/files/non-oxygen.js"></script><script src="https://cdn.shopify.com.evil.example/oxygen-v2/spoof.js"></script>';
+      body = '<main><h1>Great Things</h1><a class="button-primary" href="/collections/all">' + copy.heading + '</a></main><link href="' + assetRoot + '/app.css"><script src="' + assetRoot + '/app.js"></script><script src="https://other.example/foreign.js"></script><script src="http://cdn.shopify.com/oxygen-v2/insecure.js"></script><script src="https://cdn.shopify.com/s/files/non-oxygen.js"></script><script src="https://cdn.shopify.com.evil.example/oxygen-v2/spoof.js"></script>';
     } else if (url.pathname === '/collections/all') {
       body = '<a href="/products/shirt">Shirt</a>';
     } else if (url.pathname === '/products/shirt') {
@@ -198,7 +198,7 @@ test('localization checks use configured Korean and Indonesian locales without r
 test('configured Korean and Indonesian locales cannot silently serve English UI or catalog titles', async () => {
   for (const fallbackLocale of ['ko', 'id']) {
     await assert.rejects(check('localized-fallback', token, {localization: true, fallbackLocale}), (error) => {
-      assert.ok(error.stderr.includes(`${fallbackLocale} heading must contain translated copy, not English fallback`));
+      assert.ok(error.stderr.includes(`${fallbackLocale} cta must contain translated copy, not English fallback`));
       return true;
     });
     await assert.rejects(check('catalog-locale-title-fallback', token, {catalog: true, dictionaries, fallbackLocale}), (error) => {
