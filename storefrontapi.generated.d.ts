@@ -394,6 +394,21 @@ export type MarketsQuery = {
   };
 };
 
+export type CartMarketAvailabilityQueryVariables = StorefrontAPI.Exact<{
+  country: StorefrontAPI.CountryCode;
+  ids:
+    | Array<StorefrontAPI.Scalars['ID']['input']>
+    | StorefrontAPI.Scalars['ID']['input'];
+}>;
+
+export type CartMarketAvailabilityQuery = {
+  nodes: Array<
+    StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.ProductVariant, 'id' | 'availableForSale'>
+    >
+  >;
+};
+
 export type FeaturedCollectionFragment = Pick<
   StorefrontAPI.Collection,
   'id' | 'title' | 'handle'
@@ -1316,6 +1331,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query Markets($country: CountryCode) @inContext(country: $country) {\n    localization {\n      country {\n        isoCode\n        name\n        currency { isoCode symbol }\n      }\n      availableCountries {\n        isoCode\n        name\n        currency { isoCode symbol }\n      }\n    }\n  }\n': {
     return: MarketsQuery;
     variables: MarketsQueryVariables;
+  };
+  '#graphql\n  query CartMarketAvailability($country: CountryCode!, $ids: [ID!]!)\n  @inContext(country: $country, language: EN) {\n    nodes(ids: $ids) {\n      ... on ProductVariant {\n        id\n        availableForSale\n      }\n    }\n  }\n': {
+    return: CartMarketAvailabilityQuery;
+    variables: CartMarketAvailabilityQueryVariables;
   };
   '#graphql\n  fragment FeaturedCollection on Collection {\n    id\n    title\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n    products(first: 1) {\n      nodes {\n        featuredImage {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n    }\n    handle\n  }\n  query FeaturedCollection($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        ...FeaturedCollection\n      }\n    }\n  }\n': {
     return: FeaturedCollectionQuery;

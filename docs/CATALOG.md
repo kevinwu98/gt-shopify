@@ -141,11 +141,26 @@ CI checks that every configured catalog language is complete.
 
 ## Changing the currency
 
-The storefront has a language selector and no visible country/currency selector.
-Language controls text and currency formatting; Shopify's market context controls
-the amount and currency returned by product and cart queries. Existing signed
-market preferences remain supported; a new visitor currently defaults to US.
-No automatic location detection or language-to-country mapping is enabled.
+The language selector changes GT's language and Shopify's shopping country
+together. This demo explicitly maps English → US, French → France, Indonesian →
+Indonesia, Japanese → Japan, and Korean → South Korea. Those mappings live in
+`app/lib/locale-market.ts`; adding a GT language requires choosing its shopping
+country there and enabling that market in Shopify Admin.
+
+The server validates the selected locale and available Shopify market, updates
+an existing cart's buyer country, and then saves the GT locale cookie and signed
+market preference. The current page reloads with matching translations, product
+prices, and cart prices. Failures leave the current preferences unchanged and
+show an inline error. There is no separate country/currency selector and URLs
+stay unchanged. No automatic location detection is enabled. A new visitor starts
+in the US market; their browser's language preference can still select GT text.
+
+Existing cart items are checked for availability in the requested country before
+Shopify's buyer-country mutation. An unavailable item blocks the switch and keeps
+the current cart, language, and country. The demo's international prices are
+configured, but its published snowboards currently report unavailable for purchase
+in France. Complete Shopify's product availability and fulfillment setup
+for those markets before demonstrating an international purchase flow.
 
 Hydrogen's [`Money`](https://shopify.dev/docs/api/hydrogen/latest/components/money)
 component formats a Shopify `MoneyV2` amount/currency using its locale context.
@@ -154,17 +169,23 @@ It does not convert currencies. This GT demonstration uses `gt-react`'s
 Shopify's amount and currency code across products, search, carts, and orders.
 Regression coverage includes EUR/French, JPY/Japanese, KRW/Korean, and
 IDR/Indonesian, including each currency's fractional-digit conventions.
+IDR explicitly uses zero fractional digits so older browser locale data and the
+Oxygen runtime agree on whole-rupiah display.
 
-The linked **GT Supply Demo** store currently exposes United States and Canada,
-both priced in USD. Seeing dollars is therefore expected. To offer another
-currency, configure the country and currency in **Shopify Admin → Markets →
-market → Currency → Add currency customization**, then use that country as
-Hydrogen's market context and the cart buyer country together. Configuring a
-currency alone does not select that market for a visitor. The retained market
-backend can perform a coordinated change; the storefront no longer exposes a
-manual control for it. Automatic country detection would be a separate choice.
+The linked **GT Supply Demo** store exposes US/USD, France/EUR, Indonesia/IDR,
+Japan/JPY, and South Korea/KRW (Canada also remains available in USD). The same
+code deployed against another store uses that store's configured currencies;
+the mapping does not force a currency or invent an exchange rate. Configure each
+country and currency in **Shopify Admin → Markets → market → Currency**. A
+configured language alone does not make its mapped country available for sale.
 
 See [Shopify Markets for Hydrogen](https://shopify.dev/docs/storefronts/headless/hydrogen/markets).
+
+Run `npm run test:markets -- http://localhost:3140` to verify all five selections
+against the running app. Add `LIVE_CART_CHECK=1` to test an isolated cart; this is
+restricted to the GT Supply Demo store and cleans up its own test line. When a
+product is unavailable in another market, the check verifies that switching is
+blocked without losing the cart or either preference.
 
 For subsequent product edits, repeat sync → translate → check → review → deploy.
 This is a manual refresh workflow, not a Shopify webhook connector.

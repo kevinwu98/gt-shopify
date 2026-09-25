@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import {test} from 'node:test';
 import {createElement} from 'react';
@@ -24,9 +25,8 @@ for (const specifier of ['react/jsx-runtime', 'gt-react']) {
     .replaceAll(JSON.stringify(specifier), JSON.stringify(import.meta.resolve(specifier)))
     .replaceAll(`'${specifier}'`, JSON.stringify(import.meta.resolve(specifier)));
 }
-const {LocalizedMoney} = await import(
-  `data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`
-);
+const componentModuleUrl = `data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`;
+const {LocalizedMoney} = await import(componentModuleUrl);
 
 const gtConfig = JSON.parse(
   await readFile(new URL('../gt.config.json', import.meta.url), 'utf8'),
@@ -88,4 +88,41 @@ test('an incomplete optimistic cart cost stays empty instead of becoming NaN or 
   assert.equal(renderPrice('fr', {}), '');
   assert.equal(renderPrice('fr', {amount: '10.00'}), '');
   assert.equal(renderPrice('fr', {currencyCode: 'EUR'}), '');
+});
+
+test('IDR stays at whole rupiah when the runtime defaults to two fraction digits', () => {
+  // GT caches Intl constructors at import time, so emulate the older runtime
+  // in an isolated process before loading GT and the actual component.
+  const script = `
+    import assert from 'node:assert/strict';
+    import {createElement} from ${JSON.stringify(import.meta.resolve('react'))};
+    import {renderToStaticMarkup} from ${JSON.stringify(import.meta.resolve('react-dom/server'))};
+    const NativeNumberFormat = Intl.NumberFormat;
+    Intl.NumberFormat = class extends NativeNumberFormat {
+      constructor(locales, options) {
+        super(locales, options?.currency === 'IDR'
+          ? {minimumFractionDigits: 2, maximumFractionDigits: 2, ...options}
+          : options);
+      }
+    };
+    assert.equal(
+      new Intl.NumberFormat('id', {style: 'currency', currency: 'IDR'}).format(12718000),
+      'Rp\\u00a012.718.000,00',
+    );
+    const {GTProvider, initializeGT} = await import(${JSON.stringify(import.meta.resolve('gt-react'))});
+    const {LocalizedMoney} = await import(${JSON.stringify(componentModuleUrl)});
+    initializeGT({defaultLocale: 'en', locales: ['id']});
+    const price = Object.freeze({amount: '12718000.00', currencyCode: 'IDR'});
+    assert.equal(
+      renderToStaticMarkup(createElement(GTProvider, {locale: 'id', translations: {}},
+        createElement(LocalizedMoney, {data: price}))),
+      '<span>Rp\\u00a012.718.000</span>',
+    );
+    assert.deepEqual(price, {amount: '12718000.00', currencyCode: 'IDR'});
+  `;
+  const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], {
+    encoding: 'utf8',
+    timeout: 15_000,
+  });
+  assert.equal(result.status, 0, result.stderr || result.error?.message);
 });

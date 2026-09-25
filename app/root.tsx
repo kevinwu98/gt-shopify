@@ -28,10 +28,12 @@ import gtConfig from '../gt.config.json';
 import loadTranslations from './loadTranslations';
 import {getCatalogDictionaries} from './lib/catalog.server';
 import {getMarkets} from './lib/markets.server';
+import {GT_LOCALE_COOKIE_NAME} from './lib/locale-market';
 
 initializeGT({
   defaultLocale: gtConfig.defaultLocale,
   locales: gtConfig.locales,
+  localeCookieName: GT_LOCALE_COOKIE_NAME,
   loadTranslations,
 });
 
