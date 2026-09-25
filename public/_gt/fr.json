@@ -154,6 +154,24 @@
     "t": "p"
   },
   "2c1c93a646bbea6e": "Langue",
+  "2d74b2fa22ab10e6": {
+    "c": [
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      },
+      ":",
+      " ",
+      {
+        "i": 3,
+        "k": "_gt_value_3",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "small"
+  },
   "2e107ae81088ed2c": {
     "c": "Code postal*",
     "i": 1,
@@ -281,6 +299,7 @@
     "i": 1,
     "t": "div"
   },
+  "47eaf1036f06547e": "La liste des pays et des régions est temporairement indisponible. Veuillez réessayer.",
   "4b71561e661a9664": "Diminuer la quantité",
   "4c433b0f79367bbd": [
     {
@@ -485,6 +504,7 @@
     "t": "label"
   },
   "68959eb500bbc8ac": "Code postal",
+  "69bcc3492cddfbab": "Impossible de mettre à jour votre panier pour ce pays ou cette région. Veuillez réessayer.",
   "69c9ec6286ad234b": {
     "c": {
       "d": {
@@ -555,6 +575,7 @@
     "i": 1,
     "t": "legend"
   },
+  "803018dfe87e9a7d": "La demande ne provient pas d’une source valide.",
   "82720ab23f8e5ee6": {
     "c": "Aucune adresse de livraison renseignée",
     "i": 1,
@@ -622,23 +643,6 @@
   },
   "9494f23145fcc12d": "Navigation du pied de page",
   "99b547a01cbbe1d8": "Quantité",
-  "9e073b20d365838e": {
-    "c": [
-      {
-        "i": 2,
-        "k": "_gt_value_2",
-        "v": "v"
-      },
-      ": ",
-      {
-        "i": 3,
-        "k": "_gt_value_3",
-        "v": "v"
-      }
-    ],
-    "i": 1,
-    "t": "small"
-  },
   "9ea94e412590f53d": "Numéro de téléphone",
   "9ead38f30992e131": {
     "c": "Totaux",
@@ -646,6 +650,7 @@
     "t": "h4"
   },
   "9eeb5ee589d08542": "Panier",
+  "9f379516f5b330c5": "Sélectionnez un pays ou une région disponible.",
   "9fa2a817f1e9b55b": "Nom",
   "a2eb15fbca9406b0": {
     "c": [
@@ -790,6 +795,7 @@
     "i": 1,
     "t": "NextLink"
   },
+  "d02d5a67c5b50982": "Le marché sélectionné n’est pas valide.",
   "d0617f03f8e31553": {
     "c": "Nom",
     "i": 1,
@@ -848,6 +854,7 @@
     "i": 1,
     "t": "h1"
   },
+  "e18796e7346902ba": "La destination de retour n’est pas valide.",
   "e321d312eb7386a8": "Appliquer",
   "e4c79046b2d1eb03": "Réductions",
   "e64f4221ae48cef8": {
