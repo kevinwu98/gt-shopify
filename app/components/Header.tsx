@@ -24,13 +24,6 @@ export function Header({cart}: HeaderProps) {
   return (
     <header className="header">
       <NavLink className="brand" prefetch="intent" to={'/'} end>
-        <img
-          className="brand-mark"
-          src="/gt-mark.svg"
-          alt=""
-          width="42"
-          height="27"
-        />
         <span translate="no">Great Things</span>
       </NavLink>
       <nav className="header-shop" aria-label={gt('Main navigation')}>

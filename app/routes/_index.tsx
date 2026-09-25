@@ -114,10 +114,7 @@ function RecommendedProducts({
     >
       <T>
         <div className="section-heading">
-          <div>
-            <p className="eyebrow">On the shortlist</p>
-            <h2 id="recommended-products">The everyday edit</h2>
-          </div>
+          <h2 id="recommended-products">Designed for everywhere you will go</h2>
           <Link className="text-link" to={'/collections/all'}>
             Shop all<span aria-hidden="true">↗</span>
           </Link>

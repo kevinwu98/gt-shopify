@@ -678,7 +678,6 @@ body > main:has(.home) { padding: 0; }
 h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.035em; }
 .header { min-height: var(--header-height); height: auto; padding: 20px var(--store-gutter); gap: 40px; border-bottom: 1px solid var(--store-border); z-index: 5; background: white; }
 .brand { display: inline-flex; align-items: center; gap: 16px; flex-shrink: 0; font-size: 20px; font-weight: 500; letter-spacing: -0.8px; line-height: 1; }
-.brand-mark { width: 42px; height: 27px; }
 .header-shop, .header-ctas { font-size: 13px; font-weight: 400; }
 .header-shop a, .header-ctas a { padding-block: 10px; }
 .header-shop a:hover, .header-ctas a:hover, .footer-menu a:hover { color: var(--store-accent); }
@@ -732,6 +731,7 @@ h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.035em; }
 .footer { padding: 48px var(--store-gutter) 24px; background: white; color: var(--color-dark); border-top: 1px solid var(--store-border); }
 body:has(.home) .footer { border-top: 0; }
 .footer-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 28px; padding-bottom: 48px; }
+.footer-top:last-child { padding-bottom: 24px; }
 .footer-brand { font-size: 24px; }
 .footer-tagline { margin-top: 16px; color: var(--store-muted); font-size: 12px; line-height: 1.7; }
 .footer-menu { gap: 32px; padding: 0; font-size: 12px; }
@@ -776,7 +776,6 @@ aside main { margin: 24px; }
   :root { --header-height: 112px; }
   .header { display: grid; grid-template-columns: 1fr auto; row-gap: 18px; padding-block: 20px; }
   .brand { font-size: 18px; gap: 12px; }
-  .brand-mark { width: 34px; height: 22px; }
   .header-shop { justify-self: end; }
   .header-ctas { grid-column: 1 / -1; justify-content: space-between; width: 100%; margin: 0; gap: 14px; }
   .header-ctas .locale-switcher { max-width: 130px; }
