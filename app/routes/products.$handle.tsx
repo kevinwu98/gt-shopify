@@ -19,7 +19,7 @@ import {getCatalogText} from '~/lib/catalog.server';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
-    {title: `Hydrogen | ${data?.localizedTitle ?? ''}`},
+    {title: `GT Supply | ${data?.localizedTitle ?? ''}`},
     {
       rel: 'canonical',
       href: `/products/${data?.product.handle}`,

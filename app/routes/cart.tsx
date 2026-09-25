@@ -6,7 +6,7 @@ import {CartMain} from '~/components/CartMain';
 import {T} from 'gt-react';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Cart`}];
+  return [{title: `GT Supply | Cart`}];
 };
 
 export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;

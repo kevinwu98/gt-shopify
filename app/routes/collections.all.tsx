@@ -7,7 +7,7 @@ import type {CollectionItemFragment} from 'storefrontapi.generated';
 import {T} from 'gt-react';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Products`}];
+  return [{title: `GT Supply | Products`}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
@@ -109,7 +109,7 @@ const CATALOG_QUERY = `#graphql
     $startCursor: String
     $endCursor: String
   ) @inContext(country: $country, language: $language) {
-    products(first: $first, last: $last, before: $startCursor, after: $endCursor) {
+    products(first: $first, last: $last, before: $startCursor, after: $endCursor, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...CollectionItem
       }

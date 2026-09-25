@@ -16,7 +16,7 @@ import type {
 import {T, useGT} from 'gt-react';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
+  return [{title: `GT Supply | Search`}];
 };
 
 export async function loader({request, context}: Route.LoaderArgs) {
