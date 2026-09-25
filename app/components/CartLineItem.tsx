@@ -10,6 +10,7 @@ import type {
   CartLineFragment,
 } from 'storefrontapi.generated';
 import {Num, T, useGT, Var} from 'gt-react';
+import {useCatalog} from '~/lib/useCatalog';
 
 export type CartLine = OptimisticCartLine<CartApiQueryFragment>;
 
@@ -28,9 +29,10 @@ export function CartLineItem({
   line: CartLine;
   childrenMap: LineItemChildrenMap;
 }) {
-
+  const catalog = useCatalog();
   const {id, merchandise} = line;
-  const {product, title, image, selectedOptions} = merchandise;
+  const {product, image, selectedOptions} = merchandise;
+  const title = catalog(product.id, 'title', product.title);
   const lineItemUrl = useVariantUrl(product.handle, selectedOptions);
   const {close} = useAside();
   const lineItemChildren = childrenMap[id];
@@ -61,7 +63,7 @@ export function CartLineItem({
             }}
           >
             <p>
-              <strong>{product.title}</strong>
+              <strong>{title}</strong>
             </p>
           </Link>
           <ProductPrice price={line?.cost?.totalAmount} />
@@ -70,7 +72,24 @@ export function CartLineItem({
               <li key={option.name}>
                 <T>
                   <small>
-                    <Var>{option.name}</Var>: <Var>{option.value}</Var>
+                    <Var>
+                      {catalog(
+                        product.id,
+                        'optionName',
+                        option.name,
+                        option.name,
+                      )}
+                    </Var>
+                    :{' '}
+                    <Var>
+                      {catalog(
+                        product.id,
+                        'optionValue',
+                        option.value,
+                        option.name,
+                        option.value,
+                      )}
+                    </Var>
                   </small>
                 </T>
               </li>
@@ -84,7 +103,7 @@ export function CartLineItem({
         <div>
           <T>
             <p id={childrenLabelId} className="sr-only">
-              Line items with <Var>{product.title}</Var>
+              Line items with <Var>{title}</Var>
             </p>
           </T>
           <ul aria-labelledby={childrenLabelId} className="cart-line-children">
@@ -162,7 +181,6 @@ function CartLineRemoveButton({
   lineIds: string[];
   disabled: boolean;
 }) {
-
   return (
     <CartForm
       fetcherKey={getUpdateKey(lineIds)}
@@ -186,7 +204,6 @@ function CartLineUpdateButton({
   children: React.ReactNode;
   lines: CartLineUpdateInput[];
 }) {
-
   const lineIds = lines.map((line) => line.id);
 
   return (

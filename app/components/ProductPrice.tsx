@@ -1,4 +1,4 @@
-import {Money} from '@shopify/hydrogen';
+import {LocalizedMoney} from '~/components/LocalizedMoney';
 import type {MoneyV2} from '@shopify/hydrogen/storefront-api-types';
 import {useGT} from 'gt-react';
 
@@ -15,13 +15,13 @@ export function ProductPrice({
     <div aria-label={gt('Price')} className="product-price" role="group">
       {compareAtPrice ? (
         <div className="product-price-on-sale">
-          {price ? <Money data={price} /> : null}
+          {price ? <LocalizedMoney data={price} /> : null}
           <s>
-            <Money data={compareAtPrice} />
+            <LocalizedMoney data={compareAtPrice} />
           </s>
         </div>
       ) : price ? (
-        <Money data={price} />
+        <LocalizedMoney data={price} />
       ) : (
         <span>&nbsp;</span>
       )}

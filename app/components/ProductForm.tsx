@@ -8,16 +8,19 @@ import {AddToCartButton} from './AddToCartButton';
 import {useAside} from './Aside';
 import type {ProductFragment} from 'storefrontapi.generated';
 import {useGT} from 'gt-react';
+import {useCatalog} from '~/lib/useCatalog';
 
 export function ProductForm({
+  productId,
   productOptions,
   selectedVariant,
 }: {
+  productId: string;
   productOptions: MappedProductOptions[];
   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
 }) {
-
   const gt = useGT();
+  const catalog = useCatalog();
 
   const navigate = useNavigate();
   const {open} = useAside();
@@ -29,7 +32,9 @@ export function ProductForm({
 
         return (
           <div className="product-options" key={option.name}>
-            <h5>{option.name}</h5>
+            <h5>
+              {catalog(productId, 'optionName', option.name, option.name)}
+            </h5>
             <div className="product-options-grid">
               {option.optionValues.map((value) => {
                 const {
@@ -42,6 +47,13 @@ export function ProductForm({
                   isDifferentProduct,
                   swatch,
                 } = value;
+                const label = catalog(
+                  productId,
+                  'optionValue',
+                  name,
+                  option.name,
+                  name,
+                );
 
                 if (isDifferentProduct) {
                   // SEO
@@ -63,7 +75,7 @@ export function ProductForm({
                         opacity: available ? 1 : 0.3,
                       }}
                     >
-                      <ProductOptionSwatch swatch={swatch} name={name} />
+                      <ProductOptionSwatch swatch={swatch} name={label} />
                     </Link>
                   );
                 } else {
@@ -95,7 +107,7 @@ export function ProductForm({
                         }
                       }}
                     >
-                      <ProductOptionSwatch swatch={swatch} name={name} />
+                      <ProductOptionSwatch swatch={swatch} name={label} />
                     </button>
                   );
                 }

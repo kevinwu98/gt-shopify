@@ -7,10 +7,10 @@ import {
 import type {Route} from './+types/account.orders._index';
 import {useRef} from 'react';
 import {
-  Money,
   getPaginationVariables,
   flattenConnection,
 } from '@shopify/hydrogen';
+import {LocalizedMoney} from '~/components/LocalizedMoney';
 import {
   buildOrderSearchQuery,
   parseOrderFilters,
@@ -225,7 +225,7 @@ function OrderItem({order}: {order: OrderItemFragment}) {
         )}
         <p>{order.financialStatus}</p>
         {fulfillmentStatus && <p>{fulfillmentStatus}</p>}
-        <Money data={order.totalPrice} />
+        <LocalizedMoney data={order.totalPrice} />
         <T>
           <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
         </T>

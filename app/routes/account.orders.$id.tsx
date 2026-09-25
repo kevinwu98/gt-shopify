@@ -1,6 +1,7 @@
 import {redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/account.orders.$id';
-import {Money, Image} from '@shopify/hydrogen';
+import {Image} from '@shopify/hydrogen';
+import {LocalizedMoney} from '~/components/LocalizedMoney';
 import type {
   OrderLineItemFullFragment,
   OrderQuery,
@@ -146,7 +147,7 @@ export default function OrderRoute() {
                       </span>
                     </T>
                   ) : (
-                    discountValue && <Money data={discountValue!} />
+                    discountValue && <LocalizedMoney data={discountValue!} />
                   )}
                 </td>
               </tr>
@@ -163,7 +164,7 @@ export default function OrderRoute() {
                 </T>
               </th>
               <td>
-                <Money data={order.subtotal!} />
+                <LocalizedMoney data={order.subtotal!} />
               </td>
             </tr>
             <tr>
@@ -176,7 +177,7 @@ export default function OrderRoute() {
                 </T>
               </th>
               <td>
-                <Money data={order.totalTax!} />
+                <LocalizedMoney data={order.totalTax!} />
               </td>
             </tr>
             <tr>
@@ -189,7 +190,7 @@ export default function OrderRoute() {
                 </T>
               </th>
               <td>
-                <Money data={order.totalPrice!} />
+                <LocalizedMoney data={order.totalPrice!} />
               </td>
             </tr>
           </tfoot>
@@ -254,11 +255,11 @@ function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
         </div>
       </td>
       <td>
-        <Money data={lineItem.price!} />
+        <LocalizedMoney data={lineItem.price!} />
       </td>
       <td>{lineItem.quantity}</td>
       <td>
-        <Money data={lineItem.totalDiscount!} />
+        <LocalizedMoney data={lineItem.totalDiscount!} />
       </td>
     </tr>
   );

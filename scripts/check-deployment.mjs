@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {isDeepStrictEqual} from 'node:util';
 
 // Read-only checks: safe to run against either the sample catalog or a linked store.
 const baseUrl = new URL(process.argv[2] || 'http://localhost:3101');
@@ -6,7 +8,8 @@ assert.ok(['http:', 'https:'].includes(baseUrl.protocol), 'Use an HTTP(S) storef
 assert.ok(!baseUrl.username && !baseUrl.password, 'Do not put credentials in the URL');
 const authBypassToken = process.env.OXYGEN_AUTH_BYPASS_TOKEN;
 // Opt in after translated copy lands: CHECK_LOCALIZATION=1 npm run test:deployment -- URL
-const checkLocalization = process.env.CHECK_LOCALIZATION === '1';
+const checkCatalog = process.env.CHECK_CATALOG === '1';
+const checkLocalization = process.env.CHECK_LOCALIZATION === '1' || checkCatalog;
 const oxygenCdnOrigin = 'https://cdn.shopify.com';
 let checks = 0;
 
@@ -94,7 +97,51 @@ function purchaseText(markup) {
   return elementText(form, 'button');
 }
 
-async function localizedChecks(productPath, productTitle) {
+function purchaseInput(markup) {
+  const input = [...markup.matchAll(/<input\b[^>]*>/gi)]
+    .find(([tag]) => /\bname="cartFormInput"/.test(tag))?.[0];
+  const value = input?.match(/\bvalue="([^"]*)"/)?.[1];
+  if (!value) return undefined;
+  try {
+    return JSON.parse(decodeEntities(value));
+  } catch {
+    // Never include a cart payload in a diagnostic.
+    throw new Error('The product purchase input is not valid JSON');
+  }
+}
+
+async function localCatalogs() {
+  const catalogs = {};
+  for (const locale of ['en', 'fr', 'ja']) {
+    try {
+      catalogs[locale] = JSON.parse(await readFile(new URL(`../catalog/${locale}.json`, import.meta.url), 'utf8'));
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw new Error(`Cannot read catalog/${locale}.json`);
+      assert.ok(!checkCatalog, `CHECK_CATALOG requires catalog/${locale}.json; export and translate the catalog first`);
+      catalogs[locale] = {};
+    }
+  }
+  return catalogs;
+}
+
+function expectedCatalogTitle(catalogs, locale, productId, liveEnglish) {
+  const id = /^gid:\/\/shopify\/Product\/([1-9]\d*)$/.exec(productId || '')?.[1];
+  assert.ok(!checkCatalog || id, 'CHECK_CATALOG requires the Shopify product ID in the purchase input');
+  const key = id ? `product_${id}_title` : undefined;
+  const matchesSource = key && catalogs.en[key] === liveEnglish;
+  assert.ok(!checkCatalog || matchesSource, 'Catalog title source must match the live English product; export current catalog content first');
+  if (!matchesSource || locale === 'en') return liveEnglish;
+  const translated = catalogs[locale][key];
+  assert.ok(!checkCatalog || (typeof translated === 'string' && translated.trim()), `CHECK_CATALOG requires a ${locale} title for the selected product`);
+  return typeof translated === 'string' && translated.trim() ? translated : liveEnglish;
+}
+
+async function localizedChecks(productPath, productTitle, englishMarkup) {
+  const catalogs = await localCatalogs();
+  const englishInput = purchaseInput(englishMarkup);
+  const variant = englishInput?.inputs?.lines?.[0]?.selectedVariant;
+  const productId = variant?.product?.id;
+  const liveEnglish = typeof variant?.product?.title === 'string' ? variant.product.title : productTitle;
   const pages = new Map();
   for (const locale of ['en', 'fr', 'ja']) {
     const [home, search, cart, product] = await Promise.all([
@@ -106,18 +153,42 @@ async function localizedChecks(productPath, productTitle) {
     const cartMain = pageMarkup(cart.text);
     assert.doesNotMatch(searchMain, /role="alert"|href="\/products\//, 'Empty search must not contain an error or product result');
     assert.doesNotMatch(cartMain, /Lines(?:Update|Remove)/, 'Locale checks must receive a fresh empty cart');
-    assert.equal(elementText(pageMarkup(product.text), 'h1'), productTitle, 'GT UI localization must preserve the Shopify product title');
+    const productMain = pageMarkup(product.text);
+    const expectedTitle = expectedCatalogTitle(catalogs, locale, productId, liveEnglish);
+    assert.equal(elementText(productMain, 'h1'), expectedTitle.replace(/\s+/g, ' ').trim(), 'Product title must match the current GT catalog translation or its English fallback');
+    const localizedInput = purchaseInput(productMain);
+    if (englishInput || checkCatalog) {
+      assert.ok(localizedInput && isDeepStrictEqual(localizedInput, englishInput), 'Language switching must preserve canonical Shopify variant IDs and purchase inputs');
+    }
+    if (checkCatalog) {
+      const descriptionKey = `product_${productId.split('/').at(-1)}_description`;
+      const sourceDescription = catalogs.en[descriptionKey];
+      // Older exports may omit descriptions. Check them when the exported
+      // English text can be verified against the live product's visible HTML.
+      if (typeof sourceDescription === 'string' && sourceDescription.trim()
+        && textContent(englishMarkup).includes(sourceDescription.replace(/\s+/g, ' ').trim())) {
+        const description = locale === 'en' ? sourceDescription : catalogs[locale][descriptionKey];
+        assert.ok(typeof description === 'string' && description.trim(), `CHECK_CATALOG requires a ${locale} product description`);
+        assert.ok(textContent(productMain).includes(description.replace(/\s+/g, ' ').trim()), `Expected the ${locale} catalog description in initial HTML`);
+      }
+      if (variant?.price?.amount && variant?.price?.currencyCode) {
+        const expectedPrice = new Intl.NumberFormat(locale, {
+          style: 'currency', currency: variant.price.currencyCode,
+        }).format(Number(variant.price.amount)).replace(/\s+/g, ' ').trim();
+        assert.ok(textContent(productMain).includes(expectedPrice), `Expected the ${locale} currency format without changing Shopify's amount or currency`);
+      }
+    }
     const copy = {
       heading: elementText(pageMarkup(home.text), 'h1'),
       search: elementText(searchMain, 'p'),
       cart: elementText(cartMain, 'p'),
-      purchase: purchaseText(pageMarkup(product.text)),
+      purchase: purchaseText(productMain),
     };
     for (const previous of pages.values()) {
       for (const key of Object.keys(copy)) assert.notEqual(copy[key], previous[key], `${locale} ${key} must contain translated copy, not another locale's fallback`);
     }
     pages.set(locale, copy);
-    pass(`${locale} initial HTML, language selector, empty states, and Shopify product title are correct`);
+    pass(`${locale} initial HTML, language selector, empty states, and catalog title are correct${checkCatalog ? '; catalog translations, purchase inputs, and currency checked' : ''}`);
   }
 
   const preference = await get('/', {locale: 'ja', cookie: 'generaltranslation.locale=fr'});
@@ -201,7 +272,7 @@ async function main() {
   assert.doesNotMatch(initialMarkup(cart.text), /Lines(?:Update|Remove)/, 'A fresh visitor must not receive another cart’s line controls');
   pass('A fresh visitor gets an empty cart');
 
-  if (checkLocalization) await localizedChecks(productPath, productTitle);
+  if (checkLocalization) await localizedChecks(productPath, productTitle, productMarkup);
 
   console.log(`\n${checks} deployment checks passed. No cart was changed and no checkout was visited.`);
 }

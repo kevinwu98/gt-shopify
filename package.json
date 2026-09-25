@@ -16,6 +16,10 @@
     "locadex:check": "node scripts/locadex.mjs check",
     "locadex:setup": "node scripts/locadex.mjs auto",
     "locadex:i18n": "node scripts/locadex.mjs i18n",
+    "catalog:sync": "node scripts/catalog.mjs sync",
+    "catalog:status": "node scripts/catalog.mjs status",
+    "catalog:translate": "node scripts/catalog.mjs translate",
+    "catalog:check": "node scripts/catalog.mjs check",
     "test": "node --test tests/*.test.mjs",
     "test:smoke": "node scripts/smoke.mjs",
     "test:deployment": "node scripts/check-deployment.mjs",
@@ -24,6 +28,7 @@
   "prettier": "@shopify/prettier-config",
   "dependencies": {
     "@shopify/hydrogen": "2026.4.5",
+    "generaltranslation": "9.5.0",
     "graphql": "^16.10.0",
     "graphql-tag": "^2.12.6",
     "gt-react": "^11.4.3",

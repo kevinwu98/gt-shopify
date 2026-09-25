@@ -26,6 +26,7 @@ import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
 import gtConfig from '../gt.config.json';
 import loadTranslations from './loadTranslations';
+import {getCatalogDictionaries} from './lib/catalog.server';
 
 initializeGT({
   defaultLocale: gtConfig.defaultLocale,
@@ -97,6 +98,7 @@ export async function loader(args: Route.LoaderArgs) {
     isDemoStore,
     locale,
     translations: await getTranslationsSnapshot(locale),
+    dictionaries: getCatalogDictionaries(locale),
     ...deferredData,
     ...criticalData,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
@@ -169,7 +171,11 @@ export function Layout({children}: {children?: React.ReactNode}) {
   const locale = data?.locale ?? gtConfig.defaultLocale;
 
   return (
-    <GTProvider locale={locale} translations={data?.translations ?? {}}>
+    <GTProvider
+      locale={locale}
+      translations={data?.translations ?? {}}
+      dictionaries={data?.dictionaries ?? {}}
+    >
       <html lang={locale}>
         <head>
           <meta charSet="utf-8" />
