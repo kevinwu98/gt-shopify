@@ -1,0 +1,933 @@
+{
+  "013c24d26065d84f": "Kode kartu hadiah",
+  "01b29c87fe1a4335": {
+    "c": "Rincian barang",
+    "i": 1,
+    "t": "p"
+  },
+  "02e270b06de66d86": "Baris alamat 1",
+  "057ee26b0ada0892": {
+    "c": [
+      "Konfirmasi: ",
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "08f54865b364957d": "Perbarui",
+  "0a526f1ba3d398ce": "Cari…",
+  "0bb02a2d56746f0b": {
+    "c": "Belanja",
+    "i": 1,
+    "t": "NavLink"
+  },
+  "0cdf86f656aa40cf": {
+    "c": "Lanjut ke checkout →",
+    "i": 1,
+    "t": "p"
+  },
+  "0d97f9c66db79593": "Nama depan",
+  "111a44209dc6e701": "Hapus",
+  "13444050c5b513f5": "Halaman keranjang",
+  "13cde4e88e525cdb": {
+    "c": "Kode diskon",
+    "i": 1,
+    "t": "label"
+  },
+  "14f369019b6c3af8": {
+    "c": "Blog",
+    "i": 1,
+    "t": "h1"
+  },
+  "1b1f4ded89fc49db": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": [
+              {
+                "c": "↑",
+                "i": 4,
+                "t": "span"
+              },
+              " Muat sebelumnya"
+            ],
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Memuat…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "PreviousLink"
+  },
+  "2281d9696aa45f4b": "Nomor konfirmasi",
+  "24a85f1488ccabf6": {
+    "c": [
+      {
+        "c": "Kebutuhan sehari-hari",
+        "i": 2,
+        "t": "p"
+      },
+      {
+        "c": [
+          "Pilihan istimewa,",
+          {
+            "i": 4,
+            "t": "br"
+          },
+          "sering dipakai."
+        ],
+        "i": 3,
+        "t": "h1"
+      },
+      {
+        "c": "Mudah dipadupadankan. Favorit yang selalu diandalkan. Temukan gaya khasmu untuk sehari-hari.",
+        "i": 5,
+        "t": "p"
+      },
+      {
+        "c": [
+          "Jelajahi koleksi",
+          {
+            "c": "↗",
+            "i": 7,
+            "t": "span"
+          }
+        ],
+        "i": 6,
+        "t": "Link"
+      },
+      {
+        "c": "Favorit barumu ada di sini.",
+        "i": 8,
+        "t": "p"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "2502493024656b43": "Gunakan kode diskon",
+  "254571787353df73": "Harga",
+  "268a73c2221bfe7a": {
+    "c": "Memuat…",
+    "i": 1,
+    "t": "div"
+  },
+  "28b50cb5c1a73321": [
+    {
+      "c": "Beranda",
+      "i": 1,
+      "t": "NavLink"
+    },
+    {
+      "c": "Belanja",
+      "i": 2,
+      "t": "NavLink"
+    }
+  ],
+  "2a5e86a6abe6eab1": {
+    "c": "Alamat*",
+    "i": 1,
+    "t": "label"
+  },
+  "2a7216b1e497c21d": "Menu",
+  "2b4d1466a534f0ac": {
+    "c": {
+      "c": "Deskripsi",
+      "i": 2,
+      "t": "strong"
+    },
+    "i": 1,
+    "t": "p"
+  },
+  "2c1c93a646bbea6e": "Bahasa",
+  "2e107ae81088ed2c": {
+    "c": "Kode pos*",
+    "i": 1,
+    "t": "label"
+  },
+  "2ea95ade2ae9e528": "Pajak",
+  "2eb39a53ad7f7c34": "Produk",
+  "33db514084afee56": "Kode pos",
+  "3449a50f281a6b4e": "Cari pesanan",
+  "34cd57820252c5e9": {
+    "c": "Diskon",
+    "i": 1,
+    "t": "dt"
+  },
+  "35afbea89ac90df7": "Detail akun",
+  "364a865e64c754e6": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": "Muat lebih banyak ↓",
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Memuat…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "NextLink"
+  },
+  "36d5c5455a2d4887": "Selamat datang, {firstName}",
+  "38a26c59c5663394": {
+    "c": "Kode kartu hadiah",
+    "i": 1,
+    "t": "label"
+  },
+  "396e1ef1666d103e": {
+    "c": [
+      {
+        "c": {
+          "i": 3,
+          "k": "_gt_date_3",
+          "v": "d"
+        },
+        "i": 2,
+        "t": "time"
+      },
+      " ",
+      "·",
+      " ",
+      {
+        "c": {
+          "i": 5,
+          "k": "_gt_value_5",
+          "v": "v"
+        },
+        "i": 4,
+        "t": "address"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "3ae603950d0210bb": {
+    "c": "Hapus",
+    "i": 1,
+    "t": "button"
+  },
+  "3b15dbf95568ddbb": {
+    "c": "Kami tidak dapat memperbarui keranjang Anda.",
+    "i": 1,
+    "t": "p"
+  },
+  "3b28878accf137fb": "Perusahaan",
+  "3b50f848e56731dd": "Terjadi kesalahan yang tidak diketahui",
+  "3b6ab1d5adbd75cf": {
+    "c": "← Kembali ke Kebijakan",
+    "i": 1,
+    "t": "Link"
+  },
+  "3ca8f9aa64e74091": {
+    "c": "Kota*",
+    "i": 1,
+    "t": "label"
+  },
+  "4080d460a50cb87b": {
+    "c": [
+      "Diskon -",
+      {
+        "i": 2,
+        "k": "_gt_n_2",
+        "v": "n"
+      },
+      "%"
+    ],
+    "i": 1,
+    "t": "span"
+  },
+  "457e8505c5212321": {
+    "c": [
+      "Tidak ada hasil untuk ",
+      {
+        "c": {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        "i": 2,
+        "t": "q"
+      }
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "46d1056f38b249eb": {
+    "c": "Sedang mencari produk favorit baru untuk Anda…",
+    "i": 1,
+    "t": "div"
+  },
+  "4b71561e661a9664": "Kurangi jumlah",
+  "4c433b0f79367bbd": [
+    {
+      "c": [
+        "Pesanan ",
+        {
+          "i": 2,
+          "k": "_gt_value_2",
+          "v": "v"
+        }
+      ],
+      "i": 1,
+      "t": "h2"
+    },
+    {
+      "c": [
+        "Dipesan pada ",
+        {
+          "i": 4,
+          "k": "_gt_date_4",
+          "v": "d"
+        }
+      ],
+      "i": 3,
+      "t": "p"
+    }
+  ],
+  "4d25b014c4d42ab9": "Negara bagian/Provinsi",
+  "4f94e7beb32bcd47": {
+    "c": "Total",
+    "i": 1,
+    "t": "p"
+  },
+  "4fc8f086392c0852": {
+    "c": "Negara bagian / Provinsi*",
+    "i": 1,
+    "t": "label"
+  },
+  "508e49336de580a8": "Negara bagian / Provinsi",
+  "52ae50b5476973a0": {
+    "c": [
+      {
+        "c": [
+          {
+            "c": [
+              {
+                "c": {
+                  "c": "GT Supply.",
+                  "i": 5,
+                  "t": "span"
+                },
+                "i": 4,
+                "t": "NavLink"
+              },
+              {
+                "c": "Kebutuhan sehari-hari. Segudang kemungkinan.",
+                "i": 6,
+                "t": "p"
+              }
+            ],
+            "i": 3,
+            "t": "div"
+          },
+          {
+            "c": [
+              {
+                "c": "Lihat semua produk",
+                "i": 8,
+                "t": "NavLink"
+              },
+              {
+                "c": "Keranjang Anda",
+                "i": 9,
+                "t": "NavLink"
+              }
+            ],
+            "i": 7,
+            "t": "nav"
+          }
+        ],
+        "i": 2,
+        "t": "div"
+      },
+      {
+        "c": [
+          {
+            "c": "Perlengkapan pilihan untuk keseharian Anda.",
+            "i": 11,
+            "t": "p"
+          },
+          {
+            "c": {
+              "d": {
+                "b": {
+                  "false": {
+                    "c": "Didukung oleh Shopify.",
+                    "i": 14,
+                    "t": "C14"
+                  },
+                  "true": {
+                    "c": "Toko contoh. Checkout dinonaktifkan.",
+                    "i": 14,
+                    "t": "C14"
+                  }
+                },
+                "t": "b"
+              },
+              "i": 13,
+              "t": "Branch"
+            },
+            "i": 12,
+            "t": "p"
+          }
+        ],
+        "i": 10,
+        "t": "div"
+      }
+    ],
+    "i": 1,
+    "t": "footer"
+  },
+  "53d7c7e2950efbe3": {
+    "c": "Keranjang",
+    "i": 1,
+    "t": "h1"
+  },
+  "544b5660bbe73707": "Kota",
+  "548f9db69b69ff04": "Menambahkan…",
+  "54bad5f1a21abc79": {
+    "c": [
+      "Jumlah: ",
+      {
+        "i": 2,
+        "k": "_gt_n_2",
+        "v": "n"
+      },
+      "   "
+    ],
+    "i": 1,
+    "t": "small"
+  },
+  "54d0addd8ed97a9e": {
+    "c": "Barang ini tidak dapat ditambahkan ke keranjang Anda.",
+    "i": 1,
+    "t": "p"
+  },
+  "5523f9e6e2969b90": {
+    "c": "Lihat Status Pesanan →",
+    "i": 1,
+    "t": "a"
+  },
+  "595027176ad6da7e": "Harga",
+  "5b75ace301c59978": {
+    "c": "Cari",
+    "i": 1,
+    "t": "span"
+  },
+  "5d10339fea0ba689": {
+    "c": "Nama depan",
+    "i": 1,
+    "t": "label"
+  },
+  "5dd8f53dee597d71": {
+    "c": "Hapus",
+    "i": 1,
+    "t": "button"
+  },
+  "5e13fc664cdd09a9": [
+    {
+      "c": "Pesanan  ",
+      "i": 1,
+      "t": "NavLink"
+    },
+    " | ",
+    {
+      "c": "  Profil  ",
+      "i": 2,
+      "t": "NavLink"
+    },
+    " | ",
+    {
+      "c": "  Alamat  ",
+      "i": 3,
+      "t": "NavLink"
+    },
+    " | "
+  ],
+  "6169c607134e14aa": "Menyimpan",
+  "622dac9d25bbd6a6": {
+    "c": "Anda belum menyimpan alamat.",
+    "i": 1,
+    "t": "p"
+  },
+  "66297351c69f7123": {
+    "c": "Toko demo. Checkout dinonaktifkan.",
+    "i": 1,
+    "t": "p"
+  },
+  "68712d01cfab9713": {
+    "c": "Jadikan alamat utama",
+    "i": 1,
+    "t": "label"
+  },
+  "68959eb500bbc8ac": "Kode pos",
+  "69c9ec6286ad234b": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": "↑ Muat sebelumnya",
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Memuat…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "PreviousLink"
+  },
+  "69dcc85af3063c07": "Mencari",
+  "6be86a17d8d0a4d7": "Memperbarui",
+  "6df57099a35b36bb": "Cari produk",
+  "6eb807cd1232e8a8": "Keranjang",
+  "6f69c0102f16d2f9": "Kode negara",
+  "6f9647f746db650d": "Tambah jumlah",
+  "73d59b18dc0d6b0b": {
+    "c": [
+      {
+        "c": "Lebih simpel. Lebih leluasa menikmati hidup.",
+        "i": 2,
+        "t": "p"
+      },
+      {
+        "c": "Temukan gaya sehari-harimu.",
+        "i": 3,
+        "t": "h2"
+      },
+      {
+        "c": "Busana simpel yang bikin siap-siap jadi lebih mudah.",
+        "i": 4,
+        "t": "p"
+      }
+    ],
+    "i": 1,
+    "t": "section"
+  },
+  "74143df1de746e79": {
+    "c": "Pajak",
+    "i": 1,
+    "t": "p"
+  },
+  "74b1e2c17ea2e0f3": "Navigasi utama",
+  "754773f0c6feb550": {
+    "c": "Profil saya",
+    "i": 1,
+    "t": "h2"
+  },
+  "7574a17c6108ffd5": "Gunakan kode kartu hadiah",
+  "762fcce45b65eea9": "Simpan",
+  "7853bd9e23f25bb6": "Total",
+  "7977a585d266cf99": "No. konfirmasi",
+  "7bcf2a20ae3e6b46": {
+    "c": "Informasi pribadi",
+    "i": 1,
+    "t": "legend"
+  },
+  "82720ab23f8e5ee6": {
+    "c": "Alamat pengiriman belum ditentukan",
+    "i": 1,
+    "t": "p"
+  },
+  "86d287aa1993a091": "Tutup",
+  "89ea1163ab8dd8c7": {
+    "c": "Produk",
+    "i": 1,
+    "t": "h2"
+  },
+  "8deb483fdac192cb": {
+    "c": "Fitur pencarian untuk sementara tidak tersedia. Silakan coba lagi.",
+    "i": 1,
+    "t": "p"
+  },
+  "8e5c90de61b63f4e": {
+    "c": "Tambah alamat",
+    "i": 1,
+    "t": "legend"
+  },
+  "8f6eca9e3651152d": {
+    "c": [
+      {
+        "c": [
+          {
+            "c": "Pilihan kami",
+            "i": 3,
+            "t": "p"
+          },
+          {
+            "c": "Pilihan untuk sehari-hari",
+            "i": 4,
+            "t": "h2"
+          }
+        ],
+        "i": 2,
+        "t": "div"
+      },
+      {
+        "c": [
+          "Lihat semua produk",
+          {
+            "c": "↗",
+            "i": 6,
+            "t": "span"
+          }
+        ],
+        "i": 5,
+        "t": "Link"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "915dc556e9bef529": {
+    "c": "Nama belakang*",
+    "i": 1,
+    "t": "label"
+  },
+  "930286395738f98e": {
+    "c": "Perusahaan",
+    "i": 1,
+    "t": "label"
+  },
+  "9494f23145fcc12d": "Navigasi bagian bawah",
+  "99b547a01cbbe1d8": "Jumlah",
+  "9e073b20d365838e": {
+    "c": [
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      },
+      ": ",
+      {
+        "i": 3,
+        "k": "_gt_value_3",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "small"
+  },
+  "9ea94e412590f53d": "Nomor telepon",
+  "9ead38f30992e131": {
+    "c": "Total",
+    "i": 1,
+    "t": "h4"
+  },
+  "9eeb5ee589d08542": "Keranjang",
+  "9fa2a817f1e9b55b": "Nama belakang",
+  "a2eb15fbca9406b0": {
+    "c": [
+      {
+        "i": 2,
+        "t": "span"
+      },
+      {
+        "c": "Toko contoh",
+        "i": 3,
+        "t": "p"
+      },
+      {
+        "c": "/",
+        "i": 4,
+        "t": "span"
+      },
+      {
+        "c": "Temukan favoritmu berikutnya.",
+        "i": 5,
+        "t": "p"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
+  "a6acc9b9d54dc8ab": {
+    "c": [
+      "Lihat semua hasil untuk ",
+      {
+        "c": {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        },
+        "i": 2,
+        "t": "q"
+      },
+      " →"
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "a7fd7cad363a7198": {
+    "c": "Kode negara*",
+    "i": 1,
+    "t": "label"
+  },
+  "a8c1703d8a8cd727": {
+    "c": [
+      "Rincian barang dengan ",
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "p"
+  },
+  "ab8adec6e0f4cc95": "Kartu hadiah",
+  "ad085d614979e97a": "Barang di keranjang",
+  "ad5cf4639d0bae3f": {
+    "c": "Halaman",
+    "i": 1,
+    "t": "h2"
+  },
+  "ae42a2b2828b1848": {
+    "c": "Memuat keranjang…",
+    "i": 1,
+    "t": "p"
+  },
+  "b48dcb5b683e32b9": {
+    "c": "Alamat Pengiriman",
+    "i": 1,
+    "t": "h3"
+  },
+  "b548104df484699e": {
+    "c": "Filter Pesanan",
+    "i": 1,
+    "t": "legend"
+  },
+  "b6dc0e92f64cc505": "Baris alamat 1*",
+  "bba7e42194614be4": "Habis terjual",
+  "bbecac783d914b1d": "Buat",
+  "bf36824919f2a3d1": "Gambar produk",
+  "c07ebbe8ea1d9262": {
+    "c": [
+      " ",
+      {
+        "c": "Keluar",
+        "i": 2,
+        "t": "button"
+      }
+    ],
+    "i": 1,
+    "t": "Form"
+  },
+  "c0dc347278df9357": "Kode diskon",
+  "c28ebfaf2972a07b": {
+    "c": "Alamat",
+    "i": 1,
+    "t": "h2"
+  },
+  "c45a9109c05e9dab": "Hapus kartu hadiah dengan akhiran {lastCharacters}",
+  "c4e2b654be6de234": {
+    "c": "Kartu hadiah yang digunakan",
+    "i": 1,
+    "t": "dt"
+  },
+  "c5fdbd164f577b65": "Selamat datang di akun Anda.",
+  "c9ff886ef7712e7b": "No. pesanan",
+  "cac66e3632bcd05e": "Hapus diskon",
+  "cce0fabcbb06ec2f": "Nomor pesanan",
+  "ccf22e4e15312880": {
+    "c": {
+      "d": {
+        "b": {
+          "false": {
+            "c": [
+              "Muat lebih banyak ",
+              {
+                "c": "↓",
+                "i": 4,
+                "t": "span"
+              }
+            ],
+            "i": 3,
+            "t": "span"
+          },
+          "true": {
+            "c": "Memuat…",
+            "i": 3,
+            "t": "C3"
+          }
+        },
+        "t": "b"
+      },
+      "i": 2,
+      "t": "Branch"
+    },
+    "i": 1,
+    "t": "NextLink"
+  },
+  "d0617f03f8e31553": {
+    "c": "Nama belakang",
+    "i": 1,
+    "t": "label"
+  },
+  "d09121888850ce06": {
+    "c": "Koleksi",
+    "i": 1,
+    "t": "h5"
+  },
+  "d568c6114a797c78": "Negara",
+  "d6bdb703a75da170": "Membuat",
+  "da3e10dda5ea4c5b": [
+    {
+      "c": "Anda belum pernah memesan.",
+      "i": 1,
+      "t": "p"
+    },
+    {
+      "i": 2,
+      "t": "br"
+    },
+    {
+      "c": {
+        "c": "Mulai Belanja →",
+        "i": 4,
+        "t": "Link"
+      },
+      "i": 3,
+      "t": "p"
+    }
+  ],
+  "da49b8271b9dffa0": "Hapus",
+  "db5042a9d04fe5c7": {
+    "c": "Alamat tersimpan",
+    "i": 1,
+    "t": "legend"
+  },
+  "de2dbe5fab61d0c3": {
+    "c": "Subtotal",
+    "i": 1,
+    "t": "dt"
+  },
+  "e0012dac5e86934b": {
+    "c": "Nama depan*",
+    "i": 1,
+    "t": "label"
+  },
+  "e0b4460d13982a86": {
+    "c": "Status",
+    "i": 1,
+    "t": "h3"
+  },
+  "e17cd2600d6bf447": {
+    "c": "Kebijakan",
+    "i": 1,
+    "t": "h1"
+  },
+  "e321d312eb7386a8": "Terapkan",
+  "e4c79046b2d1eb03": "Diskon",
+  "e64f4221ae48cef8": {
+    "c": "Koleksi ini tidak dapat dimuat. Silakan coba lagi.",
+    "i": 1,
+    "t": "p"
+  },
+  "eb59bda30418bc0f": {
+    "c": "Baris alamat 2",
+    "i": 1,
+    "t": "label"
+  },
+  "eba6f410ffc4c9f8": "Menghapus",
+  "ee3e8bd8b7918aec": "Cari",
+  "efe83cd60db1efec": "Panel keranjang geser",
+  "f07199bfab840857": {
+    "c": "Artikel",
+    "i": 1,
+    "t": "h2"
+  },
+  "f2331e3b325286cb": [
+    {
+      "i": 1,
+      "t": "br"
+    },
+    {
+      "c": "Keranjang Anda masih kosong. Yuk, cari barang yang Anda suka.",
+      "i": 2,
+      "t": "p"
+    },
+    {
+      "i": 3,
+      "t": "br"
+    },
+    {
+      "c": "Lanjutkan belanja →",
+      "i": 4,
+      "t": "Link"
+    }
+  ],
+  "f28fdbd66fc9795b": "Tambahkan ke keranjang",
+  "f33d90c0974194b5": {
+    "c": "Nomor telepon",
+    "i": 1,
+    "t": "label"
+  },
+  "f3e567bdfc789496": {
+    "c": "Lihat Pesanan →",
+    "i": 1,
+    "t": "Link"
+  },
+  "f465cf3bb3f6b9d5": {
+    "c": "Tidak ada hasil. Coba kata kunci lain.",
+    "i": 1,
+    "t": "p"
+  },
+  "f4e32ec497c1d21f": {
+    "c": "Ups",
+    "i": 1,
+    "t": "h1"
+  },
+  "fa1ea463c2ce0c8b": [
+    {
+      "c": "Tidak ada pesanan yang sesuai dengan pencarian Anda.",
+      "i": 1,
+      "t": "p"
+    },
+    {
+      "i": 2,
+      "t": "br"
+    },
+    {
+      "c": {
+        "c": "Hapus filter →",
+        "i": 4,
+        "t": "Link"
+      },
+      "i": 3,
+      "t": "p"
+    }
+  ],
+  "fda8bbb4a0ef6d51": "Baris alamat 2"
+}
