@@ -2,7 +2,8 @@
   "name": "gt-shopify",
   "private": true,
   "sideEffects": [
-    "**/*.css"
+    "**/*.css",
+    "./app/lib/gt.ts"
   ],
   "version": "2026.4.6",
   "type": "module",
@@ -20,6 +21,11 @@
     "catalog:status": "node scripts/catalog.mjs status",
     "catalog:translate": "node scripts/catalog.mjs translate",
     "catalog:check": "node scripts/catalog.mjs check",
+    "shopify-catalog:export": "node scripts/shopify-catalog.mjs export",
+    "shopify-catalog:translate": "node scripts/shopify-catalog.mjs translate",
+    "shopify-catalog:plan": "node scripts/shopify-catalog.mjs plan",
+    "shopify-catalog:apply": "node scripts/shopify-catalog.mjs apply",
+    "shopify-catalog:status": "node scripts/shopify-catalog.mjs status",
     "test": "node --test tests/*.test.mjs",
     "test:smoke": "node scripts/smoke.mjs",
     "test:deployment": "node scripts/check-deployment.mjs",

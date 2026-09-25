@@ -16,6 +16,7 @@ import {parseLocale, T} from 'gt-react';
 import {useCatalog} from '~/lib/useCatalog';
 import {catalogKey} from '~/lib/catalogKeys';
 import {getCatalogText} from '~/lib/catalog.server';
+import {getCatalogDelivery} from '~/lib/commerceLocale';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
@@ -65,11 +66,14 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
 
   return {
     product,
-    localizedTitle: getCatalogText(
-      parseLocale(request),
-      catalogKey(product.id, 'title'),
-      product.title,
-    ),
+    localizedTitle:
+      getCatalogDelivery(context.env.GT_CATALOG_DELIVERY) === 'shopify'
+        ? product.title
+        : getCatalogText(
+            parseLocale(request),
+            catalogKey(product.id, 'title'),
+            product.title,
+          ),
   };
 }
 

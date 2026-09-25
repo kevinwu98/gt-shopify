@@ -14,7 +14,6 @@ import {
   GTProvider,
   T,
   getTranslationsSnapshot,
-  initializeGT,
   parseLocale,
   useGT,
 } from 'gt-react';
@@ -25,14 +24,9 @@ import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from './components/PageLayout';
 import gtConfig from '../gt.config.json';
-import loadTranslations from './loadTranslations';
 import {getCatalogDictionaries} from './lib/catalog.server';
-
-initializeGT({
-  defaultLocale: gtConfig.defaultLocale,
-  locales: gtConfig.locales,
-  loadTranslations,
-});
+import {getCatalogDelivery} from './lib/commerceLocale';
+import './lib/gt';
 
 export type RootLoader = typeof loader;
 
@@ -93,12 +87,14 @@ export async function loader(args: Route.LoaderArgs) {
   const isDemoStore = !env.PUBLIC_STORE_DOMAIN || env.PUBLIC_STORE_DOMAIN === 'hydrogen-preview.myshopify.com';
 
   const locale = parseLocale(args.request);
+  const catalogDelivery = getCatalogDelivery(env.GT_CATALOG_DELIVERY);
 
   return {
     isDemoStore,
     locale,
     translations: await getTranslationsSnapshot(locale),
-    dictionaries: getCatalogDictionaries(locale),
+    catalogDelivery,
+    dictionaries: getCatalogDictionaries(locale, catalogDelivery),
     ...deferredData,
     ...criticalData,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,

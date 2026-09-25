@@ -3,6 +3,11 @@
 This workflow belongs to the original `kevinwu98/gt-shopify` POC. The separate
 `gt-shopify-public` starter is unchanged.
 
+This is the original small-catalog dictionary demo. The next-stage
+[Shopify catalog connector](SHOPIFY-CATALOG.md) writes translations into Shopify
+instead, and the [Hydrogen recipe](HYDROGEN-INTEGRATION.md) explains how that
+fits a reusable merchant integration. Choose one catalog delivery mode.
+
 Shopify supplies the English catalog and live commerce data. A local script
 exports product titles, plain-text descriptions, and option labels; GT translates
 that text into French and Japanese. The storefront renders the resulting

@@ -1,6 +1,7 @@
 import english from '../../catalog/en.json';
 import french from '../../catalog/fr.json';
 import japanese from '../../catalog/ja.json';
+import type {CatalogDelivery} from './commerceLocale';
 
 type Catalog = Record<string, string>;
 type CatalogDictionary = Record<string, [string, {$format: 'STRING'}]>;
@@ -17,7 +18,11 @@ function dictionary(entries: Catalog): CatalogDictionary {
 }
 
 /** Include English fallback and only the active language in the SSR payload. */
-export function getCatalogDictionaries(locale: string) {
+export function getCatalogDictionaries(
+  locale: string,
+  delivery: CatalogDelivery = 'dictionary',
+): Record<string, CatalogDictionary> {
+  if (delivery === 'shopify') return {};
   const dictionaries: Record<string, CatalogDictionary> = {en: dictionary(source)};
   if (locale !== 'en') {
     const target = targets[locale] ?? {};

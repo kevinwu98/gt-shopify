@@ -14,6 +14,8 @@ test-results/
 *.log
 !.env.locadex.example
 !.env.catalog.example
+!.env.shopify-catalog.example
+.shopify-catalog/
 *.tsbuildinfo
 .locadex/
 h2_deploy_log.json
