@@ -11,3 +11,11 @@ After importing into a different store, run `npm run catalog:sync`, `npm run cat
 ## Visual system
 
 Based on the [Proto brand canon](https://www.prototemplate.com/docs/brand) and [Glyphfield](https://www.glyphfield.com/): Inter, ink `#070707`, white, titanium hairlines, blue `#2f5ce0`, square geometry, a monochrome GT monogram, and restrained heading weights. Inter is self-hosted under the adjacent SIL Open Font License. The monogram is GT's existing asset, not a redrawn logo.
+
+## Great Things black catalog
+
+`shopify-gt-black.csv` updates the same eight handles to 27 black-only size variants. It preserves sample USD prices and untracked inventory. Import with **Overwrite products with matching handles** enabled. The GT Supply Demo import retained its existing channel publications; confirm Hydrogen publication after importing into another store. Snowboards remain in Shopify but are excluded from the GT Supply Demo Hydrogen publication.
+
+The black apparel images are AI-generated demo mockups based on Shopify sample photography and GT’s existing logo. They are not photographs of manufactured GT merchandise. Optimized originals live in `public/products/gt-black/`; the CSV references the immutable Oxygen CDN deployment where those files were published. Shopify copies these into product media during import. Both product and variant images point to the branded image. Existing product handles intentionally remain stable.
+
+After import, run the catalog sync, translation, and check commands above to translate the new titles, descriptions, and Black option using GT.
