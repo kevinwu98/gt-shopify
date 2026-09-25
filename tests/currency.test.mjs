@@ -28,7 +28,13 @@ const {LocalizedMoney} = await import(
   `data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`
 );
 
-initializeGT({defaultLocale: 'en', locales: ['fr', 'ja']});
+const gtConfig = JSON.parse(
+  await readFile(new URL('../gt.config.json', import.meta.url), 'utf8'),
+);
+initializeGT({
+  defaultLocale: gtConfig.defaultLocale,
+  locales: gtConfig.locales,
+});
 
 function renderPrice(locale, data) {
   return renderToStaticMarkup(
@@ -63,6 +69,20 @@ test('the Shopify currency code controls currency digits, not the selected langu
     '<span>$0.00</span>',
   );
 });
+
+for (const {locale, currencyCode, expected} of [
+  {locale: 'fr', currencyCode: 'EUR', expected: '<span>1\u202f234,56\u00a0€</span>'},
+  {locale: 'ja', currencyCode: 'JPY', expected: '<span>￥1,235</span>'},
+  {locale: 'ko', currencyCode: 'KRW', expected: '<span>₩1,235</span>'},
+  {locale: 'id', currencyCode: 'IDR', expected: '<span>Rp\u00a01.235</span>'},
+]) {
+  test(`GT renders Shopify ${currencyCode} in ${locale} with the correct currency digits`, () => {
+    const price = Object.freeze({amount: '1234.56', currencyCode});
+
+    assert.equal(renderPrice(locale, price), expected);
+    assert.deepEqual(price, {amount: '1234.56', currencyCode});
+  });
+}
 
 test('an incomplete optimistic cart cost stays empty instead of becoming NaN or USD', () => {
   assert.equal(renderPrice('fr', {}), '');

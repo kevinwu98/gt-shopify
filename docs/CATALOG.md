@@ -141,29 +141,28 @@ CI checks that every configured catalog language is complete.
 
 ## Changing the currency
 
-Language controls text and number formatting. The country selector in the header
-controls Shopify's market prices independently. Choose a country and press
-**Update**. The choice is kept in the signed session; existing carts update their
-buyer country before the choice is saved, and new carts inherit it. GT formats
-the amount and currency Shopify returns. No exchange rate is calculated in GT.
+The storefront has a language selector and no visible country/currency selector.
+Language controls text and currency formatting; Shopify's market context controls
+the amount and currency returned by product and cart queries. Existing signed
+market preferences remain supported; a new visitor currently defaults to US.
+No automatic location detection or language-to-country mapping is enabled.
+
+Hydrogen's [`Money`](https://shopify.dev/docs/api/hydrogen/latest/components/money)
+component formats a Shopify `MoneyV2` amount/currency using its locale context.
+It does not convert currencies. This GT demonstration uses `gt-react`'s
+`Currency` for that rendering step, with the active GT language. It preserves
+Shopify's amount and currency code across products, search, carts, and orders.
+Regression coverage includes EUR/French, JPY/Japanese, KRW/Korean, and
+IDR/Indonesian, including each currency's fractional-digit conventions.
 
 The linked **GT Supply Demo** store currently exposes United States and Canada,
-both priced in USD. Adding the selector does not change those merchant settings.
-To enable another currency:
-
-1. Open **Shopify Admin → Markets** and select the market (or create one for
-   France, Japan, South Korea, or Indonesia).
-2. Include the intended country and activate the market, with products and
-   shipping configured for it.
-3. Under **Currency**, click **Add currency customization**, choose the currency
-   (EUR, JPY, KRW, or IDR as appropriate), and save the market.
-4. Reload the storefront. Shopify's available-country list supplies the selector
-   options and currency codes, so changing Markets does not require a code edit.
-5. Select the market, then check a product and the cart before checkout. Country
-   changes can change product availability as well as the price/currency.
-
-Any additional Shopify payment-provider or account setup shown by Admin must be
-completed in Shopify. Never replace just the currency code on a USD amount.
+both priced in USD. Seeing dollars is therefore expected. To offer another
+currency, configure the country and currency in **Shopify Admin → Markets →
+market → Currency → Add currency customization**, then use that country as
+Hydrogen's market context and the cart buyer country together. Configuring a
+currency alone does not select that market for a visitor. The retained market
+backend can perform a coordinated change; the storefront no longer exposes a
+manual control for it. Automatic country detection would be a separate choice.
 
 See [Shopify Markets for Hydrogen](https://shopify.dev/docs/storefronts/headless/hydrogen/markets).
 
