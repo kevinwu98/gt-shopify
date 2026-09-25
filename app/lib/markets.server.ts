@@ -1,4 +1,4 @@
-import type {HydrogenCart, HydrogenSession, Storefront} from '@shopify/hydrogen';
+import {cartSetIdDefault, type HydrogenCart, type HydrogenSession, type Storefront} from '@shopify/hydrogen';
 import type {Country, CountryCode} from '@shopify/hydrogen/storefront-api-types';
 
 export type MarketCountry = Pick<Country, 'isoCode' | 'name'> & {
@@ -63,7 +63,7 @@ function safeReturnTo(value: FormDataEntryValue | null, requestUrl: URL) {
 type MarketContext = {
   storefront: Storefront;
   session: Pick<HydrogenSession, 'set'>;
-  cart: Pick<HydrogenCart, 'getCartId' | 'updateBuyerIdentity' | 'setCartId'>;
+  cart: Pick<HydrogenCart, 'get' | 'getCartId' | 'updateBuyerIdentity' | 'setCartId'>;
 };
 
 function failure(error: string, status: number) {
@@ -105,11 +105,20 @@ export async function changeMarket(request: Request, context: MarketContext) {
   // without a cart. Their first cart inherits buyerIdentity from the context.
   if (context.cart.getCartId()) {
     try {
-      const result = await context.cart.updateBuyerIdentity({countryCode: selected.isoCode});
-      if (result.errors?.length || result.userErrors?.length || !result.cart?.id) {
+      const existing = await context.cart.get();
+      if (existing === null) {
+        // Expired carts (including cookies from another linked store) have no
+        // cart to update. Clear that ID so the next add creates a usable cart.
+        headers = cartSetIdDefault({maxage: 0})('');
+      } else if (!existing?.id || existing.errors?.length) {
         return failure('Your cart could not be updated for this country or region. Please try again.', 502);
+      } else {
+        const result = await context.cart.updateBuyerIdentity({countryCode: selected.isoCode});
+        if (result.errors?.length || result.userErrors?.length || !result.cart?.id) {
+          return failure('Your cart could not be updated for this country or region. Please try again.', 502);
+        }
+        headers = context.cart.setCartId(result.cart.id);
       }
-      headers = context.cart.setCartId(result.cart.id);
     } catch {
       return failure('Your cart could not be updated for this country or region. Please try again.', 502);
     }

@@ -84,7 +84,7 @@ npm run dev -- --port 3130
 ```
 
 Open [the original POC preview](http://localhost:3130/) and use the language
-selector. It includes English, Français, 日本語, 한국어, and Bahasa Indonesia. Restart an already-running dev server if it does
+selector. It includes English, French, Japanese, Korean, and Indonesian. Restart an already-running dev server if it does
 not pick up the generated JSON.
 
 Check the same product on the home/collection page, product detail, search

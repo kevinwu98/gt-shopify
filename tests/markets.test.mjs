@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {test} from 'node:test';
+import {cartGetIdDefault} from '@shopify/hydrogen';
 import ts from 'typescript';
 import {AppSession} from '../app/lib/session.ts';
 import {changeMarket, getMarketCountry, getMarkets, MARKET_QUERY} from '../app/lib/markets.server.ts';
@@ -18,7 +19,8 @@ function request(fields = {}, headers = {Origin: origin}) {
   });
 }
 
-function context({cartId, queryResult, result, queryError, cartError} = {}) {
+function context({cartId, queryResult, result, queryError, cartError,
+  readResult = {id: cartId, totalQuantity: 1, lines: {nodes: [{id: 'line-1', quantity: 1}]}}, readError} = {}) {
   const events = [];
   const ctx = {
     events,
@@ -34,6 +36,11 @@ function context({cartId, queryResult, result, queryError, cartError} = {}) {
     },
     cart: {
       getCartId: () => cartId,
+      get: async () => {
+        events.push(['read-cart']);
+        if (readError) throw readError;
+        return readResult;
+      },
       updateBuyerIdentity: async (identity) => {
         events.push(['buyer', identity]);
         if (cartError) throw cartError;
@@ -87,10 +94,48 @@ test('an existing cart buyer country is updated before the session, preserving i
   assert.equal(response.headers.get('Location'), '/cart?view=full#items');
   assert.match(response.headers.get('Set-Cookie'), /^cart=updated/);
   assert.deepEqual(ctx.events.slice(1), [
+    ['read-cart'],
     ['buyer', {countryCode: 'CA'}],
     ['cart-cookie', 'gid://shopify/Cart/updated'],
     ['session', 'country', 'CA'],
   ]);
+});
+
+test('an expired cart permits a market change and clears its stale cookie without a cart mutation', async () => {
+  const ctx = context({cartId: 'gid://shopify/Cart/expired', readResult: null});
+  const response = await changeMarket(request(), ctx);
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get('Location'), '/products/shirt?Size=M');
+  const cookie = response.headers.get('Set-Cookie');
+  assert.match(cookie, /^cart=;/);
+  assert.match(cookie, /Max-Age=0/i);
+  assert.match(cookie, /Path=\//i);
+  assert.equal(cartGetIdDefault(new Headers({Cookie: cookie.split(';')[0]}))(), undefined);
+  assert.deepEqual(ctx.events.slice(1), [['read-cart'], ['session', 'country', 'CA']]);
+});
+
+test('an existing empty cart is updated rather than discarded', async () => {
+  const ctx = context({cartId: 'existing', readResult: {id: 'existing', totalQuantity: 0, lines: {nodes: []}}});
+  const response = await changeMarket(request(), ctx);
+  assert.equal(response.status, 303);
+  assert.match(response.headers.get('Set-Cookie'), /^cart=updated/);
+  assert.ok(ctx.events.some(([event]) => event === 'buyer'));
+});
+
+test('cart lookup failures preserve the cart and market instead of treating them as expired', async () => {
+  for (const options of [
+    {readError: new Error('private read error')},
+    {readResult: {errors: [{message: 'private read error'}]}},
+    {readResult: {id: 'existing', totalQuantity: 2, errors: [{message: 'private read error'}]}},
+    {readResult: {}},
+  ]) {
+    const ctx = context({cartId: 'existing', ...options});
+    const response = await changeMarket(request(), ctx);
+    assert.equal(response.status, 502);
+    assert.equal(response.headers.get('Set-Cookie'), null);
+    assert.deepEqual(ctx.events.slice(1), [['read-cart']]);
+    assert.ok(!(await response.text()).includes('private read error'));
+  }
 });
 
 test('unavailable countries and invalid form values cannot change the session or cart', async () => {
