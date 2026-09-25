@@ -163,23 +163,27 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
+  const data = useRouteLoaderData<RootLoader>('root');
+  const locale = data?.locale ?? gtConfig.defaultLocale;
 
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="stylesheet" href={resetStyles}></link>
-        <link rel="stylesheet" href={appStyles}></link>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        {children}
-        <ScrollRestoration nonce={nonce} />
-        <Scripts nonce={nonce} />
-      </body>
-    </html>
+    <GTProvider locale={locale} translations={data?.translations ?? {}}>
+      <html lang={locale}>
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          <link rel="stylesheet" href={resetStyles}></link>
+          <link rel="stylesheet" href={appStyles}></link>
+          <Meta />
+          <Links />
+        </head>
+        <body>
+          {children}
+          <ScrollRestoration nonce={nonce} />
+          <Scripts nonce={nonce} />
+        </body>
+      </html>
+    </GTProvider>
   );
 }
 
@@ -191,17 +195,15 @@ export default function App() {
   }
 
   return (
-    <GTProvider locale={data.locale} translations={data.translations}>
-      <Analytics.Provider
-        cart={data.cart}
-        shop={data.shop}
-        consent={data.consent}
-      >
-        <PageLayout {...data}>
-          <Outlet />
-        </PageLayout>
-      </Analytics.Provider>
-    </GTProvider>
+    <Analytics.Provider
+      cart={data.cart}
+      shop={data.shop}
+      consent={data.consent}
+    >
+      <PageLayout {...data}>
+        <Outlet />
+      </PageLayout>
+    </Analytics.Provider>
   );
 }
 

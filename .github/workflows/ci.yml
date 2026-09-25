@@ -1,4 +1,4 @@
-name: English storefront checks
+name: Storefront checks
 
 on:
   push:
