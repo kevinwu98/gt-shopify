@@ -1,8 +1,8 @@
-# GT Supply — English Hydrogen storefront
+# GT Supply — Hydrogen localization demo
 
-A Shopify Hydrogen sample storefront prepared as an **English-only starting point for running Locadex**. It uses Hydrogen 2026.4.5, React Router 7.16.0, and React 18. The application has no GT SDK integration, translation wrappers, GT configuration, translation files, or language routing.
+A Shopify Hydrogen storefront on Oxygen with a GT dashboard and Locadex localization workflow. It uses Hydrogen 2026.4.5, React Router 7.16.0, React 18, and `gt-react`. English is the source language; French and Japanese are the target languages. GT handles interface copy, while Shopify supplies products, variants, prices, search, cart, and checkout.
 
-The source contains ordinary English interface copy across the home page, navigation, product and collection browsing, search, cart, loading/error states, and accessibility labels. Locadex can configure and internationalize that code when you run it.
+The [Demos / gt-shopify GT project](https://dash.generaltranslation.com/en-US/project/prj_l3zra1ucz2hgr1esdfq0tlxi) is connected to GitHub with three localization automations. [Setup PR #2](https://github.com/kevinwu98/gt-shopify/pull/2) merged as `f91b4d2`. [Code-generation PR #3](https://github.com/kevinwu98/gt-shopify/pull/3) contains internationalized copy and French/Japanese catalogs covering 148 entries. Its local runtime passed nine unit tests, 17 smoke checks, and 12 localized deployment-check groups. See [docs/LOCADEX.md](docs/LOCADEX.md) for the ongoing workflow.
 
 ## Run locally
 
@@ -10,19 +10,20 @@ Use a current Node.js 22 or 24 release (Node 24 recommended) and npm.
 
 ```bash
 npm ci
-cp .env.example .env
+test -f .env || cp .env.example .env
 npm run dev -- --port 3100
 ```
 
 Open [http://localhost:3100](http://localhost:3100).
 
-`.env.example` connects to Shopify's public `hydrogen-preview.myshopify.com` demo catalog using the public Storefront token published in [Shopify's demo-store repository](https://github.com/Shopify/hydrogen-demo-store/blob/main/.env). Products, images, variants, prices, search, and cart operations come from Shopify's Storefront API. The store uses the US market. Internet access is required; the included session secret is for local development.
+For a new checkout, `.env.example` connects to Shopify's public `hydrogen-preview.myshopify.com` demo catalog using the public Storefront token published in [Shopify's demo-store repository](https://github.com/Shopify/hydrogen-demo-store/blob/main/.env). The command above preserves an existing `.env`, including credentials pulled from the linked store. Products, images, variants, prices, search, and cart operations come from Shopify's Storefront API. The store uses the US market. Internet access is required; the included session secret is for local development.
 
-Browse the catalog, select a product variant, search for products, and add/update/remove cart items. **Checkout is disabled** for this sample store. Customer accounts are outside this demo's scope.
+Browse the catalog, select a product variant, search for products, and add/update/remove cart items. **Checkout is disabled for the shared public sample store.** The deployed GT Supply Demo store has a working Shopify test-checkout handoff. Customer accounts are outside this demo's scope.
 
 ## Build and check
 
 ```bash
+npm run lint
 npm run typecheck
 npm test
 npm run build
@@ -33,32 +34,27 @@ The production preview runs at [http://localhost:3101](http://localhost:3101). I
 
 ```bash
 npm run test:smoke
+CHECK_LOCALIZATION=1 npm run test:deployment -- http://localhost:3101
 ```
 
 The smoke script uses Node built-ins and needs no browser installation. It checks the storefront and exercises a sample cart without checking out; cart mutations are restricted to Shopify's demo store. Use `SMOKE_BASE_URL=http://localhost:3100 npm run test:smoke` to target the development server instead. `npm run preview` rebuilds before starting a preview server.
 
-The English-only baseline has four search-recovery regression tests and 14 commerce smoke checks. `npm run test:deployment -- https://your-storefront.example` adds seven read-only checks for English server rendering, JavaScript/CSS delivery, published products, search, and an empty visitor cart. This HTTP check needs an unprotected URL; inspect login-protected Oxygen previews in a signed-in browser.
+The suite contains nine regression tests and 17 commerce/locale smoke checks. The read-only deployment checker runs seven default-English groups; `CHECK_LOCALIZATION=1` extends this to 12 groups, checking translated initial HTML, language controls, search/cart empty states, unchanged Shopify product titles, cookie preference, and request isolation. Enable the localized checks after translation catalogs are present. For protected Oxygen previews, provide a private `OXYGEN_AUTH_BYPASS_TOKEN` for the exact deployment URL; see [docs/OXYGEN.md](docs/OXYGEN.md). Do not commit or log the token.
 
-GitHub Actions runs lint, typechecking, regression tests, the production build, and both smoke suites against Shopify's public sample catalog. Vite is pinned to 7.3.6, which is supported by this Hydrogen release and produces the bundle-analysis artifacts expected by the pinned Shopify CLI.
+GitHub Actions runs lint, typechecking, regression tests, the production build, and both smoke suites against Shopify's public sample catalog, with `CHECK_LOCALIZATION=1` enabled for the deployment checker. Vite is pinned to 7.3.6, which is supported by this Hydrogen release and produces the bundle-analysis artifacts expected by the pinned Shopify CLI.
 
 Browser automation can modify the favicon and document before React hydrates. The developer console confirms a `data-codex-favicon-badge` mismatch in controlled Chrome tabs, followed by hydration recovery. The application contains no automation-specific workaround. Verify the final preview in a normal browser tab as well as with the HTTP checks.
 
-## Deploy the English baseline to Oxygen
+## Oxygen deployment
 
-See [docs/OXYGEN.md](docs/OXYGEN.md) for the development-store setup, GitHub connection, environment configuration, and deployment checks. The application remains English-only throughout this deployment milestone.
+Open [GT Supply Demo on Oxygen](https://gt-supply-demo-d4eecb57c0a4e7a633e0.o2.myshopify.dev/). GitHub deploys repository changes automatically. This development store requires store login; the URL is not a public demo. The verified English checkpoint before localization is [`f77447c`](https://github.com/kevinwu98/gt-shopify/commit/f77447c).
 
-## Run Locadex yourself
+See [docs/OXYGEN.md](docs/OXYGEN.md) for the development-store setup, GitHub connection, environment configuration, and deployment checks. Product browsing, variants, search, cart changes, reload persistence, and Shopify test-checkout handoff have been verified. No order was placed.
 
-The optional wrapper uses an existing internal Locadex core checkout and credentials in the ignored `.env.locadex` file. **Provider credentials are not configured and no actual Locadex run has been performed.**
+## Work with Locadex
 
-After configuring it as described in [docs/LOCADEX.md](docs/LOCADEX.md):
+The existing project targets `kevinwu98/gt-shopify`, directory `.`, framework **React Router**, and locales `en`, `fr`, and `ja`. Generate code runs on PR changes; Generate translations and push runs on commits to `main`; Keep locales in sync runs manually. Auto-merge is disabled. Review generated PRs and run the checks above before merging.
 
-```bash
-npm run locadex:check
-npm run locadex:setup
-npm run locadex:i18n
-```
+The language selector persists a locale cookie and reloads the current URL. Server rendering uses that preference, then `Accept-Language`, then English; URLs and Shopify's EN/US market context remain unchanged. GT translates authored interface copy; Shopify owns catalog translations and markets. The [Locadex guide](docs/LOCADEX.md) covers integration constraints, automation settings, and an optional internal wrapper.
 
-Run setup first: this baseline has raw English source and no GT integration. Setup prepares the application; the separate i18n step marks its interface copy. Shopify-owned product content remains distinct from strings authored in this codebase.
-
-This is a local storefront baseline for a technical demonstration, not a merchant customer reference or a completed localization proof. It has not been deployed to Oxygen.
+This is a technical demonstration, not a merchant customer reference. Completing the localization proof requires passing the localized Oxygen checks and browser commerce flow.

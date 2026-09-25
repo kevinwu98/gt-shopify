@@ -37,6 +37,8 @@ jobs:
           exit 1
       - run: npm run test:smoke
       - run: npm run test:deployment
+        env:
+          CHECK_LOCALIZATION: '1'
       - name: Show preview logs on failure
         if: failure()
         run: cat "$RUNNER_TEMP/hydrogen-preview.log" 2>/dev/null || true

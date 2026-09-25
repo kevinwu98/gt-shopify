@@ -1,4 +1,4 @@
-# English storefront on Oxygen
+# GT Supply storefront on Oxygen
 
 ## Store and repository
 
@@ -70,12 +70,15 @@ If the token is already configured privately in the environment, or the deployme
 
 ```bash
 npm run test:deployment -- https://exact-deployment-url.myshopify.dev
+CHECK_LOCALIZATION=1 npm run test:deployment -- https://exact-deployment-url.myshopify.dev
 ```
 
-The script checks initial English HTML, CSS/JavaScript assets, a published available product among the first eight catalog items, product search, empty search, and a fresh empty cart. It does not mutate carts or visit checkout. An optional second argument selects a known matching product-search term.
+The script's seven default groups check initial English HTML, CSS/JavaScript assets, a published available product among the first eight catalog items, product search, empty search, and a fresh empty cart. `CHECK_LOCALIZATION=1` extends this to 12 groups covering en/fr/ja translated initial HTML, language controls, translated search/cart/purchase copy, unchanged Shopify product title, cookie precedence, and repeated-request isolation. It does not mutate carts or visit checkout. An optional second argument selects a known matching product-search term.
 
 `npm run test:smoke` is deliberately restricted to Shopify's shared sample catalog. It performs isolated cart mutations and is the CI regression check, not a test to point at a live merchant store.
 
 ## Localization checkpoint
 
-Keep a successful English Oxygen deployment and its commit before running Locadex. Later localization must update the English-only smoke assertions and verify translated initial HTML, locale switching, variants, search, and cart persistence on Oxygen.
+The English checkpoint is [`f77447c`](https://github.com/kevinwu98/gt-shopify/commit/f77447c). [Locadex setup PR #2](https://github.com/kevinwu98/gt-shopify/pull/2) merged as `f91b4d2`. [PR #3](https://github.com/kevinwu98/gt-shopify/pull/3) contains the generated French/Japanese interface localization and has passed nine unit tests, 17 smoke checks, and all 12 localized deployment-check groups against its local runtime.
+
+Run the opt-in localized checks against the actual Oxygen preview, then verify language switching, product variants, search, and cart persistence in a browser. Keep GT responsible for authored interface copy and Shopify responsible for catalog content and EN/US market configuration. See [LOCADEX.md](LOCADEX.md) for the project and automation settings.
