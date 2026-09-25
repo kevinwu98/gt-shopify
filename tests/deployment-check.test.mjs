@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import {execFile} from 'node:child_process';
+import {mkdtemp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {promisify} from 'node:util';
 import {test} from 'node:test';
@@ -41,37 +44,79 @@ const fixture = `
     if (url.pathname.endsWith('.css')) {
       return new Response('body {}', {headers: {'content-type': 'text/css'}});
     }
+    const requestHeaders = new Headers(options.headers);
+    const locale = requestHeaders.get('Cookie')?.includes('generaltranslation.locale=fr')
+      ? 'fr' : requestHeaders.get('Accept-Language') || 'en';
+    const copy = {
+      en: {heading: 'Good things, worn often.', search: 'No results. Try a different search.', cart: 'Your cart is empty. Find something you love.', purchase: 'Add to cart'},
+      fr: {heading: 'De belles choses, souvent portées.', search: 'Aucun résultat. Essayez une autre recherche.', cart: 'Votre panier est vide. Trouvez votre bonheur.', purchase: 'Ajouter au panier'},
+      ja: {heading: '毎日を彩る、お気に入り。', search: '結果がありません。別の検索をお試しください。', cart: 'カートは空です。お気に入りを見つけましょう。', purchase: 'カートに追加'},
+    }[locale];
+    const translatedCatalog = mode.startsWith('catalog') && mode !== 'catalog-stale-fallback';
+    const title = translatedCatalog && mode !== 'catalog-brand' && mode !== 'catalog-wrong-title'
+      ? {en: 'Shirt', fr: 'Chemise', ja: 'シャツ'}[locale] : 'Shirt';
+    const description = translatedCatalog
+      ? {en: 'A soft cotton shirt.', fr: 'Une chemise en coton doux.', ja: '柔らかなコットンのシャツ。'}[locale]
+      : 'A soft cotton shirt.';
     let body;
     if (url.pathname === '/') {
       const assetRoot = mode === 'cdn'
         ? 'https://cdn.shopify.com/oxygen-v2/61555/179082/365980/4550792/assets'
         : '/assets';
-      body = '<html lang="en"><h1>Good things, worn often.</h1><link href="' + assetRoot + '/app.css"><script src="' + assetRoot + '/app.js"></script><script src="https://other.example/foreign.js"></script><script src="http://cdn.shopify.com/oxygen-v2/insecure.js"></script><script src="https://cdn.shopify.com/s/files/non-oxygen.js"></script><script src="https://cdn.shopify.com.evil.example/oxygen-v2/spoof.js"></script>';
+      body = '<main><h1>' + copy.heading + '</h1></main><link href="' + assetRoot + '/app.css"><script src="' + assetRoot + '/app.js"></script><script src="https://other.example/foreign.js"></script><script src="http://cdn.shopify.com/oxygen-v2/insecure.js"></script><script src="https://cdn.shopify.com/s/files/non-oxygen.js"></script><script src="https://cdn.shopify.com.evil.example/oxygen-v2/spoof.js"></script>';
     } else if (url.pathname === '/collections/all') {
       body = '<a href="/products/shirt">Shirt</a>';
     } else if (url.pathname === '/products/shirt') {
-      body = '<h1>Shirt</h1><button>Add to cart</button>';
+      const product = {title: 'Shirt', ...(mode.startsWith('catalog') ? {id: 'gid://shopify/Product/123'} : {})};
+      const selectedVariant = {id: 'gid://shopify/ProductVariant/456', product, price: {amount: '1500.00', currencyCode: 'USD'}, selectedOptions: [{name: 'Size', value: 'M'}]};
+      const merchandiseId = mode === 'catalog-changed-input' && locale === 'fr' ? 'gid://shopify/ProductVariant/789' : selectedVariant.id;
+      const form = JSON.stringify({action: 'LinesAdd', inputs: {lines: [{merchandiseId, quantity: 1, selectedVariant}]}}).replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+      const price = new Intl.NumberFormat(mode === 'catalog-wrong-currency' ? 'en' : locale, {style: 'currency', currency: 'USD'}).format(1500);
+      body = '<main><h1>' + title + '</h1><div>' + price + '</div><form><input name="cartFormInput" value="' + form + '"><button>' + copy.purchase + '</button></form><div>' + description + '</div></main>';
     } else if (url.pathname === '/search') {
-      body = '<h1>Search</h1>' + (url.searchParams.get('q') === 'gtOxygenNoMatch7f96f8'
-        ? '<p>No results. Try a different search.</p>'
-        : '<a href="/products/shirt">Shirt</a>');
+      body = '<main><h1>Search</h1>' + (url.searchParams.get('q') === 'gtOxygenNoMatch7f96f8'
+        ? '<p>' + copy.search + '</p>'
+        : '<a href="/products/shirt">Shirt</a>') + '</main>';
     } else if (url.pathname === '/cart') {
-      body = '<p>Your cart is empty. Find something you love.</p>';
+      body = '<main><h1>Cart</h1><p>' + copy.cart + '</p></main>';
     } else {
       throw new Error('Unexpected request path');
     }
-    return new Response(body, {headers});
+    const select = '<select class="locale-switcher">' + ['en', 'fr', 'ja'].map((value) => '<option value="' + value + '"' + (value === locale ? ' selected' : '') + '>' + value + '</option>').join('') + '</select>';
+    return new Response('<html lang="' + locale + '">' + select + body + '</html>', {headers});
   };
 `;
 
-async function check(mode, bypassToken = token) {
-  return run(process.execPath, [
-    '--import', `data:text/javascript,${encodeURIComponent(fixture)}`,
-    script, 'https://preview.myshopify.dev',
-  ], {
-    env: {...process.env, DEPLOYMENT_CHECK_FIXTURE: mode, OXYGEN_AUTH_BYPASS_TOKEN: bypassToken},
-  });
+async function check(mode, bypassToken = token, {localization = false, catalog = false, dictionaries} = {}) {
+  // Isolate local catalogs from real merchant content while exercising the CLI.
+  const root = await mkdtemp(join(tmpdir(), 'gt-deployment-check-'));
+  try {
+    await mkdir(join(root, 'scripts'));
+    const fixtureScript = join(root, 'scripts/check-deployment.mjs');
+    await writeFile(fixtureScript, await readFile(script));
+    if (dictionaries) {
+      await mkdir(join(root, 'catalog'));
+      for (const [locale, dictionary] of Object.entries(dictionaries)) {
+        await writeFile(join(root, 'catalog', `${locale}.json`), JSON.stringify(dictionary));
+      }
+    }
+    return await run(process.execPath, [
+      '--import', `data:text/javascript,${encodeURIComponent(fixture)}`,
+      fixtureScript, 'https://preview.myshopify.dev',
+    ], {
+      env: {...process.env, DEPLOYMENT_CHECK_FIXTURE: mode, OXYGEN_AUTH_BYPASS_TOKEN: bypassToken,
+        CHECK_LOCALIZATION: localization ? '1' : '0', CHECK_CATALOG: catalog ? '1' : '0'},
+    });
+  } finally {
+    await rm(root, {recursive: true, force: true});
+  }
 }
+
+const dictionaries = {
+  en: {product_123_title: 'Shirt', product_123_description: 'A soft cotton shirt.'},
+  fr: {product_123_title: 'Chemise', product_123_description: 'Une chemise en coton doux.'},
+  ja: {product_123_title: 'シャツ', product_123_description: '柔らかなコットンのシャツ。'},
+};
 
 test('protected deployment checks authenticate same-origin pages and assets without printing the token', async () => {
   const {stdout, stderr} = await check('protected');
@@ -110,4 +155,59 @@ test('assertion errors redact a token echoed in a response', async () => {
     assert.ok(!(error.stdout + error.stderr).includes(token));
     return true;
   });
+});
+
+test('localization-only checks preserve the twelve groups for older deployments without catalog files or product IDs', async () => {
+  const {stdout, stderr} = await check('localized', token, {localization: true});
+  assert.match(stdout, /12 deployment checks passed/);
+  assert.equal(stderr, '');
+});
+
+test('catalog checks verify translated SSR titles and descriptions, canonical purchase inputs, and currency formats', async () => {
+  const {stdout, stderr} = await check('catalog', token, {catalog: true, dictionaries});
+  assert.match(stdout, /12 deployment checks passed/);
+  assert.match(stdout, /catalog translations, purchase inputs, and currency checked/);
+  assert.equal(stderr, '');
+});
+
+test('catalog checks allow unchanged branded product titles', async () => {
+  const branded = Object.fromEntries(Object.entries(dictionaries)
+    .map(([locale, entries]) => [locale, {...entries, product_123_title: 'Shirt'}]));
+  const {stdout, stderr} = await check('catalog-brand', token, {catalog: true, dictionaries: branded});
+  assert.match(stdout, /12 deployment checks passed/);
+  assert.equal(stderr, '');
+});
+
+test('localization checks fall back to live English for a stale catalog source', async () => {
+  const stale = {...dictionaries, en: {...dictionaries.en, product_123_title: 'Old shirt'}};
+  const {stdout, stderr} = await check('catalog-stale-fallback', token, {localization: true, dictionaries: stale});
+  assert.match(stdout, /12 deployment checks passed/);
+  assert.equal(stderr, '');
+});
+
+test('catalog checks reject stale source mappings and missing catalog files', async () => {
+  const stale = {...dictionaries, en: {...dictionaries.en, product_123_title: 'Old shirt'}};
+  await assert.rejects(check('catalog-stale', token, {catalog: true, dictionaries: stale}), (error) => {
+    assert.match(error.stderr, /Catalog title source must match the live English product/);
+    return true;
+  });
+  await assert.rejects(check('catalog-missing', token, {catalog: true}), (error) => {
+    assert.match(error.stderr, /requires catalog\/en.json/);
+    return true;
+  });
+});
+
+test('catalog checks reject English title fallback, translated purchase inputs, and the wrong currency format', async () => {
+  for (const [mode, message] of [
+    ['catalog-wrong-title', /Product title must match the current GT catalog translation/],
+    ['catalog-changed-input', /preserve canonical Shopify variant IDs and purchase inputs/],
+    ['catalog-wrong-currency', /Expected the fr currency format/],
+  ]) {
+    await assert.rejects(check(mode, token, {catalog: true, dictionaries}), (error) => {
+      assert.match(error.stderr, message);
+      assert.ok(!(error.stdout + error.stderr).includes('gid://shopify/ProductVariant/'));
+      assert.ok(!(error.stdout + error.stderr).includes(token));
+      return true;
+    });
+  }
 });

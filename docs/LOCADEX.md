@@ -27,7 +27,7 @@ The known working English baseline is commit [`f77447c`](https://github.com/kevi
 
 All three target root `.`, use React Router and branch prefix `codex/locadex/`, preserve local edits, and have auto-merge disabled. Code and translation automations use changed-file filtering; locale synchronization does not.
 
-GT owns interface copy authored in this repository: navigation, home-page copy, buttons, cart/search states, and accessibility labels. Shopify remains responsible for product and collection content, options, prices, inventory, catalog translations, and market configuration. The baseline uses Shopify's EN/US commerce context; adding GT interface languages does not itself translate the Shopify catalog or change markets.
+Locadex handles interface copy authored in this repository: navigation, home-page copy, buttons, cart/search states, and accessibility labels. The separate [local catalog workflow](CATALOG.md) exports product names, plain descriptions, and option labels for GT translation, renders them through `gt-react` dictionaries, and formats Shopify amounts through GT's Currency component. Shopify still owns live commerce data, search indexing, checkout, and market configuration. The baseline uses Shopify's EN/US commerce context; language selection does not change the charged currency.
 
 ## Ongoing workflow
 
@@ -53,7 +53,7 @@ Preserve these properties when reviewing generated changes:
 - **Locale changes:** The selector saves `generaltranslation.locale` and reloads the current URL. The server resolves that cookie before `Accept-Language`, falling back to English. URLs remain unprefixed, preserving product-option and search query parameters. If switching later uses client navigation instead of reload, ensure root-loader revalidation refreshes the locale and translations.
 - **CSP and runtime:** Preserve Hydrogen's streaming renderer and nonce providers. Any additional inline scripts must receive the nonce. Verify any translation-network requests against the CSP and Oxygen runtime; keep private credentials out of browser bundles and Git.
 - **Commerce state:** Keep the cart/session cookie shared across locale paths. Verify add, quantity changes, removal, reload persistence, and checkout handoff after language switches. Do not translate product handles, variant IDs, GraphQL field names, or cart action values.
-- **Translation delivery:** `public/_gt/[locale].json` files are bundled through `app/loadTranslations.ts`. Keep server and client locale configuration aligned, and verify actual translated copy rather than only locale metadata.
+- **Translation delivery:** `public/_gt/[locale].json` UI translations are bundled through `app/loadTranslations.ts`. Product dictionaries under `catalog/` are separate and passed through the provider's `dictionaries` prop. Keep server and client locale configuration aligned, and verify actual translated copy rather than only locale metadata. Catalog labels must remain literal strings and original Shopify option values must remain in purchase requests.
 
 ## Validate locally and on Oxygen
 
@@ -76,7 +76,7 @@ CHECK_LOCALIZATION=1 npm run test:deployment -- http://localhost:3101
 
 The suite has nine regression tests and 17 commerce/locale smoke checks. Run `npm run test:smoke` against a preview configured with `.env.example`'s public Shopify sample catalog. Its cart mutations deliberately refuse other stores. GitHub CI uses that sample configuration; preserve any existing `.env` containing linked-store credentials.
 
-The deployment checker makes only GET requests. Its seven default groups cover English SSR/CSP, assets, catalog, product, search, empty search, and empty cart. `CHECK_LOCALIZATION=1` expands this to 12 groups: translated en/fr/ja HTML and selector state, distinct translated homepage/search/cart/purchase copy, unchanged Shopify product title, cookie precedence, and repeated-request isolation. Run the opt-in checks once translation catalogs are present.
+The deployment checker makes only GET requests. Its seven default groups cover English SSR/CSP, assets, catalog, product, search, empty search, and empty cart. `CHECK_LOCALIZATION=1` expands these checks to translated en/fr/ja HTML and selector state, translated UI copy, expected catalog titles, cookie precedence, and repeated-request isolation. Use `CHECK_CATALOG=1` after the catalog translation step to require translated catalog coverage for the tested product.
 
 On the Oxygen preview, verify initial HTML in all three languages, language switching, product options, predictive/full search, and cart persistence. The current development-store deployment requires Shopify login in a browser. The read-only deployment checker also supports a private authentication bypass token for its exact deployment URL; see [OXYGEN.md](OXYGEN.md). Run the final browser check in a normal tab as well as an automated tab, because browser automation can modify the document before hydration.
 

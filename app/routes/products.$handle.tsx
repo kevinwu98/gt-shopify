@@ -12,11 +12,14 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {T} from 'gt-react';
+import {parseLocale, T} from 'gt-react';
+import {useCatalog} from '~/lib/useCatalog';
+import {catalogKey} from '~/lib/catalogKeys';
+import {getCatalogText} from '~/lib/catalog.server';
 
 export const meta: Route.MetaFunction = ({data}) => {
   return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
+    {title: `Hydrogen | ${data?.localizedTitle ?? ''}`},
     {
       rel: 'canonical',
       href: `/products/${data?.product.handle}`,
@@ -62,6 +65,11 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
 
   return {
     product,
+    localizedTitle: getCatalogText(
+      parseLocale(request),
+      catalogKey(product.id, 'title'),
+      product.title,
+    ),
   };
 }
 
@@ -79,6 +87,7 @@ function loadDeferredData({context, params}: Route.LoaderArgs) {
 
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
+  const catalog = useCatalog();
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -96,7 +105,8 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
+  const title = catalog(product.id, 'title', product.title);
+  const description = catalog(product.id, 'description', product.description);
 
   return (
     <div className="product">
@@ -109,6 +119,7 @@ export default function Product() {
         />
         <br />
         <ProductForm
+          productId={product.id}
           productOptions={productOptions}
           selectedVariant={selectedVariant}
         />
@@ -120,7 +131,11 @@ export default function Product() {
           </p>
         </T>
         <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+        {description !== product.description ? (
+          <div style={{whiteSpace: 'pre-line'}}>{description}</div>
+        ) : (
+          <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
+        )}
         <br />
       </div>
       <Analytics.ProductView
@@ -163,6 +178,7 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
       currencyCode
     }
     product {
+      id
       title
       handle
     }
