@@ -1,5 +1,6 @@
 import {cartSetIdDefault, type HydrogenCart, type HydrogenSession, type Storefront} from '@shopify/hydrogen';
 import type {Country, CountryCode} from '@shopify/hydrogen/storefront-api-types';
+import {msg} from 'gt-react';
 
 export type MarketCountry = Pick<Country, 'isoCode' | 'name'> & {
   currency: Pick<Country['currency'], 'isoCode' | 'symbol'>;
@@ -76,29 +77,29 @@ export async function changeMarket(request: Request, context: MarketContext) {
   }
   const requestUrl = new URL(request.url);
   const origin = request.headers.get('Origin');
-  if (origin !== null && origin !== requestUrl.origin) return failure('Invalid request origin.', 403);
+  if (origin !== null && origin !== requestUrl.origin) return failure(msg('Invalid request origin.'), 403);
 
   let form: FormData;
   try {
     form = await request.formData();
   } catch {
-    return failure('Invalid market selection.', 400);
+    return failure(msg('Invalid market selection.'), 400);
   }
   const country = form.get('country');
   const returnTo = safeReturnTo(form.get('returnTo'), requestUrl);
-  if (!returnTo) return failure('Invalid return destination.', 400);
+  if (!returnTo) return failure(msg('Invalid return destination.'), 400);
   if (typeof country !== 'string' || !/^[A-Z]{2}$/.test(country)) {
-    return failure('Select an available country or region.', 400);
+    return failure(msg('Select an available country or region.'), 400);
   }
 
   let markets: Markets;
   try {
     markets = await getMarkets(context.storefront);
   } catch {
-    return failure('Countries and regions are temporarily unavailable. Please try again.', 502);
+    return failure(msg('Countries and regions are temporarily unavailable. Please try again.'), 502);
   }
   const selected = markets.availableCountries.find(({isoCode}) => isoCode === country);
-  if (!selected) return failure('Select an available country or region.', 400);
+  if (!selected) return failure(msg('Select an available country or region.'), 400);
 
   let headers = new Headers();
   // updateBuyerIdentity creates a cart when no ID exists, so skip it for visitors
@@ -111,16 +112,16 @@ export async function changeMarket(request: Request, context: MarketContext) {
         // cart to update. Clear that ID so the next add creates a usable cart.
         headers = cartSetIdDefault({maxage: 0})('');
       } else if (!existing?.id || existing.errors?.length) {
-        return failure('Your cart could not be updated for this country or region. Please try again.', 502);
+        return failure(msg('Your cart could not be updated for this country or region. Please try again.'), 502);
       } else {
         const result = await context.cart.updateBuyerIdentity({countryCode: selected.isoCode});
         if (result.errors?.length || result.userErrors?.length || !result.cart?.id) {
-          return failure('Your cart could not be updated for this country or region. Please try again.', 502);
+          return failure(msg('Your cart could not be updated for this country or region. Please try again.'), 502);
         }
         headers = context.cart.setCartId(result.cart.id);
       }
     } catch {
-      return failure('Your cart could not be updated for this country or region. Please try again.', 502);
+      return failure(msg('Your cart could not be updated for this country or region. Please try again.'), 502);
     }
   }
   context.session.set('country', selected.isoCode);

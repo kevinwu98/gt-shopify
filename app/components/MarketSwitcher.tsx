@@ -1,5 +1,5 @@
 import {useFetcher, useLocation, useRouteLoaderData} from 'react-router';
-import {useGT, useLocale} from 'gt-react';
+import {useGT, useLocale, useMessages} from 'gt-react';
 import type {RootLoader} from '~/root';
 
 /** Country determines Shopify pricing; the separate GT selector controls language. */
@@ -9,6 +9,7 @@ export function MarketSwitcher() {
   const location = useLocation();
   const locale = useLocale();
   const gt = useGT();
+  const m = useMessages();
   if (!data?.markets) return null;
   const {country, availableCountries} = data.markets;
   const names = new Intl.DisplayNames([locale], {type: 'region'});
@@ -32,7 +33,9 @@ export function MarketSwitcher() {
       <button type="submit" disabled={fetcher.state !== 'idle'}>
         {gt('Update')}
       </button>
-      {fetcher.data?.error && <span role="alert">{fetcher.data.error}</span>}
+      {fetcher.data?.error && (
+        <span role="alert">{m(fetcher.data.error)}</span>
+      )}
     </fetcher.Form>
   );
 }
