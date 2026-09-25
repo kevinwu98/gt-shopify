@@ -1,7 +1,9 @@
 {
   "locales": [
     "fr",
-    "ja"
+    "ja",
+    "ko",
+    "id"
   ],
   "defaultLocale": "en",
   "framework": "react",

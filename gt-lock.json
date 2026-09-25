@@ -7,14 +7,24 @@
       "versionId": "552a1d2a22614cba8cfce312fd6506f1c624140a886f0c0038f400fafcf79d11",
       "translations": {
         "ja": {
-          "updatedAt": "2026-09-25T05:21:19.284Z",
+          "updatedAt": "2026-09-25T19:05:13.159Z",
           "fileName": "public/_gt/ja.json",
           "postProcessHash": "a58551673b64f88e030855ac2539a9864f866b0ce1e972f03594ceb78132bb9d"
         },
         "fr": {
-          "updatedAt": "2026-09-25T05:21:19.285Z",
+          "updatedAt": "2026-09-25T19:05:13.161Z",
           "fileName": "public/_gt/fr.json",
           "postProcessHash": "9570666d72b24dfce75f049d2c8088100be4a0459fd9bfcddf65c68e80fe932d"
+        },
+        "id": {
+          "updatedAt": "2026-09-25T19:05:13.163Z",
+          "fileName": "public/_gt/id.json",
+          "postProcessHash": "509519d4289154e3c8b9db5ca6b0f59a513afa05eb080a7a147d47f0204d3542"
+        },
+        "ko": {
+          "updatedAt": "2026-09-25T19:05:13.165Z",
+          "fileName": "public/_gt/ko.json",
+          "postProcessHash": "3e8254c853f97c44cdec574c036194c5386cf0c68e4b1a11360a0f873366c9f7"
         }
       },
       "fileName": "__INTERNAL_GT_TEMPLATE_NAME__"
