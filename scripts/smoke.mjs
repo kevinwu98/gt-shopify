@@ -109,9 +109,8 @@ async function main() {
   const heading = homeMarkup.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
   assert.ok(heading && visibleText(heading).includes('Good things,'), 'English headline must appear before scripts');
   assert.ok(visibleText(homeMarkup).includes('Cart'), 'English navigation must be server-rendered');
-  assert.doesNotMatch(homeMarkup, /(?:class|data-testid)="[^"]*locale-switcher/);
   assert.doesNotMatch(homeMarkup, /href="\/(?:fr|ja)(?:[/?#"])/, 'English navigation must not expose locale-prefixed routes');
-  pass('English headline, navigation, and html lang are present before scripts without a locale switcher');
+  pass('English headline, navigation, and html lang are present before scripts');
 
   const rootData = await request('/_root.data?_routes=root');
   assertStatus(rootData, 200, 'English single-fetch homepage');
@@ -119,10 +118,33 @@ async function main() {
   assert.equal(dataValue(rootTable, 'root', 'data', 'consent', 'language'), 'EN');
   assert.equal(dataValue(rootTable, 'root', 'data', 'consent', 'country'), 'US');
   const rootFields = Object.keys(dataValue(rootTable, 'root', 'data')).map((key) => rootTable[Number(key.slice(1))]);
-  assert.ok(!rootFields.includes('translations'), 'Root loader must not include translation dictionaries');
-  assert.ok(!rootFields.includes('selectedLocale'), 'Root loader must not select a UI locale');
+  assert.ok(rootFields.includes('translations'), 'Root loader must include the GT translation snapshot');
+  assert.equal(dataValue(rootTable, 'root', 'data', 'locale'), 'en');
   const runtimeStore = dataValue(rootTable, 'root', 'data', 'publicStoreDomain');
-  pass('Root loader uses EN/US commerce context and contains no UI locale or translation dictionaries');
+  pass('Root loader exposes the English GT snapshot while retaining EN/US commerce context');
+
+  for (const locale of ['fr', 'ja', 'en', 'ja', 'fr', 'en']) {
+    const localized = await request('/', {headers: {'Accept-Language': locale}});
+    assertStatus(localized, 200, `${locale} homepage`);
+    assert.match(initialMarkup(localized.text), new RegExp(`<html\\b[^>]*lang="${locale}"`));
+    const localizedData = await request('/_root.data?_routes=root', {headers: {'Accept-Language': locale}});
+    assertStatus(localizedData, 200, `${locale} loader`);
+    const localizedTable = dataTable(localizedData.text);
+    assert.equal(dataValue(localizedTable, 'root', 'data', 'locale'), locale);
+    assert.equal(dataValue(localizedTable, 'root', 'data', 'consent', 'language'), 'EN');
+    assert.equal(dataValue(localizedTable, 'root', 'data', 'consent', 'country'), 'US');
+  }
+  pass('French, Japanese, and English SSR select independent UI locales with unchanged Shopify market context');
+
+  cookies.set('generaltranslation.locale', 'fr');
+  try {
+    const savedLocale = await request('/', {headers: {'Accept-Language': 'ja'}});
+    assertStatus(savedLocale, 200, 'Saved locale preference');
+    assert.match(initialMarkup(savedLocale.text), /<html\b[^>]*lang="fr"/);
+  } finally {
+    cookies.delete('generaltranslation.locale');
+  }
+  pass('Saved language cookie takes precedence over the browser language');
 
   const search = await request('/search?q=snowboard');
   assertStatus(search, 200, 'English full search');
