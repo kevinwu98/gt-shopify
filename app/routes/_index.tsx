@@ -9,7 +9,7 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
-import {T, useGT} from 'gt-react';
+import {T, Var, useGT} from 'gt-react';
 import {useCatalog} from '~/lib/useCatalog';
 
 import type {RootLoader} from '~/root';
@@ -76,8 +76,12 @@ function FeaturedCollection({
   return (
     <section className="store-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <h1 id="hero-title" translate="no">Great Things</h1>
-        <p className="hero-description" translate="no">by General Translation</p>
+        <T>
+          <h1 id="hero-title">Great Things</h1>
+          <p className="hero-description">
+            by <Var>General Translation</Var>
+          </p>
+        </T>
         <Link className="button-primary" to="/collections/all" prefetch="intent">
           {gt('Explore the collection', {$format: 'STRING'})}<span aria-hidden="true">↗</span>
         </Link>

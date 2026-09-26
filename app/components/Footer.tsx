@@ -1,5 +1,5 @@
 import {NavLink, useRouteLoaderData} from 'react-router';
-import {T, useGT} from 'gt-react';
+import {T, Var, useGT} from 'gt-react';
 
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
 import type {RootLoader} from '~/root';
@@ -17,12 +17,16 @@ export function Footer(_props: FooterProps) {
   return (
     <footer className="footer">
       <div className="footer-top">
-        <div translate="no">
-          <NavLink className="brand footer-brand" to={'/'} end>
-            Great Things
-          </NavLink>
-          <p className="footer-tagline">by General Translation</p>
-        </div>
+        <T>
+          <div>
+            <NavLink className="brand footer-brand" to={'/'} end>
+              Great Things
+            </NavLink>
+            <p className="footer-tagline">
+              by <Var>General Translation</Var>
+            </p>
+          </div>
+        </T>
         <T>
           <nav className="footer-menu" aria-label={gt('Footer navigation')}>
             <NavLink to={'/collections/all'}>Shop all</NavLink>
