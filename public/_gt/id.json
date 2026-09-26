@@ -74,51 +74,7 @@
     "t": "PreviousLink"
   },
   "2281d9696aa45f4b": "Nomor konfirmasi",
-  "24a85f1488ccabf6": {
-    "c": [
-      {
-        "c": "Kebutuhan sehari-hari",
-        "i": 2,
-        "t": "p"
-      },
-      {
-        "c": [
-          "Pilihan istimewa,",
-          {
-            "i": 4,
-            "t": "br"
-          },
-          "sering dipakai."
-        ],
-        "i": 3,
-        "t": "h1"
-      },
-      {
-        "c": "Mudah dipadupadankan. Favorit yang selalu diandalkan. Temukan gaya khasmu untuk sehari-hari.",
-        "i": 5,
-        "t": "p"
-      },
-      {
-        "c": [
-          "Jelajahi koleksi",
-          {
-            "c": "↗",
-            "i": 7,
-            "t": "span"
-          }
-        ],
-        "i": 6,
-        "t": "Link"
-      },
-      {
-        "c": "Favorit barumu ada di sini.",
-        "i": 8,
-        "t": "p"
-      }
-    ],
-    "i": 1,
-    "t": "div"
-  },
+  "229b14f1b1f11ac8": "Jelajahi koleksi",
   "2502493024656b43": "Gunakan kode diskon",
   "254571787353df73": "Harga",
   "268a73c2221bfe7a": {
@@ -126,6 +82,7 @@
     "i": 1,
     "t": "div"
   },
+  "27fe90e6fee770e2": "Bahasa dan wilayah Anda tidak dapat diubah. Silakan coba lagi.",
   "28b50cb5c1a73321": [
     {
       "c": "Beranda",
@@ -154,6 +111,24 @@
     "t": "p"
   },
   "2c1c93a646bbea6e": "Bahasa",
+  "2d74b2fa22ab10e6": {
+    "c": [
+      {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      },
+      ":",
+      " ",
+      {
+        "i": 3,
+        "k": "_gt_value_3",
+        "v": "v"
+      }
+    ],
+    "i": 1,
+    "t": "small"
+  },
   "2e107ae81088ed2c": {
     "c": "Kode pos*",
     "i": 1,
@@ -281,6 +256,22 @@
     "i": 1,
     "t": "div"
   },
+  "48b46937e0058355": {
+    "c": [
+      {
+        "c": "Lihat semua produk",
+        "i": 2,
+        "t": "NavLink"
+      },
+      {
+        "c": "Keranjang Anda",
+        "i": 3,
+        "t": "NavLink"
+      }
+    ],
+    "i": 1,
+    "t": "nav"
+  },
   "4b71561e661a9664": "Kurangi jumlah",
   "4c433b0f79367bbd": [
     {
@@ -320,88 +311,6 @@
     "t": "label"
   },
   "508e49336de580a8": "Negara bagian / Provinsi",
-  "52ae50b5476973a0": {
-    "c": [
-      {
-        "c": [
-          {
-            "c": [
-              {
-                "c": {
-                  "c": "GT Supply.",
-                  "i": 5,
-                  "t": "span"
-                },
-                "i": 4,
-                "t": "NavLink"
-              },
-              {
-                "c": "Kebutuhan sehari-hari. Segudang kemungkinan.",
-                "i": 6,
-                "t": "p"
-              }
-            ],
-            "i": 3,
-            "t": "div"
-          },
-          {
-            "c": [
-              {
-                "c": "Lihat semua produk",
-                "i": 8,
-                "t": "NavLink"
-              },
-              {
-                "c": "Keranjang Anda",
-                "i": 9,
-                "t": "NavLink"
-              }
-            ],
-            "i": 7,
-            "t": "nav"
-          }
-        ],
-        "i": 2,
-        "t": "div"
-      },
-      {
-        "c": [
-          {
-            "c": "Perlengkapan pilihan untuk keseharian Anda.",
-            "i": 11,
-            "t": "p"
-          },
-          {
-            "c": {
-              "d": {
-                "b": {
-                  "false": {
-                    "c": "Didukung oleh Shopify.",
-                    "i": 14,
-                    "t": "C14"
-                  },
-                  "true": {
-                    "c": "Toko contoh. Checkout dinonaktifkan.",
-                    "i": 14,
-                    "t": "C14"
-                  }
-                },
-                "t": "b"
-              },
-              "i": 13,
-              "t": "Branch"
-            },
-            "i": 12,
-            "t": "p"
-          }
-        ],
-        "i": 10,
-        "t": "div"
-      }
-    ],
-    "i": 1,
-    "t": "footer"
-  },
   "53d7c7e2950efbe3": {
     "c": "Keranjang",
     "i": 1,
@@ -514,27 +423,6 @@
   "6eb807cd1232e8a8": "Keranjang",
   "6f69c0102f16d2f9": "Kode negara",
   "6f9647f746db650d": "Tambah jumlah",
-  "73d59b18dc0d6b0b": {
-    "c": [
-      {
-        "c": "Lebih simpel. Lebih leluasa menikmati hidup.",
-        "i": 2,
-        "t": "p"
-      },
-      {
-        "c": "Temukan gaya sehari-harimu.",
-        "i": 3,
-        "t": "h2"
-      },
-      {
-        "c": "Busana simpel yang bikin siap-siap jadi lebih mudah.",
-        "i": 4,
-        "t": "p"
-      }
-    ],
-    "i": 1,
-    "t": "section"
-  },
   "74143df1de746e79": {
     "c": "Pajak",
     "i": 1,
@@ -576,40 +464,6 @@
     "i": 1,
     "t": "legend"
   },
-  "8f6eca9e3651152d": {
-    "c": [
-      {
-        "c": [
-          {
-            "c": "Pilihan kami",
-            "i": 3,
-            "t": "p"
-          },
-          {
-            "c": "Pilihan untuk sehari-hari",
-            "i": 4,
-            "t": "h2"
-          }
-        ],
-        "i": 2,
-        "t": "div"
-      },
-      {
-        "c": [
-          "Lihat semua produk",
-          {
-            "c": "↗",
-            "i": 6,
-            "t": "span"
-          }
-        ],
-        "i": 5,
-        "t": "Link"
-      }
-    ],
-    "i": 1,
-    "t": "div"
-  },
   "915dc556e9bef529": {
     "c": "Nama belakang*",
     "i": 1,
@@ -622,23 +476,6 @@
   },
   "9494f23145fcc12d": "Navigasi bagian bawah",
   "99b547a01cbbe1d8": "Jumlah",
-  "9e073b20d365838e": {
-    "c": [
-      {
-        "i": 2,
-        "k": "_gt_value_2",
-        "v": "v"
-      },
-      ": ",
-      {
-        "i": 3,
-        "k": "_gt_value_3",
-        "v": "v"
-      }
-    ],
-    "i": 1,
-    "t": "small"
-  },
   "9ea94e412590f53d": "Nomor telepon",
   "9ead38f30992e131": {
     "c": "Total",
@@ -790,6 +627,7 @@
     "i": 1,
     "t": "NextLink"
   },
+  "cd707bc456456d84": "Beberapa barang di keranjang Anda tidak tersedia di wilayah ini. Keluarkan barang tersebut dari keranjang sebelum beralih wilayah.",
   "d0617f03f8e31553": {
     "c": "Nama belakang",
     "i": 1,
@@ -847,6 +685,29 @@
     "c": "Kebijakan",
     "i": 1,
     "t": "h1"
+  },
+  "e319f0775ce1638d": {
+    "c": [
+      {
+        "c": "Dirancang untuk menemani Anda ke mana saja",
+        "i": 2,
+        "t": "h2"
+      },
+      {
+        "c": [
+          "Lihat semua produk",
+          {
+            "c": "↗",
+            "i": 4,
+            "t": "span"
+          }
+        ],
+        "i": 3,
+        "t": "Link"
+      }
+    ],
+    "i": 1,
+    "t": "div"
   },
   "e321d312eb7386a8": "Terapkan",
   "e4c79046b2d1eb03": "Diskon",
@@ -929,6 +790,5 @@
       "t": "p"
     }
   ],
-  "fda8bbb4a0ef6d51": "Baris alamat 2",
-  "229b14f1b1f11ac8": "Jelajahi koleksi"
+  "fda8bbb4a0ef6d51": "Baris alamat 2"
 }
