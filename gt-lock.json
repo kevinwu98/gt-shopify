@@ -4,27 +4,27 @@
   "entries": [
     {
       "fileId": "879f3a5f954ee8b75bf1e91f4ea9916b41c933e5beba7eb6362647a637c9c66d",
-      "versionId": "079a085f8800f71cdd0e5840037b04a9cafc271f168b35a1c0af5771e694e4b0",
+      "versionId": "6b8ad8d3b67856c14c07fd77d0ea5084d133ad4744df1f00eb1024cde9a878f9",
       "translations": {
         "ko": {
-          "updatedAt": "2026-09-25T23:59:18.343Z",
+          "updatedAt": "2026-09-26T00:20:39.422Z",
           "fileName": "public/_gt/ko.json",
-          "postProcessHash": "7aa39c32bb8bf69d32d89d37d142e8fd8a6bb9407a7e9920971f8346b673150e"
-        },
-        "fr": {
-          "updatedAt": "2026-09-25T23:59:18.347Z",
-          "fileName": "public/_gt/fr.json",
-          "postProcessHash": "06dbe6e1b44cab119d09376c9a1e53fa0e3dec5ca1d3c1bd263aac6435f0be9d"
+          "postProcessHash": "94776e4bb4d7b1fecae31f47c48138023b6c2e5cc4e0a919da1484282f4f241a"
         },
         "ja": {
-          "updatedAt": "2026-09-25T23:59:18.350Z",
+          "updatedAt": "2026-09-26T00:20:39.424Z",
           "fileName": "public/_gt/ja.json",
-          "postProcessHash": "87d60c9e2351048bde2dc88a48adabb08a8912d2eec423e8e24aee5be145f084"
+          "postProcessHash": "f6a16445ae5d1871cbb5d00b093bfc9a3df9d19bf5c607dcbe4c196c774c309a"
         },
         "id": {
-          "updatedAt": "2026-09-25T23:59:18.353Z",
+          "updatedAt": "2026-09-26T00:20:39.426Z",
           "fileName": "public/_gt/id.json",
-          "postProcessHash": "7165df307c25fc3071c89035aa8112f2fbe5ac77b530d131bbed31e1d613949b"
+          "postProcessHash": "9e8024281b20ce6f56396df727c88c2f3c7ed534677e94466b15dc31e5afc3e7"
+        },
+        "fr": {
+          "updatedAt": "2026-09-26T00:20:39.428Z",
+          "fileName": "public/_gt/fr.json",
+          "postProcessHash": "b1d7e7f1c7360e6230a5a171bd4cd5f0be2359c68cad2fda17e976bc7fbf4ad8"
         }
       },
       "fileName": "__INTERNAL_GT_TEMPLATE_NAME__"
