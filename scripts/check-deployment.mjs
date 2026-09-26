@@ -189,9 +189,8 @@ async function localizedChecks(productPath, productTitle, englishMarkup) {
     };
     const englishCopy = pages.get('en');
     if (englishCopy) {
-      assert.equal(copy.heading, 'Great Things', 'Keep the store brand unchanged across locales');
       assert.ok(copy.cta, 'Expected translated collection CTA');
-      for (const key of ['cta', 'search', 'cart', 'purchase']) assert.notEqual(copy[key], englishCopy[key], `${locale} ${key} must contain translated copy, not English fallback`);
+      for (const key of ['heading', 'cta', 'search', 'cart', 'purchase']) assert.notEqual(copy[key], englishCopy[key], `${locale} ${key} must contain translated copy, not English fallback`);
     }
     pages.set(locale, copy);
     pass(`${locale} initial HTML, language selector, empty states, and catalog title are correct${checkCatalog ? '; catalog translations, purchase inputs, and currency checked' : ''}`);

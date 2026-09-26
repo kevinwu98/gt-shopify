@@ -17,7 +17,7 @@ export function Footer(_props: FooterProps) {
   return (
     <footer className="footer">
       <div className="footer-top">
-        <T>
+        <T context="Great Things is the store name. Translate its meaning into the target language rather than leaving it in English.">
           <div>
             <NavLink className="brand footer-brand" to={'/'} end>
               Great Things
