@@ -9,7 +9,7 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
-import {T, Var, useGT} from 'gt-react';
+import {T, Var} from 'gt-react';
 import {useCatalog} from '~/lib/useCatalog';
 
 import type {RootLoader} from '~/root';
@@ -62,7 +62,6 @@ function FeaturedCollection({
   product: Awaited<ReturnType<typeof loadCriticalData>>['featuredProduct'];
 }) {
   const catalog = useCatalog();
-  const gt = useGT();
   const image =
     product?.featuredImage ??
     collection?.image ??
@@ -82,9 +81,15 @@ function FeaturedCollection({
             by <Var>General Translation</Var>
           </p>
         </T>
-        <Link className="button-primary" to="/collections/all" prefetch="intent">
-          {gt('Explore the collection', {$format: 'STRING'})}<span aria-hidden="true">↗</span>
-        </Link>
+        <T>
+          <Link
+            className="button-primary"
+            to="/collections/all"
+            prefetch="intent"
+          >
+            Explore the collection<span aria-hidden="true">↗</span>
+          </Link>
+        </T>
       </div>
       <div className="hero-image">
         {image ? (
