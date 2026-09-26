@@ -74,7 +74,6 @@
     "t": "PreviousLink"
   },
   "2281d9696aa45f4b": "Numéro de confirmation",
-  "229b14f1b1f11ac8": "Découvrez la collection",
   "2502493024656b43": "Appliquer le code de réduction",
   "254571787353df73": "Prix",
   "268a73c2221bfe7a": {
@@ -136,6 +135,18 @@
   },
   "2ea95ade2ae9e528": "Taxes",
   "2eb39a53ad7f7c34": "Produit",
+  "30ff692913835012": {
+    "c": [
+      "Découvrez la collection",
+      {
+        "c": "↗",
+        "i": 2,
+        "t": "span"
+      }
+    ],
+    "i": 1,
+    "t": "Link"
+  },
   "33db514084afee56": "Code postal",
   "3449a50f281a6b4e": "Rechercher des commandes",
   "34cd57820252c5e9": {
@@ -256,6 +267,7 @@
     "i": 1,
     "t": "div"
   },
+  "47ec3e89c04fd3d5": "De belles choses",
   "48b46937e0058355": {
     "c": [
       {
@@ -347,25 +359,6 @@
     "i": 1,
     "t": "span"
   },
-  "5bb26ad1836c62c3": [
-    {
-      "c": "Great Things",
-      "i": 1,
-      "t": "h1"
-    },
-    {
-      "c": [
-        "par ",
-        {
-          "i": 3,
-          "k": "_gt_value_3",
-          "v": "v"
-        }
-      ],
-      "i": 2,
-      "t": "p"
-    }
-  ],
   "5d10339fea0ba689": {
     "c": "Prénom",
     "i": 1,
@@ -462,35 +455,31 @@
     "i": 1,
     "t": "legend"
   },
-  "7d359b5df1e36485": {
-    "c": [
-      {
-        "c": "Great Things",
-        "i": 2,
-        "t": "NavLink"
-      },
-      {
-        "c": [
-          "par ",
-          {
-            "i": 4,
-            "k": "_gt_value_4",
-            "v": "v"
-          }
-        ],
-        "i": 3,
-        "t": "p"
-      }
-    ],
-    "i": 1,
-    "t": "div"
-  },
   "82720ab23f8e5ee6": {
     "c": "Aucune adresse de livraison renseignée",
     "i": 1,
     "t": "p"
   },
   "86d287aa1993a091": "Fermer",
+  "87177a2c68f1b15c": [
+    {
+      "c": "De belles choses",
+      "i": 1,
+      "t": "h1"
+    },
+    {
+      "c": [
+        "par ",
+        {
+          "i": 3,
+          "k": "_gt_value_3",
+          "v": "v"
+        }
+      ],
+      "i": 2,
+      "t": "p"
+    }
+  ],
   "89ea1163ab8dd8c7": {
     "c": "Produits",
     "i": 1,
@@ -551,7 +540,6 @@
     "i": 1,
     "t": "div"
   },
-  "a5bdd273cef218e0": "Great Things",
   "a6acc9b9d54dc8ab": {
     "c": [
       "Voir tous les résultats pour ",
@@ -625,6 +613,29 @@
     "t": "Form"
   },
   "c0dc347278df9357": "Code de réduction",
+  "c16b4b35bad52753": {
+    "c": [
+      {
+        "c": "De belles choses",
+        "i": 2,
+        "t": "NavLink"
+      },
+      {
+        "c": [
+          "par ",
+          {
+            "i": 4,
+            "k": "_gt_value_4",
+            "v": "v"
+          }
+        ],
+        "i": 3,
+        "t": "p"
+      }
+    ],
+    "i": 1,
+    "t": "div"
+  },
   "c28ebfaf2972a07b": {
     "c": "Adresses",
     "i": 1,
