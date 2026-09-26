@@ -76,7 +76,7 @@ function FeaturedCollection({
   return (
     <section className="store-hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <T>
+        <T context="Great Things is the store name. Translate its meaning into the target language rather than leaving it in English.">
           <h1 id="hero-title">Great Things</h1>
           <p className="hero-description">
             by <Var>General Translation</Var>
