@@ -24,7 +24,7 @@ export function Header({cart}: HeaderProps) {
   return (
     <header className="header">
       <NavLink className="brand" prefetch="intent" to={'/'} end>
-        <span translate="no">Great Things</span>
+        <T>Great Things</T>
       </NavLink>
       <nav className="header-shop" aria-label={gt('Main navigation')}>
         <T>
