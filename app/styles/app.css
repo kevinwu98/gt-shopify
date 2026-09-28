@@ -673,11 +673,12 @@ button { cursor: pointer; }
 button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--store-accent); outline-offset: 4px; }
 img { border-radius: 0; }
 body > main, .header, .footer { width: min(1440px, 100%); margin-inline: auto; border-inline: 1px solid var(--store-border); }
-body > main { flex: 1; padding: 40px var(--store-gutter) 72px; }
+body > main { flex: 1; margin-block: 0; padding: 40px var(--store-gutter) 72px; }
 body > main:has(.home) { padding: 0; }
 h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.035em; }
 .header { min-height: var(--header-height); height: auto; padding: 20px var(--store-gutter); gap: 40px; border-bottom: 1px solid var(--store-border); z-index: 5; background: white; }
 .brand { display: inline-flex; align-items: center; gap: 16px; flex-shrink: 0; font-size: 20px; font-weight: 500; letter-spacing: -0.8px; line-height: 1; }
+.header-shop { margin-left: 24px; }
 .header-shop, .header-ctas { font-size: 13px; font-weight: 400; }
 .header-shop a, .header-ctas a { padding-block: 10px; }
 .header-shop a:hover, .header-ctas a:hover, .footer-menu a:hover { color: var(--store-accent); }
@@ -720,7 +721,15 @@ h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.035em; }
 .products-grid { gap: 32px 20px; }
 .product-item { display: block; min-width: 0; }
 .recommended-products-grid .product-item { padding: 20px 20px 24px; border-bottom: 1px solid var(--store-border); border-right: 1px solid var(--store-border); }
-.recommended-products-grid .product-item:nth-child(4n) { border-right: 0; }
+.recommended-products-grid .product-item:nth-child(4n of .product-item) { border-right: 0; }
+.recommended-products-grid .product-item { transition: background 160ms, color 160ms; }
+.recommended-products-grid .product-item:hover { background: var(--store-accent); color: white; }
+.recommended-products-grid .product-item:hover small { color: rgba(255, 255, 255, .8); }
+.product-image-frame { transition: background 160ms; }
+.recommended-products-grid .product-item:hover .product-image-frame { background: transparent; }
+.hero-image, .hero-collection-link { transition: background 160ms, color 160ms; background-clip: padding-box; }
+.hero-image:hover, .hero-image:hover .hero-collection-link { background: var(--store-accent); color: white; }
+.hero-image:hover .hero-collection-link > span:last-child { color: white; }
 .product-image-frame { overflow: hidden; background: var(--store-cream); aspect-ratio: 4 / 5; }
 .product-image-frame img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 220ms ease-out; }
 .product-item:hover .product-image-frame img { transform: scale(1.035); }
@@ -770,7 +779,7 @@ aside main { margin: 24px; }
   .hero-image { min-height: 560px; }
   .hero-copy h1 { font-size: 56px; }
   .recommended-products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .recommended-products-grid .product-item:nth-child(2n) { border-right: 0; }
+  .recommended-products-grid .product-item:nth-child(2n of .product-item) { border-right: 0; }
 }
 @media (max-width: 600px) {
   :root { --header-height: 112px; }
