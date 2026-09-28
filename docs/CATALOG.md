@@ -12,24 +12,25 @@ dictionaries through `gt-react` during server rendering and in the browser.
 Prices use `gt-react`'s `Currency` component. It preserves Shopify's amount and
 currency code while formatting separators, decimal places, and currency labels
 for the active language. For example, USD 1234.56 appears as `$1,234.56` in
-English and `1 234,56 $US` in French. Selecting Japanese does not convert USD
-to yen. Shopify Markets must supply a different currency if conversion is wanted.
+English and `1 234,56 $US` in French. GT never converts currency. Shopify Markets
+supplies each country's currency and prices; in this demo, selecting Japanese moves
+the shopper to the Japan market, so Shopify returns prices in yen.
 
 ## 1. Open a checkout containing this integration
 
+From the repository root:
+
 ```sh
-cd /Users/kevinwu/Documents/gt-shopify
 npm ci
 ```
 
-Keep the existing `.env`: it links this checkout to GT Supply Demo. Do not replace
-it with `.env.example`, which points at Shopify's separate public sample store.
+The catalog workflow reads the linked store from `.env`. Don't use `.env.example`
+here; it points at Shopify's separate public sample store.
 
 ## 2. Create your GT API key
 
 Open the [GT API Keys page](https://dash.generaltranslation.com/api-keys) and
-create a key with access to the existing
-[Demos / gt-shopify project](https://dash.generaltranslation.com/en-US/project/prj_l3zra1ucz2hgr1esdfq0tlxi).
+create a key with access to your GT project.
 
 Create the local credentials file without overwriting an existing one:
 
@@ -37,8 +38,8 @@ Create the local credentials file without overwriting an existing one:
 test -f .env.catalog || cp .env.catalog.example .env.catalog
 ```
 
-Open `.env.catalog` in your editor and fill in `GT_API_KEY`. The project ID is
-already in the example. This file is ignored by Git. Keep the key in this file,
+Open `.env.catalog` in your editor and fill in `GT_PROJECT_ID` and `GT_API_KEY`.
+This file is ignored by Git. Keep the key in this file,
 not in application code, the browser, a commit, or a chat message.
 
 ## 3. Export the English product content
