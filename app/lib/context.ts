@@ -44,7 +44,8 @@ export async function createHydrogenRouterContext(
 
   const waitUntil = executionContext.waitUntil.bind(executionContext);
   const [cache, session] = await Promise.all([
-    caches.open('hydrogen'),
+    // Vercel Edge has no Cache API; Hydrogen skips sub-request caching without it.
+    typeof caches === 'undefined' ? undefined : caches.open('hydrogen'),
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
 

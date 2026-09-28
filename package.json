@@ -9,6 +9,7 @@
   "type": "module",
   "scripts": {
     "build": "shopify hydrogen build --codegen",
+    "build:vercel": "npm run build && node scripts/vercel-output.mjs",
     "dev": "shopify hydrogen dev --codegen",
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
