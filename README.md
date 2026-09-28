@@ -1,10 +1,46 @@
 # GT Supply — Hydrogen localization demo
 
-A Shopify Hydrogen storefront on Oxygen with a GT dashboard and Locadex localization workflow. It uses Hydrogen 2026.4.5, React Router 7.16.0, React 18, and `gt-react`. English is the source language; French, Japanese, Korean, and Indonesian are the target languages in `gt.config.json`. GT handles interface copy, exported catalog text, and price formatting, while Shopify supplies live products, variants, amounts, currencies, search, cart, and checkout.
+A Shopify Hydrogen storefront localized with [General Translation](https://generaltranslation.com) (GT). It runs Hydrogen 2026.4.5 on React Router 7.16.0 and React 18, deploys to Oxygen, and uses `gt-react` with Locadex, GT's localization agent. English is the source language; French, Japanese, Korean, and Indonesian are the target languages in `gt.config.json`.
 
-Follow [the local catalog translation walkthrough](docs/CATALOG.md) to export the linked store's product text, translate it with your GT API key, and preview translated product names, descriptions, options, and locale-formatted prices. Translation generation is a separate manual step; missing catalog translations fall back to English.
+GT handles the storefront's own code: interface copy, accessibility labels, and locale-aware price formatting. Shopify supplies products, variants, prices, currencies, search, cart, and checkout.
 
-The [Demos / gt-shopify GT project](https://dash.generaltranslation.com/en-US/project/prj_l3zra1ucz2hgr1esdfq0tlxi) is connected to GitHub with three localization automations. [Setup PR #2](https://github.com/kevinwu98/gt-shopify/pull/2) merged as `f91b4d2`. [Code-generation PR #3](https://github.com/kevinwu98/gt-shopify/pull/3) contains internationalized copy and French/Japanese catalogs covering 148 entries. Its local runtime passed nine unit tests, 17 smoke checks, and 12 localized deployment-check groups. See [docs/LOCADEX.md](docs/LOCADEX.md) for the ongoing workflow.
+## What to look at
+
+### Locadex pull requests
+
+Locadex is connected to this repository and opened these pull requests:
+
+| PR | What Locadex did |
+| --- | --- |
+| [#2](https://github.com/kevinwu98/gt-shopify/pull/2) | Set up `gt-react`: provider, configuration, and translation loading |
+| [#3](https://github.com/kevinwu98/gt-shopify/pull/3) | Internationalized the storefront's interface copy and added French and Japanese translations |
+| [#6](https://github.com/kevinwu98/gt-shopify/pull/6) | Added Korean and Indonesian when the project's languages changed |
+| [#15](https://github.com/kevinwu98/gt-shopify/pull/15) | Internationalized new copy introduced by a feature pull request |
+| [#4](https://github.com/kevinwu98/gt-shopify/pull/4), [#9](https://github.com/kevinwu98/gt-shopify/pull/9), [#13](https://github.com/kevinwu98/gt-shopify/pull/13) | Updated translations after changes merged to `main` |
+
+Setup needed two manual follow-ups. [`099ff81`](https://github.com/kevinwu98/gt-shopify/commit/099ff81) moved `GTProvider` into the document `Layout`, so `<html lang>` and error pages are localized. [`9b31b79`](https://github.com/kevinwu98/gt-shopify/commit/9b31b79) normalized the generated lockfile so `npm ci` passes; the automations now run a lockfile step for this (see [docs/LOCADEX.md](docs/LOCADEX.md)).
+
+### GT integration in the code
+
+| Area | Files |
+| --- | --- |
+| Setup and server rendering | `gt.config.json`; `app/root.tsx` initializes GT, loads the active locale's translations in the root loader, and wraps the document in `GTProvider`; `app/loadTranslations.ts` |
+| Generated translations | `public/_gt/[locale].json` |
+| Interface copy | `<T>` and `gt()` across `app/components/` and `app/routes/` |
+| Prices | `app/components/LocalizedMoney.tsx`: GT's `<Currency>` formats Shopify's amount and currency code for the active language. It never converts currency. |
+| Language and market | `app/components/LocaleSwitcher.tsx`, `app/routes/market.tsx`, `app/lib/markets.server.ts`, `app/lib/locale-market.ts` |
+
+### Catalog text is demo scaffolding
+
+Product names, descriptions, and option labels are translated by a separate script, `scripts/catalog.mjs`. It exports them from Shopify, translates them with GT's API, and bundles the results under `catalog/`, rendered through `app/lib/useCatalog.ts`. The script stands in for Shopify's native translations, which a production storefront would use for merchant content. Locadex does not run it. See [docs/CATALOG.md](docs/CATALOG.md).
+
+## How language and market work
+
+The language selector changes GT's language and Shopify's shopping country together: English → US, French → France, Indonesian → Indonesia, Japanese → Japan, Korean → South Korea. Shopify determines each country's prices and currency; GT only formats them.
+
+The selector posts to `/market`. Before saving either preference, the server checks that the country is available and that any items in the cart can be bought there, then updates the cart's buyer identity. If an item is unavailable, the switch is blocked with a message and the cart is kept. After a successful switch, the current URL reloads. URLs are not locale-prefixed.
+
+Server rendering reads the GT locale cookie, then `Accept-Language`, then falls back to English. New visitors shop in the US market until they use the selector; browser language alone does not change the country. Catalog queries to Shopify stay in English because product text comes from the bundled catalog translations.
 
 ## Run locally
 
@@ -18,9 +54,9 @@ npm run dev -- --port 3100
 
 Open [http://localhost:3100](http://localhost:3100).
 
-For a new checkout, `.env.example` connects to Shopify's public `hydrogen-preview.myshopify.com` demo catalog using the public Storefront token published in [Shopify's demo-store repository](https://github.com/Shopify/hydrogen-demo-store/blob/main/.env). The command above preserves an existing `.env`, including credentials pulled from the linked store. Products, images, variants, prices, search, and cart operations come from Shopify's Storefront API. The store defaults to the US market and preserves existing signed market preferences; there is no visible country/currency selector. Internet access is required; the included session secret is for local development.
+For a new checkout, `.env.example` connects to Shopify's public `hydrogen-preview.myshopify.com` demo catalog using the public Storefront token published in [Shopify's demo-store repository](https://github.com/Shopify/hydrogen-demo-store/blob/main/.env). The command above preserves an existing `.env`. Products, images, variants, prices, search, and cart operations come from Shopify's Storefront API. Internet access is required; the included session secret is for local development.
 
-Browse the catalog, select a product variant, search for products, and add/update/remove cart items. **Checkout is disabled for the shared public sample store.** The deployed GT Supply Demo store has a working Shopify test-checkout handoff. Customer accounts are outside this demo's scope.
+Browse the catalog, switch languages, select a product variant, search, and add, update, or remove cart items. **Checkout is disabled for the shared public sample store.** The bundled catalog translations belong to the linked GT Supply store, so product text on the public sample store appears in English. Customer accounts are outside this demo's scope.
 
 ## Build and check
 
@@ -39,28 +75,18 @@ npm run test:smoke
 CHECK_LOCALIZATION=1 npm run test:deployment -- http://localhost:3101
 ```
 
-The smoke script uses Node built-ins and needs no browser installation. It checks the storefront and exercises a sample cart without checking out; cart mutations are restricted to Shopify's demo store. Use `SMOKE_BASE_URL=http://localhost:3100 npm run test:smoke` to target the development server instead. `npm run preview` rebuilds before starting a preview server.
+The smoke script uses Node built-ins and needs no browser. It checks the storefront and exercises a sample cart without checking out; cart mutations are restricted to Shopify's demo store. Use `SMOKE_BASE_URL=http://localhost:3100 npm run test:smoke` to target the development server instead.
 
-The suite includes catalog sync, dictionary rendering, currency, search, and deployment regression tests, plus 17 commerce/locale smoke checks. The read-only deployment checker runs seven default-English groups; `CHECK_LOCALIZATION=1` adds translated initial HTML, language controls, search/cart empty states, expected catalog titles, cookie preference, and request isolation. Add `CHECK_CATALOG=1` after generating the catalog translations to require catalog translation coverage for the tested product. For protected Oxygen previews, provide a private `OXYGEN_AUTH_BYPASS_TOKEN` for the exact deployment URL; see [docs/OXYGEN.md](docs/OXYGEN.md). Do not commit or log the token.
+The read-only deployment checker covers English server rendering, assets, catalog, product, search, and cart pages. `CHECK_LOCALIZATION=1` adds translated initial HTML for every configured language, language controls, translated search and cart states, cookie precedence, and isolation between concurrent requests. For protected Oxygen previews, see [docs/OXYGEN.md](docs/OXYGEN.md).
 
-GitHub Actions runs lint, typechecking, regression tests, the production build, and both smoke suites against Shopify's public sample catalog, with `CHECK_LOCALIZATION=1` enabled for the deployment checker. Vite is pinned to 7.3.6, which is supported by this Hydrogen release and produces the bundle-analysis artifacts expected by the pinned Shopify CLI.
-
-Browser automation can modify the favicon and document before React hydrates. The developer console confirms a `data-codex-favicon-badge` mismatch in controlled Chrome tabs, followed by hydration recovery. The application contains no automation-specific workaround. Verify the final preview in a normal browser tab as well as with the HTTP checks.
+GitHub Actions runs lint, typechecking, regression tests, the production build, and both smoke suites against Shopify's public sample catalog.
 
 ## Oxygen deployment
 
-Open [GT Supply Demo on Oxygen](https://gt-supply-demo-d4eecb57c0a4e7a633e0.o2.myshopify.dev/). GitHub deploys repository changes automatically. This development store requires store login; the URL is not a public demo. The verified English checkpoint before localization is [`f77447c`](https://github.com/kevinwu98/gt-shopify/commit/f77447c).
+The storefront is deployed to Oxygen from GitHub on every change to `main`. The deployment uses a development store, so it requires a store login and is not a public demo. Product browsing, variants, search, cart changes, reload persistence, and Shopify test-checkout handoff have been verified there; no order was placed. See [docs/OXYGEN.md](docs/OXYGEN.md).
 
-See [docs/OXYGEN.md](docs/OXYGEN.md) for the development-store setup, GitHub connection, environment configuration, and deployment checks. Product browsing, variants, search, cart changes, reload persistence, and Shopify test-checkout handoff have been verified. No order was placed.
+## Locadex workflow
 
-## Work with Locadex
+Three Locadex automations run on this repository. **Generate code** internationalizes new copy in pull requests. **Generate translations and push** updates translations after commits to `main`. **Keep locales in sync** runs manually when the language list changes. Auto-merge is disabled, so each generated pull request is reviewed and checked before merging. See [docs/LOCADEX.md](docs/LOCADEX.md).
 
-The existing project targets `kevinwu98/gt-shopify`, directory `.`, framework **React Router**, and locales `en`, `fr`, `ja`, `ko`, and `id`. Generate code runs on PR changes; Generate translations and push runs on commits to `main`; Keep locales in sync runs manually. Auto-merge is disabled. Review generated PRs and run the checks above before merging.
-
-The language selector changes GT's language and Shopify's shopping country together: English → US, French → France, Indonesian → Indonesia, Japanese → Japan, Korean → South Korea. Shopify determines each country's prices and currency. The server checks market availability and updates any existing cart before saving both preferences, then reloads the current URL. A failed switch keeps the current language and market and displays an inline error. URLs stay unchanged; no separate currency selector is needed.
-
-Before changing a populated cart, the app checks that its items are purchasable in the target market. If any are unavailable, the switch is blocked with a message and the cart is retained. The linked demo currently exposes the local currencies, but its products still need Shopify configuration to become purchasable in the international markets.
-
-Server rendering uses the GT locale cookie, then `Accept-Language`, then English. A new visitor's shopping country defaults to US until they use the selector; browser language detection alone does not change the country. The catalog query language remains English for GT's translated display dictionaries. Locadex handles authored interface copy; the [catalog workflow](docs/CATALOG.md) adds GT-generated catalog dictionaries and GT currency formatting. Shopify controls market pricing and currency conversion. The [Locadex guide](docs/LOCADEX.md) covers integration constraints, automation settings, and an optional internal wrapper.
-
-This is a technical demonstration, not a merchant customer reference. Completing the localization proof requires passing the localized Oxygen checks and browser commerce flow.
+This is a technical demonstration, not a merchant deployment.

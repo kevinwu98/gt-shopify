@@ -12,7 +12,6 @@ coverage/
 playwright-report/
 test-results/
 *.log
-!.env.locadex.example
 !.env.catalog.example
 *.tsbuildinfo
 .locadex/

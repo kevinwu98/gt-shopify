@@ -93,6 +93,6 @@ The script's seven default groups check initial English HTML, CSS/JavaScript ass
 
 ## Localization checkpoint
 
-The English checkpoint is [`f77447c`](https://github.com/kevinwu98/gt-shopify/commit/f77447c). [Locadex setup PR #2](https://github.com/kevinwu98/gt-shopify/pull/2) merged as `f91b4d2`. [PR #3](https://github.com/kevinwu98/gt-shopify/pull/3) contains the generated French/Japanese interface localization and has passed nine unit tests, 17 smoke checks, and all 12 localized deployment-check groups against its local runtime.
+The English checkpoint is [`f77447c`](https://github.com/kevinwu98/gt-shopify/commit/f77447c). [Locadex setup PR #2](https://github.com/kevinwu98/gt-shopify/pull/2) merged as `f91b4d2`. [PR #3](https://github.com/kevinwu98/gt-shopify/pull/3) contains the generated French and Japanese interface localization, and [PR #6](https://github.com/kevinwu98/gt-shopify/pull/6) added Korean and Indonesian.
 
-Run the opt-in localized checks against the actual Oxygen preview, then verify language switching, product variants, search, and cart persistence in a browser. GT handles authored interface copy and the exported catalog display dictionaries. Shopify remains responsible for live commerce data and EN/US market configuration. See [LOCADEX.md](LOCADEX.md) for the project and automation settings.
+Run the opt-in localized checks against the actual Oxygen preview, then verify language switching, product variants, search, and cart persistence in a browser. GT handles authored interface copy and the exported catalog display dictionaries. Shopify remains responsible for live commerce data, market configuration, prices, and currencies. See [LOCADEX.md](LOCADEX.md) for the project and automation settings.
